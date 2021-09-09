@@ -1,0 +1,290 @@
+*{
+    font-family: 'Recursive', sans-serif;
+    padding: 0;
+    margin: 0;
+    font-size: 18px;
+}
+
+html{
+    scroll-behavior: smooth;
+}
+
+button{
+    border: none;
+    background-color: transparent;
+    text-decoration: underline;
+    text-decoration-thickness: 3px;
+    text-decoration-color: #BECA9A;
+}
+
+button:hover{
+    text-decoration-color: #79907E;
+}
+
+#copyTextInput{
+    display: none;
+}
+
+.wrapper{
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+.body{
+    margin-top: 120px;
+    position: relative;
+    height: auto;
+}
+
+
+/* nav */
+nav{
+    top: 0;
+    position: fixed;
+    display: block;
+    padding: 30px 0px;
+    width: 80%;
+    height: 60px;
+    background-color: white;
+    opacity: 90%;
+    z-index: 10;
+   
+}
+
+#nav{
+    transition: 0.2s top;
+}
+
+nav ul li a{
+    text-decoration: underline;
+    text-decoration-thickness: 3px;
+    text-decoration-color: #BECA9A;
+    
+    color: black;
+    font-size: 20px;
+    transition: 0.2s;
+}
+nav a{
+    text-decoration: none;
+    color: black;
+}
+
+
+nav ul a:hover{
+    
+    text-decoration-color: #79907E;
+}
+
+nav ul{
+    float: right;
+}
+
+nav ul li{
+    list-style: none;
+    display: inline-block;
+    padding: 10px;
+
+}
+
+#name{
+    margin: 10px 0;
+    float: left;
+    font-size: 24px;
+}
+
+#nameMobile{
+    display: none;
+}
+
+/* body */
+
+
+.leftBox{
+    width: 30%;
+    float: left;
+    margin-right: 80px;
+}
+
+.rightBox{
+    position: relative;
+    width: 60%;
+    float: left;
+}
+
+
+p{
+    font-size: 20px;
+}
+
+.project33LBox h2{
+    text-decoration: underline;
+    text-decoration-thickness: 3px;
+}
+
+
+.project33LBox{
+    float: left;
+    width: 30%;
+    margin-right: 50px;
+    margin-bottom: 100px;
+}
+
+.project66RBox{
+    float: left;
+    width: 60%;
+    margin-bottom: 100px;
+}
+
+
+/* these two are not in use right now*/
+.project33RBox{
+    float: left;
+    /* background-color: #576363; */
+    width: 30%;
+    height: 300px;
+    margin-top: 40px;
+}
+
+.project66LBox{
+    float: left;
+    width: 60%;
+    /*background-color: #617A76; */
+    height: 300px;
+    margin-right: 50px;
+    margin-top: 40px;
+}
+
+
+.clearFloat{
+    clear: both;
+}
+
+
+
+.prjLink {
+    color: black;
+    text-decoration-thickness: 3px;
+    
+    text-decoration-color: #BECA9A;
+    transition: 0.3s;
+}
+
+.prjLink:hover {
+    text-decoration-color: #79907E;
+}
+
+.prjImg{
+    padding: 30px 0;
+    width: 80%;
+}
+
+
+#research{
+    padding: 10px 0;
+    margin: 0 60px;
+}
+
+#about{
+    margin: 10px 40px;
+}
+
+
+/* footer */
+
+.footer{
+    margin: 50px 0;
+    width: 100%;
+    text-align: center;
+    font-size: 20px;
+}
+
+.footer ul li{
+    display: inline-block;
+    padding: 10px;
+}
+.footer ul li a{
+    text-decoration: underline;
+    text-decoration-thickness: 3px;
+    text-decoration-color: #BECA9A;
+    
+    color: black;
+    font-size: 18px;
+    transition: 0.2s;
+}
+
+.footer ul li a:hover{
+    text-decoration-color: #79907E;
+}
+
+
+/* tablet responsive design */
+@media(max-width: 1024px){
+    .leftBox{
+        float: none;
+        margin-left: auto;
+        margin-right: auto;
+        margin-bottom: 50px;
+    }
+
+    .rightBox{
+        float: none;
+        width: 100%;
+    }
+}
+
+
+
+/* mobile responsive design */
+@media (max-width: 767px){
+    .leftBox{
+        float: none;
+        width: 50%;
+        margin: 40px auto;
+        
+    }
+    .leftBox img{
+        padding: 40px 0;
+    }
+
+    .rightBox{
+        float: none;
+        width: 100%
+        
+    }
+
+
+    #name{
+        float: none;
+        display: block;
+        text-align: center;
+    }
+
+    nav ul{
+        width: 100%;
+        text-align: center;
+       
+    }
+
+
+    .project33LBox{
+        float: none;
+        width: 100%;
+        height: auto;
+        margin: 10px 0;
+        padding-top: 30px;
+    }
+
+    .project66RBox{
+        float: none;
+        width: 100%;
+    }
+
+    .prjImg{
+        display: none;
+    }
+    
+
+
+}
