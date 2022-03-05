@@ -29,6 +29,28 @@
 
     <body>
         <div class="body">
+            <!-- TMBST MoraleBot -->
+            <div class="project33LBox"> 
+                <h2>DevOps for Community Discord Bot</h2>
+                <img src="./images/tmbstlogo.png" class="prjImg" alt="">
+            </div>
+            <div class="project66RBox">
+                <p>
+                    Tools: AWS ECS/ECR, GitHub Actions, Docker
+                    <br><br>
+                    Implemented a GitHub Actions-based continuous integration (CI) pipeline
+                    for existing JavaScript-based Discord bot. Previous project configuration required
+                    developers to update the bot manually, interrupting availability for end users.
+                    The new configuration enables developers to easily test and deploy without extra steps.
+                    <br><br>
+                    The pipeline itself deploys the bot to an AWS EC2 instance via ECR/ECS and is only run
+                    in specific circumstances. Additionally, deployments require passing unit tests and
+                    manual approval from a project maintainer.
+                </p>
+            </div>
+
+            <div class="clearFloat"></div>
+
 
             <!-- NetBSD inetd -->
             <div class="project33LBox"> 
@@ -37,6 +59,8 @@
             </div>
             <div class="project66RBox">
                 <p>
+                    Tools: C, Bash, GitLab CI, Virtualbox, Make
+                    <br><br>
                     Implemented new features within NetBSD's inetd super-server 
                     daemon for team-based undergraduate capstone project. Project 
                     was completed in series of Agile-like sprints under advisement 
@@ -46,32 +70,6 @@
                     automated testing using GitLab CI, Virtualbox, and the NetBSD-supported 
                     ATF framework. Additionally, I researched and implemented 
                     IP-based rate limiting with another team member.
-                    <br><br>
-                    Tools: C, Bash, GitLab CI, Virtualbox
-                </p>
-            </div>
-
-            <div class="clearFloat"></div>
-
-
-            <!-- XFeedForward PUF -->
-            <div class="project33LBox"> 
-                <h2>XFeedForward PUF</h2>
-                <img src="./images/Arbiter-PUF-architecture.png" class="prjImg"  alt="">
-            </div>
-            <div class="project66RBox">
-                <p>
-                    Collaboratively built and tested a Python-based simulation 
-                    package to investigate the relative security of hardware 
-                    security primitives (PUFs), including existing and novel 
-                    configurations. Scripted data generation, machine learning benchmarking,
-                    and result logging for use on an HPC system.
-                    <br><br>
-                    The project resulted in the identification of several unique 
-                    and more resilient PUF configurations. Paper forthcoming in <a href="https://www.iscas2022.org/">ISCAS '22</a>!
-                    <br><br>
-
-                    Tools: NumPy, GitLab CI, PyTest, PyTorch, Bash, Plt/Seaborn
                 </p>
             </div>
 
@@ -85,16 +83,14 @@
             </div>
             <div class="project66RBox">
                 <p>
+                    Tools: C, ZephyrOS, Nordic nRF SDK, OpenThread, CMake
+                    <br><br>
                     Reproduced modified experiments from the NSDI '20 paper <a href="https://www.usenix.org/conference/nsdi20/presentation/kumar">Performant TCP for Low-Power Wireless Networks</a>
                     on commodity hardware (the AdaFruit Feather Express nrf52840 pictured at left).
-                    <br><br>
-
-                    Tools: C, ZephyrOS, Nordic nRF SDK, OpenThread, CMake
                 </p>
             </div>
 
             <div class="clearFloat"></div>
-
 
 
             <!-- ATL Compiler -->
@@ -104,32 +100,30 @@
             </div>
             <div class="project66RBox">
                 <p>
+                    Tools: C, Flex/Yacc, Make, CMake
+                    <br><br>
                     Constructed a parser-driven compiler for a strongly-typed
                     language similar to Modula-2 for an undergraduate compilers
                     course. Project entailed the full construction of the compiler,
                     including symbol table and abstract syntax tree construction,
                     and code generation for a stack-based virtual machine.
-
-
-                    <br><br>
-                    Tools: C, Flex/Yacc, Make
                 </p>
             </div>
 
             <div class="clearFloat"></div>
 
-            <!-- TMBST MoraleBot -->
+
+            <!-- Networked Chatroom -->
             <div class="project33LBox"> 
-                <h2>DevOps for Community Discord Bot</h2>
-                <img src="./images/tmbstlogo.png" class="prjImg" alt="">
+                <h2>Networked Chatroom</h2>
             </div>
             <div class="project66RBox">
                 <p>
-                    Implemented GitHub Actions-based continuous integration (CI) pipeline for existing JavaScript-based Discord bot.
-                    Pipeline includes functionality for automated testing, manual deployment approval, and deployment to AWS via ECR/ECS.
-
+                    Tools: C, TCP/IP, Make
                     <br><br>
-                    Tools: AWS ECS/ECR, GitHub Actions, Docker
+                    Collaboratively implemented a simple, scalable terminal-based chatroom
+                    for an undergraduate networks course. Project leveraged the C sockets API
+                    and used a two-part observer/messeger client protocol for simplicity. 
                 </p>
             </div>
 
@@ -139,15 +133,44 @@
             <!-- LC3 VM -->
             <div class="project33LBox"> 
                 <h2> <a class="prjLink" href="https://github.com/a-gavin/lc3">LC-3 Virtual Machine</a></h2>
-                <!-- <img src="./images/lc3_add_instr.png" class="prjImg"  alt=""> -->
+                <img src="./images/lc3_add_instr.png" class="prjImg"  alt="">
             </div>
             <div class="project66RBox">
                 <p>
+                    Tools: Rust, RISC ISA Assembly
+                    <br><br>
                     Implemented a Rust-based virtual machine for the 16-bit <a href="https://justinmeiners.github.io/lc3-vm/supplies/lc3-isa.pdf">LC-3 educational ISA</a>,
                     as described in <a href="https://justinmeiners.github.io/lc3-vm/">this C-based tutorial</a>.
+                </p>
+            </div>
 
+            <div class="clearFloat"></div>
+
+
+            <!-- XFeedForward PUF -->
+            <div class="project33LBox"> 
+                <h2>XFeedForward PUF</h2>
+                <img src="./images/Arbiter-PUF-architecture.png" class="prjImg"  alt="">
+            </div>
+            <div class="project66RBox">
+                <p>
+                    Tools: NumPy, GitLab CI, PyTest, PyTorch, Bash, Plt/Seaborn
                     <br><br>
-                    Tools: Rust, RISC ISA Assembly
+                    Collaboratively built and tested a Python-based simulation 
+                    package to investigate the relative security of hardware 
+                    security primitives (PUFs), including existing and novel 
+                    configurations.
+                    <br><br>
+                    In addition to co-leading project design, my personal contributions include:
+                        <ul>
+                            <li>Scripting of data generation and benchmarking for use on HPC cluster</li>
+                            <li>Refactoring project, creating into bona-fide Python package</li>
+                            <li>Graphing and analysis of results</li>
+                        </ul>
+                    <br>
+                    The project resulted in the identification of several unique 
+                    and more resilient PUF configurations and the foundation of future PUF simulation projects.
+                    Paper is forthcoming in <a href="https://www.iscas2022.org/">ISCAS '22</a>!
                 </p>
             </div>
 
@@ -161,6 +184,8 @@
             </div>
             <div class="project66RBox">
                 <p>
+                    Tools: Python, PyTorch, scikit-learn, WandB
+                    <br><br>
                     Collaborative project for graduate-level deep learning course 
                     to determine the impact of common data augmentations in 
                     classifying pneumonia in chest X-rays. Used an expert-validated 
@@ -170,9 +195,6 @@
                     In addition to being a rather abrupt introduction to remote 
                     collaboration (thanks COVID-19!), this project helped me 
                     better formalize how I approach research.
-                    <br><br>
-
-                    Tools: PyTorch, scikit-learn, WandB
                 </p>
             </div>
 
@@ -186,10 +208,10 @@
 
             <div class="project66RBox">
                 <p>
+                    Tools: C, Autotools, ptrace
+                    <br><br>
                     Contributed bug fixes and minor features, documentation improvements,
                     and test cases to the open source user-space live patching tool, Libpulp.
-                    <br><br>
-                    Tools: C, Autotools, ptrace
                 </p>
             </div>
 
@@ -206,7 +228,6 @@
             
             <li><a href="https://www.linkedin.com/in/alex-gavin/" target="blank">LinkedIn</a></li>
         </ul>
-
     </div>
 </div>
 
