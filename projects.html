@@ -76,6 +76,24 @@
             <div class="clearFloat"></div>
 
 
+            <!-- Bit-banged SPI -->
+            <div class="project33LBox"> 
+                <h2>Driving Motors w/ Bit-banged SPI</h2>
+            </div>
+            <div class="project66RBox">
+                <p>
+                    Tools: C, FreeRTOS, CMake
+                    <br><br>
+                    Using two Raspberry Pi Pico boards connected via SPI, drove two motors in sync using PID controller loop.
+                    On TX-side receipt of user input, TX device would instruct RX device to spin motors to specific location.
+                    While motors spinning or stabilizing, TX device blinks external LED polling the RX device for instruction completion.
+                    <br><br>
+                    Both devices programmed using concurrent FreeRTOS APIs and leverage hand-built SPI communication.
+                </p>
+            </div>
+
+            <div class="clearFloat"></div>
+
             <!-- TCPlp -->
             <div class="project33LBox"> 
                 <h2>Embedded Networking: TCPlp</h2>
