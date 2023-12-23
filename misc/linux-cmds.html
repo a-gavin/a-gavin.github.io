@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alex Gavin</title>
+    <link rel="icon" href="../images/fav.png">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Recursive&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</head>
+
+<div class="wrapper"> 
+    <header>
+        <nav id="nav">
+            <a href="../index.html" id="name">Alex Gavin</a>
+            <ul>
+                <li><a href="../index.html">About</a></li>
+                <li><a href="../blog.html">Blog</a></li>
+                <li><a href="https://alw32c9tw.s3.us-west-2.amazonaws.com/AlexGavinResume.pdf" target="blank">CV</a></li>
+                <li><a href="../misc.html">Misc</a></li>
+            </ul>
+        </nav>
+        <script src="../script.js"></script>
+    </header>
+
+    <body>
+        <div class="body">
+            <!-- Title -->
+            <h1 class="mt5b1">Linux Commands Cheatsheet</h1>
+
+            <!-- Table of Contents -->
+            <h2 class="mt5b1" id="table-of-contents">Table of Contents</h2>
+            <p class="mv1">
+                <a class="prjLink" href="#general-cmds">General Commands</a>
+            </p>
+            <p class="mv1">
+                <a class="prjLink" href="#sysadmin-non-systemd">System Administration: Non-Systemd</a>
+            </p>
+            <p class="mv1">
+                <a class="prjLink" href="#sysadmin-systemd">System Administration: Systemd</a>
+            </p>
+            <p class="mv1">
+                <a class="prjLink" href="#querying-hw-info">Querying Hardware Information</a>
+            </p>
+            <p class="mv1">
+                <a class="prjLink" href="#networking-iproute2">Managing Networking (L2/L3): <code>iproute2</code></a>
+            </p>
+            <p class="mv1">
+                <a class="prjLink" href="#networking-non-iproute2">Managing Networking (L2/L3): Non-<code>iproute2</code></a>
+            </p>
+            <p class="mv1">
+                <a class="prjLink" href="#wifi">Managing WiFi</a>
+            </p>
+
+
+            <!-- General commands -->
+            <!-- TODO: grep w/ regex -->
+            <h2 class="mt5b1" id="general-cmds">General Commands</h2>
+
+            <h3 class="mt2b1" id="watch">Run Command Every N Seconds</h3>
+            <pre><code class="language-bash">
+                # Prints 'Vale la pena' once every half second
+                $ watch -n 0.5 echo 'Vale la pena'
+            </code></pre>
+
+            <h3 class="mt2b1" id="tail">View File Contents as File Updates</h3>
+            <pre><code class="language-bash">
+                # The '-F' option may be useful as well. See 'man tail'
+                $ tail -f lanforge_log_1.txt
+            </code></pre>
+
+            <h3 class="mt2b1" id="find">Search for File</h3>
+            <pre><code class="language-bash">
+                # The '.' here specifies to search in and all sub-directories of the '$CWD'
+                $ find . -name "*.html"
+                ./blog.html
+                ./projects.html
+            </code></pre>
+
+
+            <!-- System Administration: Non-Systemd -->
+            <h2 class="mt5b1" id="sysadmin-non-systemd">System Administration: Non-Systemd</h2>
+
+            <h3 class="mt2b1" id="ps">Show All Running Processes</h3>
+            <p class="mv1">
+                <b>NOTE:</b> Systemd command <code>systemctl status</code> does similar but includes Cgroup-specific
+                information as well.
+            </p>
+            <pre><code class="language-bash">
+                # Show all current processes running for current user
+                $ ps a
+                PID  TTY   STAT TIME COMMAND
+                2106 tty2  Ssl+ 0:00 /usr/libexec/gdm-wayland-session env GNOME_SHELL_SESSION_MODE=ubuntu /usr/bin/gnome
+                2110 tty2  Sl+  0:00 /usr/libexec/gnome-session-binary --session=ubuntu
+                6773 pts/0 Ss   0:00 zsh
+                6951 pts/0 S+   0:00 tmux
+                6958 pts/2 Ss   0:00 -zsh
+                7574 pts/2 R+   0:00 ps a
+            </code></pre>
+            <br>
+            <pre><code class="language-bash">
+                # Show all processes running on system
+                $ ps -e
+                PID TTY          TIME CMD                                                                                            
+                  1 ?        00:00:02 systemd                                                                                        
+                  2 ?        00:00:00 kthreadd                                                                                       
+                  3 ?        00:00:00 rcu_gp                                                                                         
+                  4 ?        00:00:00 rcu_par_gp                                                                                     
+                ...
+            </code></pre>
+
+            <h3 class="mt2b1" id="pgrep">Get All PIDs of Program (if Running)</h3>
+            <pre><code class="language-bash">
+                # Get PIDs of Firefox program
+                $ pgrep firefox
+                4602
+                5086
+            </code></pre>
+
+            <h3 class="mt2b1" id="kill">Kill Running Process (USE CAUTION)</h3>
+            <pre><code class="language-bash">
+                # Kill process w/ PID 921. Default signal to send is 'TERM', so command is same as 'kill -s TERM'
+                # More immediate (and potentially harmful) is the 'KILL' signal.
+                $ kill 921
+            </code></pre>
+
+            <h3 class="mt2b1" id="dmesg">View Kernel Logs</h3>
+            <pre><code class="language-bash">
+                # Run with '-w' to follow in real time (like 'tail -f')
+                $ sudo dmesg
+            </code></pre>
+
+
+            <!-- System Administration: Systemd -->
+            <h2 class="mt5b1" id="sysadmin-systemd">System Administration: Systemd</h2>
+
+            <!-- TODO: systemctl commands (status, start/stop/restart, daemon-reload, enable/disable, edit)-->
+            <h3 class="mt2b1" id="systemctl-status">Show Systemd Unit Status</h3>
+            <pre><code class="language-bash">
+                # The '.service' is optional if there are no other Systemd units w/ same name
+                # The bottom of the output is the same as would be output by 'journalctl -b -0 -u NetworkManager-wait-online'
+                $ systemctl status NetworkManager-wait-online.service
+                ● NetworkManager-wait-online.service - Network Manager Wait Online
+                     Loaded: loaded (/lib/systemd/system/NetworkManager-wait-online.service; enabled; vendor preset: enabled)
+                     Active: active (exited) since Sat 2023-12-23 11:41:06 PST; 1h 8min ago
+                       Docs: man:nm-online(1)
+                    Process: 1182 ExecStart=/usr/bin/nm-online -s -q (code=exited, status=0/SUCCESS)
+                   Main PID: 1182 (code=exited, status=0/SUCCESS)
+                        CPU: 47ms
+
+                Dec 23 11:40:56 meadowlark systemd[1]: Starting Network Manager Wait Online...
+                Dec 23 11:41:06 meadowlark systemd[1]: Finished Network Manager Wait Online.
+            </code></pre>
+
+            <h3 class="mt2b1" id="systemctl-mgmt">Manage and Configure Systemd Unit</h3>
+            <p class="mv1">
+                <b>NOTE:</b> After editing a Systemd unit file, you must run <code>systemctl daemon-reload</code>
+                for the changes to take effect.
+            </p>
+            <pre><code class="language-bash">
+                # TODO
+                # start
+                # stop
+                # restart
+                # enable, disable
+                # mask, unmask
+                # edit
+                # daemon-reload
+            </code></pre>
+
+            <h3 class="mt2b1" id="journalctl">View Service (Daemon) Logs</h3>
+            <pre><code class="language-bash">
+                # Prints all log lines. Will be very long
+                $ journalctl
+
+                # Print only the last 100 log lines
+                $ journalctl -n 100
+
+                # Follow logs in real time (similar to 'tail -f')
+                $ journalctl -f
+
+                # Only show logs for a specific ID, here 'test_program'.
+                # For example, the following would create a log message and
+                # tag it with the 'test_program' tag:
+                #   logger -t test_program "This is a log message"
+                #
+                # Note that this is different from the '-u' option
+                $ journalctl -t test_program
+
+                # Only show logs for a specific service, here, 'wpa_supplicant.service'
+                $ journalctl -u wpa_supplicant
+                # or
+                $ journalctl -u wpa_supplicant.service
+
+                # Only show logs for this boot (can use '-b' option instead of '--boot')
+                $ journalctl --boot -0
+
+                # Only show logs for the last boot (can use '-b' option instead of '--boot')
+                $ journalctl --boot -1
+            </code></pre>
+
+
+            <!-- Querying HW info -->
+            <h2 class="mt5b1" id="querying-hw-info">Querying Hardware Information</h2>
+
+            <h3 class="mt2b1" id="lshw">Show System Hardware Information</h3>
+            <p class="mv1">
+                It is recommended to run this command with root privileges to get the most detailed information.
+            </p>
+            <p class="mv1">
+                For more CPU/NUMA-focused information in a pop-up GUI format, the <code>lstopo</code> command may prove useful.
+                It has a text-only mode as well for non-GUI use cases.
+            </p>
+            <pre><code class="language-bash">
+                $ sudo lshw
+                HOSTNAME
+                    description: Notebook
+                    product: XXXXXXXXXXX (XXXXXXXXXXX)
+                    vendor: XXXXXXXXXXX
+                    version: XXXXXXXXXXX
+                    serial: XXXXXXXXXXX
+                    width: 64 bits
+                    capabilities: smbios-3.3.0 dmi-3.3.0 smp vsyscall32
+                    configuration: administrator_password=disabled chassis=notebook family=ThinkPad E14 Gen 4 power-on_password=disabled sku=LENOVO_MT_21EB_BU_Think_FM_ThinkPad E14 Gen 4 uuid=9b2d86cc-2b0f-11b2-a85c-ad3b66e4d98e
+                ...
+            </code></pre>
+
+            <h3 class="mt2b1" id="lsusb">Show USB Device Information</h3>
+            <pre><code class="language-bash">
+                # Use '-v' for more verbose output
+                $ lsusb
+                Bus 004 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
+                Bus 003 Device 002: ID 0489:e0cd Foxconn / Hon Hai Wireless_Device
+                Bus 003 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+                Bus 002 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
+                Bus 001 Device 002: ID 30c9:0030 Luxvisions Innotech Limited Integrated Camera
+                Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+
+                # Filter on vendor and product ID
+                $ lsusb -d 0489:e0cd
+                Bus 003 Device 002: ID 0489:e0cd Foxconn / Hon Hai Wireless_Device
+
+                # Filter on bus and device number
+                $ lsusb -s 003:002
+                Bus 003 Device 002: ID 0489:e0cd Foxconn / Hon Hai Wireless_Device
+            </code></pre>
+
+            <h3 class="mt2b1" id="lspci">Show PCI(e) Device Information</h3>
+            <pre><code class="language-bash">
+                # Use the '-v', '-vv', '-vvv' options to show more information with increasing verbosity
+                # Use the '-k' option to show kernel drivers used (on by default w/ '-v')
+                $ lspci
+                ...
+                02:00.0 Ethernet controller: Realtek Semiconductor Co., Ltd. RTL8111/8168/8411 PCI Express Gigabit Ethernet Contr
+                03:00.0 Network controller: MEDIATEK Corp. MT7921 802.11ax PCI Express Wireless Network Adapter
+                ...
+
+                # Filter on PCI(e) bus
+                $ lspci -s 03:00.0
+                03:00.0 Network controller: MEDIATEK Corp. MT7921 802.11ax PCI Express Wireless Network Adapter
+            </code></pre>
+
+            <h3 class="mt2b1" id="lsblk">List Block Devices</h3>
+            <p class="mv1">
+                For more disk-specific utilization info, see <code>df</code>.
+            </p>
+            <pre><code class="language-bash">
+                $ lsblk
+                NAME        MAJ:MIN RM   SIZE RO TYPE MOUNTPOINTS
+                ...
+                loop18        7:18   0   428K  1 loop /snap/snapd-desktop-integration/57                                                 
+                loop19        7:19   0   452K  1 loop /snap/snapd-desktop-integration/83
+                nvme0n1     259:0    0 476.9G  0 disk                                                                                    
+                ├─nvme0n1p1 259:1    0   512M  0 part /boot/efi                                                                          
+                └─nvme0n1p2 259:2    0 476.4G  0 part /
+            </code></pre>
+
+            <h3 class="mt2b1" id="df">Show Disk Usage</h3>
+            <pre><code class="language-bash">
+                # Use the '-h' flag for human-readable output (in base 1024).
+                # NOTE: The '-H' flag is human-readable but in base 1000s units
+                $ df -h
+                Filesystem      Size  Used Avail Use% Mounted on
+                tmpfs           2.3G  2.3M  2.3G   1% /run
+                /dev/nvme0n1p2  468G  125G  320G  29% /
+                tmpfs            12G  6.9M   12G   1% /dev/shm
+                tmpfs           5.0M  4.0K  5.0M   1% /run/lock
+                /dev/nvme0n1p1  511M  6.1M  505M   2% /boot/efi
+                tmpfs           2.3G  124K  2.3G   1% /run/user/1000
+            </code></pre>
+
+            <h3 class="mt2b1" id="du">Show Disk Usage by Directory</h3>
+            <pre><code class="language-bash">
+                # Use the '-h' flag for human-readable output (unsure what base is used)
+                # NOTE: The '-H' flag for 'du' is not the same as the '-H' flag for 'df'
+                $ du -h
+                1.5M    ./images
+                44K     ./blog
+                ...
+                5.4M    .
+            </code></pre>
+
+
+            <!-- Managing Networking (L2/L3): iproute2 Commands -->
+            <!-- TODO: 1q vlan, vrf -->
+            <h2 class="mt5b1" id="networking-iproute2">Managing Networking (L2/L3): <code>iproute2</code></h2>
+
+            <h3 class="mt2b1" id="ip-link">Show Network Interface Link-Layer Info</h3>
+            <p class="mv1">
+                Displays interface status and MAC address. More detailed output is possible by
+                using the <code>-d</code> option (without the <code>-br</code> option).
+            </p>
+            <p class="mv1">
+                <b>NOTE:</b>
+                Take note of information beyond MAC address. 'UP' indicates interface is running. 'LOWER_UP' means
+                the driver is functioning. For example, a non-configured but plugged in ethernet device may be 'DOWN' but 'LOWER_UP'.
+                For Ethernet interfaces, 'NO-CARRIER' indicates that there is no signal on the wire (it's disconnected).
+            </p>
+            <pre><code class="language-bash">
+                # Shorthand shown. Full command would be 'ip link show', but the 'show' is optional.
+                $ ip -br l
+                lo               UNKNOWN        00:00:00:00:00:00 <LOOPBACK,UP,LOWER_UP> 
+                enp2s0           DOWN           6c:24:08:d5:14:c9 <NO-CARRIER,BROADCAST,MULTICAST,UP> 
+                wlan0            UP             3c:55:76:04:68:b9 <BROADCAST,MULTICAST,UP,LOWER_UP>
+            </code></pre>
+
+            <h3 class="mt2b1" id="ip-addr">Show Network Interface IP-Layer Info</h3>
+            <p class="mv1">
+                Displays IPv4 and IPv6 information in addition to interface status, MAC address, MTU, and interface
+                routing table, among other things (some of which require <code>-d</code> option). More detailed output is
+                possible by using the <code>-d</code> option (without the <code>-br</code> option).
+            </p>
+            <pre><code class="language-bash">
+                # Shorthand shown. Full command would be 'ip addr show', but the 'show' is optional.
+                $ ip -br a
+                lo               UNKNOWN        127.0.0.1/8 ::1/128
+                enp2s0           DOWN
+                wlan0            UP             10.199.4.142/20 fe80::b283:e1f9:587f:9a15/64
+
+                # Only show IPv4 information
+                $ ip -4 addr show
+
+                # Only show IPv6 information
+                $ ip -6 addr show
+            </code></pre>
+
+            <h3 class="mt2b1" id="ip-neigh">Show ARP Tables</h3>
+            <pre><code class="language-bash">
+                # Shorthand is 'ip n'
+                $ ip neigh
+                10.199.0.1 dev wlan0 lladdr 00:50:e8:04:57:ab REACHABLE
+
+                # Show specific interface's ARP table
+                $ ip neigh show dev wlan0
+                10.199.0.1 dev wlan0 lladdr 00:50:e8:04:57:ab REACHABLE
+            </code></pre>
+
+            <h3 class="mt2b1" id="ip-route">Show Routing Tables</h3>
+            <pre><code class="language-bash">
+                # Shorthand is 'ip r'. Will show all IPv4 routing tables.
+                # The '169.254.0.0/16' route is link-local IPv4 and is mostly default.
+                $ ip route
+                default via 10.199.0.1 dev wlan0 proto dhcp metric 600
+                10.199.0.0/20 dev wlan0 proto kernel scope link src 10.199.4.142 metric 600
+                169.254.0.0/16 dev wlan0 scope link metric 1000
+
+                # Show IPv6 routing tables only
+                $ ip -6 route
+                ::1 dev lo proto kernel metric 256 pref medium
+                fe80::/64 dev wlan0 proto kernel metric 1024 pref medium
+
+                # Determine what route traffic will take for a specific address, here '8.8.8.8'
+                $ ip route get 8.8.8.8
+                8.8.8.8 via 10.199.0.1 dev wlan0 src 10.199.4.142 uid 1000
+                cache
+
+                # Show routes in routing table 10
+                $ ip route show table 10
+            </code></pre>
+
+
+            <!-- TODO: nmap? -->
+            <!-- Managing Networking (L2/L3): Non-iproute2 -->
+            <h2 class="mt5b1" id="networking-non-iproute2">Managing Networking (L2/L3): Non-<code>iproute2</code></h2>
+
+            <h3 class="mt2b1" id="ss">Show Open Sockets (Existing Connections)</h3>
+            <p class="mv1">
+                I typically use this as <code>ss -tulpn</code> and <code>grep</code> for what I want.
+                If you run as root (e.g. with <code>sudo</code>), you will also see the program that
+                is using the socket.
+            </p>
+            <pre><code class="language-bash">
+                # Main options are:
+                # '-u' for UDP
+                # '-t' for TCP
+                # '-p' display process (if have permission for given process)
+                # '-l' display only listening sockets
+                # '-a' display listening and established sockets (no '-a' or '-l' will only display established)
+                # '-n' do not attempt to resolve service name for port (to guarantee port num is printed)
+                $ sudo ss -tulpn
+                Netid State  Recv-Q Send-Q Local Address:Port Peer Address:Port Process
+                udp   UNCONN 0      0            0.0.0.0:36755     0.0.0.0:*    users:(("avahi-daemon",pid=1086,fd=13))
+                udp   UNCONN 0      0            0.0.0.0:5353      0.0.0.0:*    users:(("avahi-daemon",pid=1086,fd=7))
+            </code></pre>
+
+
+            <!-- Managing WiFi -->
+            <h2 class="mt5b1" id="wifi">Managing WiFi</h2>
+
+            <h3 class="mt2b1" id="iw-iface-info">Show WiFi Interface General Info</h3>
+            <p class="mv1">
+                Includes STA MAC, SSID, phy device, channel, frequency, transmit power.
+            </p>
+            <pre><code class="language-bash">
+                # Can also run 'iw dev wlan0 info', but 'dev' is optional
+                $ iw wlan0 info
+                Interface wlan0
+                    ifindex 3
+                    wdev 0x1
+                    addr xx:xx:xx:xx:xx:xx
+                    ssid EXAMPLE_SSID
+                    type managed
+                    wiphy 0
+
+                    channel 60 (5300 MHz), width: 40 MHz, center1: 5310 MHz
+                    txpower 3.00 dBm
+                    multicast TXQ:
+                        qsz-byt qsz-pkt flows   drops   marks   overlmt hashcol tx-bytes        tx-packets
+                        0       0       0       0       0       0       0       0               0
+            </code></pre>
+
+            <h3 class="mt2b1" id="iw-link">Show WiFi Interface Link Information</h3>
+            <p class="mv1">
+                Includes AP MAC (if station), SSID, frequency, bandwidth, RSSI (if station), and phy rate (MCS),
+                among other things. Phy rate may or may not include NSS.
+            </p>
+            <pre><code class="language-bash">
+                # Can also run 'iw dev wlan0 link', but 'dev' is optional
+                $ iw wlan0 link
+                Connected to xx:xx:xx:xx:xx:xx (on wlan0)
+                    SSID: EXAMPLE_SSID
+                    freq: 5300
+                    RX: 432698117 bytes (308005 packets)
+                    TX: 20447681 bytes (178106 packets)
+                    signal: -73 dBm
+                    rx bitrate: 120.0 MBit/s MCS 5 40MHz short GI
+                    tx bitrate: 108.0 MBit/s MCS 5 40MHz
+
+                    bss flags: short-slot-time
+                    dtim period: 1
+                    beacon int: 100
+            </code></pre>
+
+            <h3 class="mt2b1" id="iw-phy-info">Show WiFi Radio Info</h3>
+            <p class="mv1">
+                Includes channels and bands in current regulatory domain, ciphers, MCS rates, and antennas, among other things.
+            </p>
+            <pre><code class="language-bash">
+                # Can also run 'iw phy phy0 info', but 'phy' is optional
+                # Will show a 'Band 3', if supports 2.4 GHz, 5 GHz, and 6 GHz
+                $ iw phy0 info
+                    ...
+                    Supported Ciphers:
+                        * WEP40 (00-0f-ac:1)
+                        * WEP104 (00-0f-ac:5)
+                        ...
+                    ...
+                    Band 1:
+                    ...
+                        Frequencies:
+                            * 2412 MHz [1] (30.0 dBm)
+                            * 2417 MHz [2] (30.0 dBm)
+                            ...
+                    ...
+                    Band 2:
+                    ...
+            </code></pre>
+
+            <h3 class="mt2b1" id="iw-reg-get">Show Wireless Regulatory Domain Info</h3>
+            <pre><code class="language-bash">
+                $ iw reg get
+                global
+                country US: DFS-FCC
+                        (902 - 904 @ 2), (N/A, 30), (N/A)
+                        (904 - 920 @ 16), (N/A, 30), (N/A)
+                        (920 - 928 @ 8), (N/A, 30), (N/A)
+                        (2400 - 2472 @ 40), (N/A, 30), (N/A)
+                        (5150 - 5250 @ 80), (N/A, 23), (N/A), AUTO-BW
+                        (5250 - 5350 @ 80), (N/A, 24), (0 ms), DFS, AUTO-BW
+                        (5470 - 5730 @ 160), (N/A, 24), (0 ms), DFS
+                        (5730 - 5850 @ 80), (N/A, 30), (N/A), AUTO-BW
+                        (5850 - 5895 @ 40), (N/A, 27), (N/A), NO-OUTDOOR, AUTO-BW, PASSIVE-SCAN
+                        (5925 - 7125 @ 320), (N/A, 12), (N/A), NO-OUTDOOR, PASSIVE-SCAN
+                        (57240 - 71000 @ 2160), (N/A, 40), (N/A)
+            </code></pre>
+    </body>
+
+    <div class="footer">
+        <ul>
+            <script src="../emailJS.js"></script>
+            <li> <button onclick="copyText('a_gavin@icloud.com')">Email</button> </li>
+            <li><a href="https://github.com/a-gavin" target="blank">Github</a></li>
+            
+            <li><a href="https://www.linkedin.com/in/alex-gavin/" target="blank">LinkedIn</a></li>
+        </ul>
+
+    </div>
+</div>
+
+</html>

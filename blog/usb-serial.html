@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alex Gavin</title>
+    <link rel="icon" href="../images/fav.png">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Recursive&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</head>
+
+<div class="wrapper"> 
+    <header>
+        <nav id="nav">
+            <a href="../index.html" id="name">Alex Gavin</a>
+            <ul>
+                <li><a href="../index.html">About</a></li>
+                <li><a href="../blog.html">Blog</a></li>
+                <li><a href="https://alw32c9tw.s3.us-west-2.amazonaws.com/AlexGavinResume.pdf" target="blank">CV</a></li>
+                <li><a href="../misc.html">Misc</a></li>
+            </ul>
+        </nav>
+        <script src="../script.js"></script>
+    </header>
+
+    <body>
+        <div class="body">
+            <!-- Title -->
+            <h1 class="mv5">USB Serial Device Access w/o Root</h1>
+
+
+            <!-- Motivation section -->
+            <h2 class="mt3b1" id="motivation">Motivation</h2>
+            <p class="mv1">
+                If you're using a USB serial device like an FTDI USB UART device on Linux,
+                only root can access the device by default. To allow users to use the USB serial device
+                <i>without being root</i>, you need to configure a udev rule for the device.
+            </p>
+            <p class="mv1">
+                If you aren't familiar with udev, <a href="https://wiki.archlinux.org/title/udev">this article</a>
+                explains the basics and a bit of history. The main takeaway is that udev controls USB serial devices, among other things,
+                requiring us to create an appropriate udev rule to use the device as a non-root user.
+            </p>
+
+
+            <!-- Instructions section -->
+            <h2 class="mt3b1" id="instructions">Instructions</h2>
+            <p class="mv1">
+                The following instructions detail the steps required to give non-root users access to USB serial devices.
+                These steps require that you have root access on the system you are configuring.
+            </p>
+            <p class="mv1">
+                <b>NOTE:</b> These steps will give access to all non-root users on the system.
+            </p>
+
+
+            <!-- 1. Identify device -->
+            <h3 class="mt3b1" id="id_device">1. Identify the device</h3>
+            <p class="mv1">
+                Run <code>ls /dev/</code>. The device will show up as a <code>/dev/ttyACMx</code> or <code>/dev/ttyUSBx</code>,
+                where <b>x</b> is some positive number.
+            </p>
+            <p class="mv1">
+                If there are multiple ACM and/or USB devices visible, unplug and re-plug in the USB device.
+                Then, search for the USB event in the kernel message  buffer using command
+                <code>sudo dmesg | grep "usb"</code>. This should print out enough information
+                to identify the desired USB device tty.
+            </p>
+            <p class="mv1">
+                For example, see the last line of the output where it lists ttyUSB1:
+            </p>
+                <pre><code class="language-bash">
+                    $ sudo dmesg | grep "usb"
+                    [21.944277] usb 1-4: USB disconnect, device number 6
+                    [21.637095] usb 1-4: new full-speed USB device number 7 using xhci_hcd
+                    [21.764180] usb 1-4: New USB device found, idVendor=1a86, idProduct=7523, bcdDevice= 2.64
+                    [21.764184] usb 1-4: New USB device strings: Mfr=0, Product=2, SerialNumber=0
+                    [21.764186] usb 1-4: Product: USB Serial
+                    [21.766670] usb 1-4: ch341-uart converter now attached to ttyUSB1
+                </code></pre>
+            </p>
+
+
+            <!-- 2. Get device model and vendor ID -->
+            <h3 class="mt3b1" id="get_ids">2. Get the device model and vendor ID</h3>
+            <p class="mv1">
+                Search for the model and vendor ID using the <code>udevadm info</code> command.
+                For example, the following searches for the model and vendor ID of the <code>/dev/ttyUSB1</code>
+                device.
+            </p>
+            <pre><code class="language-bash">
+                $ udevadm info /dev/ttyUSB1 | grep "ID_VENDOR_ID\|ID_MODEL_ID"
+                E: ID_VENDOR_ID=0403
+                E: ID_MODEL_ID=6015
+            </code></pre>
+
+
+            <!-- 3. Create udev rule -->
+            <h3 class="mt3b1" id="create_rule">3. Create the udev rule</h3>
+            <p class="mv1">
+                As super user, create a new udev rule file in <code>/etc/udev/rules.d/</code>, for example
+                <code>80-usb-serial.rules</code>. Then add the below line, substituting in the model and vendor ID
+                you found in the previous step. Note that the number prefix of the file name matters.
+                It indicates priority when checking udev rules, the lower the higher.
+            </p>
+
+            <pre><code>
+                # Contents of udev rule
+                SUBSYSTEM=="tty", ENV{ID_VENDOR_ID}=="0403", ENV{ID_MODEL_ID}="6015", MODE="0666"
+            </code></pre>
+
+            <p class="mv1">
+                If you'd like to give your device a more meaningful name or you find the device file
+                changing (e.g. <code>/dev/ttyUSB1</code>) because you have multiple USB serial devices,
+                you can add a symlink for the device's tty file. The following extends the above rule file,
+                note the <code>SYMLINK</code> in the rule:
+            </p>
+                
+            <pre><code>
+                # Contents of udev rule with symlink
+                SUBSYSTEM=="tty", ENV{ID_VENDOR_ID}=="0403", ENV{ID_MODEL_ID}="6015", SYMLINK+="ttyUART", MODE="0666"
+            </code></pre>
+
+            <p class="mv1">
+                <b>NOTE:</b> When multiple USB serial devices with the same model and vendor ID are added, udev will match
+                on all of them and overwrite the symlink each time. The end result is only the last device matched
+                will be symlinked. As far as I am aware, the order is indeterminate, so there's no guarantees that the
+                symlink will map to the same device each time.
+            </p>
+            <p class="mv1">
+                If this is the case, there may be other device information
+                you can match on to ensure only your desired device is symlinked. The command <code>udevadm info</code>
+                will prove useful for this. See <code>man 7 udevadm</code> for more info.
+            </p>
+
+
+            <!-- 4. Verify udev rule -->
+            <h3 class="mt3b1" id="verify_udev_rule">4. Verify the udev rule</h3>
+            <p class="mv1">
+                Using the <code>udevadm test</code> command, simulate the application of udev rules to your
+                desired USB serial device. You'll also need the <code>/sys/</code> device path, but you can
+                get this with the <code>udevadm info</code> command.
+            </p>
+
+            <p class="mv1">
+                Substituting in your device's <code>/dev/</code> path, run the following command. Look
+                for a line which contains 'MODE' and optionally a line that contains 'LINK', if you
+                configured a symlink for your device. These are visible in the command:
+            </p>
+
+            <pre><code class="language-bash">
+                $ sudo udevadm test $(udevadm info --query=path --name=/dev/ttyUSB0) 2>&1 | grep "80-usb-serial.rules"
+                Reading rules file: /etc/udev/rules.d/80-usb-serial.rules
+                ttyUSB0: /etc/udev/rules.d/80-usb-serial.rules:7 MODE 0666
+                ttyUSB0: /etc/udev/rules.d/80-usb-serial.rules:7 LINK 'ttyUART'
+            </code></pre>
+
+
+            <!-- 5. Reload udev rules -->
+            <h3 class="mt3b1" id="reload_udev_rules">5. Reload udev rules (giving non-root access to the device)</h3>
+            <p class="mv1">
+                Run the following command:
+            </p>
+
+            <pre><code class="language-bash">
+                $ sudo udevadm control --reload && sudo udevadm trigger
+            </code></pre>
+
+            <p class="mv1">
+                The <code>udevadm control --reload</code> command only reloads the rules for new events.
+                The <code>udevadm trigger</code> command replays kernel events so that your newly-loaded rule
+                applies to events which have already occured. This means you won't need to unplug and replug your device
+                in order for the new udev rule to take effect.
+            </p>
+
+
+            <!-- References -->
+            <h2 class="mt3b1" id="references">References</h2>
+            <p class="mv1">
+                <a href="https://wiki.archlinux.org/title/udev">Arch Linux Wiki udev Article</a>
+            </p>
+            <p class="mv1">
+                <a href="http://www.reactivated.net/writing_udev_rules.html#terminology">udev Terminology</a>
+            </p>
+            <p class="mv1">
+                <a href="http://hackaday.com/2009/09/18/how-to-write-udev-rules/">udev Rule Creation Tutorial</a>
+            </p>
+        </div>
+    </body>
+
+    <div class="footer">
+        <ul>
+            <script src="../emailJS.js"></script>
+            <li> <button onclick="copyText('a_gavin@icloud.com')">Email</button> </li>
+            <li><a href="https://github.com/a-gavin" target="blank">Github</a></li>
+            
+            <li><a href="https://www.linkedin.com/in/alex-gavin/" target="blank">LinkedIn</a></li>
+        </ul>
+
+    </div>
+</div>
+
+</html>
