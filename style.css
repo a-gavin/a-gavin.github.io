@@ -2,7 +2,6 @@
     font-family: 'Recursive', sans-serif;
     padding: 0;
     margin: 0;
-    font-size: 18px;
 }
 
 html{
@@ -10,6 +9,7 @@ html{
 }
 
 button{
+    font-size: 18px;
     border: none;
     background-color: transparent;
     text-decoration: underline;
@@ -26,11 +26,10 @@ button:hover{
 }
 
 .wrapper{
-    width: 80%;
+    width: 70%;
     margin-left: auto;
     margin-right: auto;
 }
-
 
 .body{
     margin-top: 120px;
@@ -45,12 +44,11 @@ nav{
     position: fixed;
     display: block;
     padding: 30px 0px;
-    width: 80%;
+    width: 70%;
     height: 60px;
     background-color: white;
     opacity: 90%;
     z-index: 10;
-   
 }
 
 #nav{
@@ -73,7 +71,6 @@ nav a{
 
 
 nav ul a:hover{
-    
     text-decoration-color: #79907E;
 }
 
@@ -85,7 +82,6 @@ nav ul li{
     list-style: none;
     display: inline-block;
     padding: 10px;
-
 }
 
 #name{
@@ -99,8 +95,6 @@ nav ul li{
 }
 
 /* body */
-
-
 .leftBox{
     width: 30%;
     float: left;
@@ -113,16 +107,33 @@ nav ul li{
     float: left;
 }
 
+h1{
+    font-size: 28px;
+    text-align: center;
+}
 
-p{
+h2{
+    font-size: 24px;
+}
+
+h3{
     font-size: 20px;
 }
 
-.project33LBox h2{
+p{
+    font-size: 18px;
+}
+
+code {
+    /* https://www.flatuicolorpicker.com/grey-hsl-color-model/ */
+    background: hsl(0, 0%, 93%);
+    font-family: 'Courier New', sans-serif, monospace;
+}
+
+.project33LBox h3{
     text-decoration: underline;
     text-decoration-thickness: 3px;
 }
-
 
 .project33LBox{
     float: left;
@@ -136,7 +147,6 @@ p{
     width: 60%;
     margin-bottom: 100px;
 }
-
 
 /* these two are not in use right now*/
 .project33RBox{
@@ -156,17 +166,13 @@ p{
     margin-top: 40px;
 }
 
-
 .clearFloat{
     clear: both;
 }
 
-
-
 .prjLink {
     color: black;
     text-decoration-thickness: 3px;
-    
     text-decoration-color: #BECA9A;
     transition: 0.3s;
 }
@@ -181,18 +187,7 @@ p{
 }
 
 
-#research{
-    padding: 10px 0;
-    margin: 0 60px;
-}
-
-#about{
-    margin: 10px 40px;
-}
-
-
 /* footer */
-
 .footer{
     margin: 50px 0;
     width: 100%;
@@ -216,6 +211,103 @@ p{
 
 .footer ul li a:hover{
     text-decoration-color: #79907E;
+}
+
+.flex{
+    display: flex;
+}
+
+.flex-row{
+    flex-direction: row;
+}
+
+.flex-col{
+    flex-direction: column;
+}
+
+.align-center{
+    align-items: center;
+}
+
+.justify-between{
+    justify-content: space-between;
+}
+
+.justify-center{
+    justify-content: center;
+}
+
+.w30p{
+    width: 30%;
+}
+
+.w60p{
+    width: 60%;
+}
+
+.caption{
+    font-size: 12px;
+}
+
+/*
+    SPACING CLASSES
+    m = margin
+
+    a = all
+    v = vertical
+    h = horizontal
+    b = bottom
+
+    numberical values are multiplied by 10
+    eg.
+    ma1: margin on all sides = 10px
+    mv2: margin on top and bottom = 20px
+*/
+.ma2{
+    margin:         20px;
+}
+
+.mv1{
+    margin:         10px 0;
+}
+
+.mv2{
+    margin:         20px 0;
+}
+
+.mt2b1{
+    margin-top:     20px;
+    margin-bottom:  10px;
+}
+
+.mt3b1{
+    margin-top:     30px;
+    margin-bottom:  10px;
+}
+
+.mt5b1{
+    margin-top:     50px;
+    margin-bottom:  10px;
+}
+
+.mv5{
+    margin:         50px 0;
+}
+
+.mt1{
+    margin-top:     10px;
+}
+
+.mt2{
+    margin-top:     20px;
+}
+
+.mb1{
+    margin-bottom:  10px;
+}
+
+.mb2{
+    margin-bottom:  20px;
 }
 
 
@@ -251,9 +343,7 @@ p{
     .rightBox{
         float: none;
         width: 100%
-        
     }
-
 
     #name{
         float: none;
@@ -266,7 +356,6 @@ p{
         text-align: center;
        
     }
-
 
     .project33LBox{
         float: none;
@@ -284,7 +373,4 @@ p{
     .prjImg{
         display: none;
     }
-    
-
-
 }
