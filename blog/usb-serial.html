@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -15,14 +16,15 @@
     <script>hljs.highlightAll();</script>
 </head>
 
-<div class="wrapper"> 
+<div class="wrapper">
     <header>
         <nav id="nav">
             <a href="../index.html" id="name">Alex Gavin</a>
             <ul>
                 <li><a href="../index.html">About</a></li>
                 <li><a href="../blog.html">Blog</a></li>
-                <li><a href="https://alw32c9tw.s3.us-west-2.amazonaws.com/AlexGavinResume.pdf" target="blank">CV</a></li>
+                <li><a href="https://alw32c9tw.s3.us-west-2.amazonaws.com/AlexGavinResume.pdf" target="blank">CV</a>
+                </li>
                 <li><a href="../misc.html">Misc</a></li>
             </ul>
         </nav>
@@ -34,7 +36,6 @@
             <!-- Title -->
             <h1 class="mt5 mb1">USB Serial Device Access w/o Root</h1>
 
-
             <!-- Motivation section -->
             <h2 class="mt3 mb1" id="motivation">Motivation</h2>
             <p class="mv1">
@@ -44,41 +45,42 @@
             </p>
             <p class="mv1">
                 If you aren't familiar with udev, <a href="https://wiki.archlinux.org/title/udev">this article</a>
-                explains the basics and a bit of history. The main takeaway is that udev controls USB serial devices, among other things,
+                explains the basics and a bit of history. The main takeaway is that udev controls USB serial devices,
+                among other things,
                 requiring us to create an appropriate udev rule to use the device as a non-root user.
             </p>
             <p class="mv1">
                 <b>NOTE:</b> This assumes you have root privileges on the machine you will use.
             </p>
 
-
             <!-- Instructions section -->
             <h2 class="mt3 mb1" id="instructions">Instructions</h2>
             <p class="mv1">
-                The following instructions detail the steps required to give non-root users access to USB serial devices.
+                The following instructions detail the steps required to give non-root users access to USB serial
+                devices.
                 These steps require that you have root access on the system you are configuring.
             </p>
             <p class="mv1">
                 <b>NOTE:</b> These steps will give access to all non-root users on the system.
             </p>
 
-
             <!-- 1. Identify device -->
             <h3 class="mt3 mb1" id="id_device">1. Identify the device</h3>
             <p class="mv1">
-                Run <code>ls /dev/</code>. The device will show up as a <code>/dev/ttyACMx</code> or <code>/dev/ttyUSBx</code>,
+                Run <code>ls /dev/</code>. The device will show up as a <code>/dev/ttyACMx</code> or
+                <code>/dev/ttyUSBx</code>,
                 where <b>x</b> is some positive number.
             </p>
             <p class="mv1">
                 If there are multiple ACM and/or USB devices visible, unplug and re-plug in the USB device.
-                Then, search for the USB event in the kernel message  buffer using command
+                Then, search for the USB event in the kernel message buffer using command
                 <code>sudo dmesg | grep "usb"</code>. This should print out enough information
                 to identify the desired USB device tty.
             </p>
             <p class="mv1">
                 For example, see the last line of the output where it lists ttyUSB1:
             </p>
-                <pre><code class="language-bash">
+            <pre><code class="language-bash">
                     $ sudo dmesg | grep "usb"
                     [21.944277] usb 1-4: USB disconnect, device number 6
                     [21.637095] usb 1-4: new full-speed USB device number 7 using xhci_hcd
@@ -88,7 +90,6 @@
                     [21.766670] usb 1-4: ch341-uart converter now attached to ttyUSB1
                 </code></pre>
             </p>
-
 
             <!-- 2. Get device model and vendor ID -->
             <h3 class="mt3 mb1" id="get_ids">2. Get the device model and vendor ID</h3>
@@ -102,7 +103,6 @@
                 E: ID_VENDOR_ID=0403
                 E: ID_MODEL_ID=6015
             </code></pre>
-
 
             <!-- 3. Create udev rule -->
             <h3 class="mt3 mb1" id="create_rule">3. Create the udev rule</h3>
@@ -124,14 +124,15 @@
                 you can add a symlink for the device's tty file. The following extends the above rule file,
                 note the <code>SYMLINK</code> in the rule:
             </p>
-                
+
             <pre><code>
                 # Contents of udev rule with symlink
                 SUBSYSTEM=="tty", ENV{ID_VENDOR_ID}=="0403", ENV{ID_MODEL_ID}="6015", SYMLINK+="ttyUART", MODE="0666"
             </code></pre>
 
             <p class="mv1">
-                <b>NOTE:</b> When multiple USB serial devices with the same model and vendor ID are added, udev will match
+                <b>NOTE:</b> When multiple USB serial devices with the same model and vendor ID are added, udev will
+                match
                 on all of them and overwrite the symlink each time. The end result is only the last device matched
                 will be symlinked. As far as I am aware, the order is indeterminate, so there's no guarantees that the
                 symlink will map to the same device each time.
@@ -141,7 +142,6 @@
                 you can match on to ensure only your desired device is symlinked. The command <code>udevadm info</code>
                 will prove useful for this. See <code>man 7 udevadm</code> for more info.
             </p>
-
 
             <!-- 4. Verify udev rule -->
             <h3 class="mt3 mb1" id="verify_udev_rule">4. Verify the udev rule</h3>
@@ -164,7 +164,6 @@
                 ttyUSB0: /etc/udev/rules.d/80-usb-serial.rules:7 LINK 'ttyUART'
             </code></pre>
 
-
             <!-- 5. Reload udev rules -->
             <h3 class="mt3 mb1" id="reload_udev_rules">5. Reload udev rules (giving non-root access to the device)</h3>
             <p class="mv1">
@@ -181,7 +180,6 @@
                 applies to events which have already occured. This means you won't need to unplug and replug your device
                 in order for the new udev rule to take effect.
             </p>
-
 
             <!-- References -->
             <h2 class="mt3 mb1" id="references">References</h2>
@@ -202,7 +200,7 @@
             <script src="../emailJS.js"></script>
             <li> <button onclick="copyText('a_gavin@icloud.com')">Email</button> </li>
             <li><a href="https://github.com/a-gavin" target="blank">Github</a></li>
-            
+
             <li><a href="https://www.linkedin.com/in/alex-gavin/" target="blank">LinkedIn</a></li>
         </ul>
 

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -15,14 +16,15 @@
     <script>hljs.highlightAll();</script>
 </head>
 
-<div class="wrapper"> 
+<div class="wrapper">
     <header>
         <nav id="nav">
             <a href="../index.html" id="name">Alex Gavin</a>
             <ul>
                 <li><a href="../index.html">About</a></li>
                 <li><a href="../blog.html">Blog</a></li>
-                <li><a href="https://alw32c9tw.s3.us-west-2.amazonaws.com/AlexGavinResume.pdf" target="blank">CV</a></li>
+                <li><a href="https://alw32c9tw.s3.us-west-2.amazonaws.com/AlexGavinResume.pdf" target="blank">CV</a>
+                </li>
                 <li><a href="../misc.html">Misc</a></li>
             </ul>
         </nav>
@@ -52,12 +54,12 @@
                 <a class="prjLink" href="#networking-iproute2">Managing Networking (L2/L3): <code>iproute2</code></a>
             </p>
             <p class="mv1">
-                <a class="prjLink" href="#networking-non-iproute2">Managing Networking (L2/L3): Non-<code>iproute2</code></a>
+                <a class="prjLink" href="#networking-non-iproute2">Managing Networking (L2/L3):
+                    Non-<code>iproute2</code></a>
             </p>
             <p class="mv1">
                 <a class="prjLink" href="#wifi">Managing WiFi</a>
             </p>
-
 
             <!-- General commands -->
             <!-- TODO: grep w/ regex -->
@@ -82,7 +84,6 @@
                 ./blog.html
                 ./projects.html
             </code></pre>
-
 
             <!-- System Administration: Non-Systemd -->
             <h2 class="mt3 mb1" id="sysadmin-non-systemd">System Administration: Non-Systemd</h2>
@@ -135,7 +136,6 @@
                 # Run with '-w' to follow in real time (like 'tail -f')
                 $ sudo dmesg
             </code></pre>
-
 
             <!-- System Administration: Systemd -->
             <h2 class="mt3 mb1" id="sysadmin-systemd">System Administration: Systemd</h2>
@@ -205,7 +205,6 @@
                 $ journalctl --boot -1
             </code></pre>
 
-
             <!-- Querying HW info -->
             <h2 class="mt3 mb1" id="querying-hw-info">Querying Hardware Information</h2>
 
@@ -214,7 +213,8 @@
                 It is recommended to run this command with root privileges to get the most detailed information.
             </p>
             <p class="mv1">
-                For more CPU/NUMA-focused information in a pop-up GUI format, the <code>lstopo</code> command may prove useful.
+                For more CPU/NUMA-focused information in a pop-up GUI format, the <code>lstopo</code> command may prove
+                useful.
                 It has a text-only mode as well for non-GUI use cases.
             </p>
             <pre><code class="language-bash">
@@ -306,7 +306,6 @@
                 5.4M    .
             </code></pre>
 
-
             <!-- Managing Networking (L2/L3): iproute2 Commands -->
             <!-- TODO: 1q vlan, vrf -->
             <h2 class="mt3 mb1" id="networking-iproute2">Managing Networking (L2/L3): <code>iproute2</code></h2>
@@ -319,7 +318,8 @@
             <p class="mv1">
                 <b>NOTE:</b>
                 Take note of information beyond MAC address. 'UP' indicates interface is running. 'LOWER_UP' means
-                the driver is functioning. For example, a non-configured but plugged in ethernet device may be 'DOWN' but 'LOWER_UP'.
+                the driver is functioning. For example, a non-configured but plugged in ethernet device may be 'DOWN'
+                but 'LOWER_UP'.
                 For Ethernet interfaces, 'NO-CARRIER' indicates that there is no signal on the wire (it's disconnected).
             </p>
             <pre><code class="language-bash">
@@ -333,7 +333,8 @@
             <h3 class="mt2 mb1" id="ip-addr">Show Network Interface IP-Layer Info</h3>
             <p class="mv1">
                 Displays IPv4 and IPv6 information in addition to interface status, MAC address, MTU, and interface
-                routing table, among other things (some of which require <code>-d</code> option). More detailed output is
+                routing table, among other things (some of which require <code>-d</code> option). More detailed output
+                is
                 possible by using the <code>-d</code> option (without the <code>-br</code> option).
             </p>
             <pre><code class="language-bash">
@@ -383,7 +384,6 @@
                 # Show routes in routing table 10
                 $ ip route show table 10
             </code></pre>
-
 
             <!-- TODO: nmap? -->
             <!-- Managing Networking (L2/L3): Non-iproute2 -->
@@ -459,7 +459,8 @@
 
             <h3 class="mt2 mb1" id="iw-phy-info">Show WiFi Radio Info</h3>
             <p class="mv1">
-                Includes channels and bands in current regulatory domain, ciphers, MCS rates, and antennas, among other things.
+                Includes channels and bands in current regulatory domain, ciphers, MCS rates, and antennas, among other
+                things.
             </p>
             <pre><code class="language-bash">
                 # Can also run 'iw phy phy0 info', but 'phy' is optional
@@ -506,7 +507,7 @@
             <script src="../emailJS.js"></script>
             <li> <button onclick="copyText('a_gavin@icloud.com')">Email</button> </li>
             <li><a href="https://github.com/a-gavin" target="blank">Github</a></li>
-            
+
             <li><a href="https://www.linkedin.com/in/alex-gavin/" target="blank">LinkedIn</a></li>
         </ul>
 
