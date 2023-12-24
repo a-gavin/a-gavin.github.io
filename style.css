@@ -275,21 +275,6 @@ code {
     margin:         20px 0;
 }
 
-.mt2b1{
-    margin-top:     20px;
-    margin-bottom:  10px;
-}
-
-.mt3b1{
-    margin-top:     30px;
-    margin-bottom:  10px;
-}
-
-.mt5b1{
-    margin-top:     50px;
-    margin-bottom:  10px;
-}
-
 .mv5{
     margin:         50px 0;
 }
@@ -300,6 +285,14 @@ code {
 
 .mt2{
     margin-top:     20px;
+}
+
+.mt3{
+    margin-top:     30px;
+}
+
+.mt5{
+    margin-top:     50px;
 }
 
 .mb1{

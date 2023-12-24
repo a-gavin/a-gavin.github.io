@@ -32,11 +32,11 @@
     <body>
         <div class="body">
             <!-- Title -->
-            <h1 class="mv5">USB Serial Device Access w/o Root</h1>
+            <h1 class="mt5 mb1">USB Serial Device Access w/o Root</h1>
 
 
             <!-- Motivation section -->
-            <h2 class="mt3b1" id="motivation">Motivation</h2>
+            <h2 class="mt3 mb1" id="motivation">Motivation</h2>
             <p class="mv1">
                 If you're using a USB serial device like an FTDI USB UART device on Linux,
                 only root can access the device by default. To allow users to use the USB serial device
@@ -50,7 +50,7 @@
 
 
             <!-- Instructions section -->
-            <h2 class="mt3b1" id="instructions">Instructions</h2>
+            <h2 class="mt3 mb1" id="instructions">Instructions</h2>
             <p class="mv1">
                 The following instructions detail the steps required to give non-root users access to USB serial devices.
                 These steps require that you have root access on the system you are configuring.
@@ -61,7 +61,7 @@
 
 
             <!-- 1. Identify device -->
-            <h3 class="mt3b1" id="id_device">1. Identify the device</h3>
+            <h3 class="mt3 mb1" id="id_device">1. Identify the device</h3>
             <p class="mv1">
                 Run <code>ls /dev/</code>. The device will show up as a <code>/dev/ttyACMx</code> or <code>/dev/ttyUSBx</code>,
                 where <b>x</b> is some positive number.
@@ -88,7 +88,7 @@
 
 
             <!-- 2. Get device model and vendor ID -->
-            <h3 class="mt3b1" id="get_ids">2. Get the device model and vendor ID</h3>
+            <h3 class="mt3 mb1" id="get_ids">2. Get the device model and vendor ID</h3>
             <p class="mv1">
                 Search for the model and vendor ID using the <code>udevadm info</code> command.
                 For example, the following searches for the model and vendor ID of the <code>/dev/ttyUSB1</code>
@@ -102,7 +102,7 @@
 
 
             <!-- 3. Create udev rule -->
-            <h3 class="mt3b1" id="create_rule">3. Create the udev rule</h3>
+            <h3 class="mt3 mb1" id="create_rule">3. Create the udev rule</h3>
             <p class="mv1">
                 As super user, create a new udev rule file in <code>/etc/udev/rules.d/</code>, for example
                 <code>80-usb-serial.rules</code>. Then add the below line, substituting in the model and vendor ID
@@ -141,7 +141,7 @@
 
 
             <!-- 4. Verify udev rule -->
-            <h3 class="mt3b1" id="verify_udev_rule">4. Verify the udev rule</h3>
+            <h3 class="mt3 mb1" id="verify_udev_rule">4. Verify the udev rule</h3>
             <p class="mv1">
                 Using the <code>udevadm test</code> command, simulate the application of udev rules to your
                 desired USB serial device. You'll also need the <code>/sys/</code> device path, but you can
@@ -163,7 +163,7 @@
 
 
             <!-- 5. Reload udev rules -->
-            <h3 class="mt3b1" id="reload_udev_rules">5. Reload udev rules (giving non-root access to the device)</h3>
+            <h3 class="mt3 mb1" id="reload_udev_rules">5. Reload udev rules (giving non-root access to the device)</h3>
             <p class="mv1">
                 Run the following command:
             </p>
@@ -181,7 +181,7 @@
 
 
             <!-- References -->
-            <h2 class="mt3b1" id="references">References</h2>
+            <h2 class="mt3 mb1" id="references">References</h2>
             <p class="mv1">
                 <a href="https://wiki.archlinux.org/title/udev">Arch Linux Wiki udev Article</a>
             </p>

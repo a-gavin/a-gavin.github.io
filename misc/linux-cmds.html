@@ -32,10 +32,10 @@
     <body>
         <div class="body">
             <!-- Title -->
-            <h1 class="mt5b1">Linux Commands Cheatsheet</h1>
+            <h1 class="mt5 mb1">Linux Commands Cheatsheet</h1>
 
             <!-- Table of Contents -->
-            <h2 class="mt5b1" id="table-of-contents">Table of Contents</h2>
+            <h2 class="mt3 mb1" id="table-of-contents">Table of Contents</h2>
             <p class="mv1">
                 <a class="prjLink" href="#general-cmds">General Commands</a>
             </p>
@@ -61,21 +61,21 @@
 
             <!-- General commands -->
             <!-- TODO: grep w/ regex -->
-            <h2 class="mt5b1" id="general-cmds">General Commands</h2>
+            <h2 class="mt3 mb1" id="general-cmds">General Commands</h2>
 
-            <h3 class="mt2b1" id="watch">Run Command Every N Seconds</h3>
+            <h3 class="mt2 mb1" id="watch">Run Command Every N Seconds</h3>
             <pre><code class="language-bash">
                 # Prints 'Vale la pena' once every half second
                 $ watch -n 0.5 echo 'Vale la pena'
             </code></pre>
 
-            <h3 class="mt2b1" id="tail">View File Contents as File Updates</h3>
+            <h3 class="mt2 mb1" id="tail">View File Contents as File Updates</h3>
             <pre><code class="language-bash">
                 # The '-F' option may be useful as well. See 'man tail'
                 $ tail -f lanforge_log_1.txt
             </code></pre>
 
-            <h3 class="mt2b1" id="find">Search for File</h3>
+            <h3 class="mt2 mb1" id="find">Search for File</h3>
             <pre><code class="language-bash">
                 # The '.' here specifies to search in and all sub-directories of the '$CWD'
                 $ find . -name "*.html"
@@ -85,9 +85,9 @@
 
 
             <!-- System Administration: Non-Systemd -->
-            <h2 class="mt5b1" id="sysadmin-non-systemd">System Administration: Non-Systemd</h2>
+            <h2 class="mt3 mb1" id="sysadmin-non-systemd">System Administration: Non-Systemd</h2>
 
-            <h3 class="mt2b1" id="ps">Show All Running Processes</h3>
+            <h3 class="mt2 mb1" id="ps">Show All Running Processes</h3>
             <p class="mv1">
                 <b>NOTE:</b> Systemd command <code>systemctl status</code> does similar but includes Cgroup-specific
                 information as well.
@@ -115,7 +115,7 @@
                 ...
             </code></pre>
 
-            <h3 class="mt2b1" id="pgrep">Get All PIDs of Program (if Running)</h3>
+            <h3 class="mt2 mb1" id="pgrep">Get All PIDs of Program (if Running)</h3>
             <pre><code class="language-bash">
                 # Get PIDs of Firefox program
                 $ pgrep firefox
@@ -123,14 +123,14 @@
                 5086
             </code></pre>
 
-            <h3 class="mt2b1" id="kill">Kill Running Process (USE CAUTION)</h3>
+            <h3 class="mt2 mb1" id="kill">Kill Running Process (USE CAUTION)</h3>
             <pre><code class="language-bash">
                 # Kill process w/ PID 921. Default signal to send is 'TERM', so command is same as 'kill -s TERM'
                 # More immediate (and potentially harmful) is the 'KILL' signal.
                 $ kill 921
             </code></pre>
 
-            <h3 class="mt2b1" id="dmesg">View Kernel Logs</h3>
+            <h3 class="mt2 mb1" id="dmesg">View Kernel Logs</h3>
             <pre><code class="language-bash">
                 # Run with '-w' to follow in real time (like 'tail -f')
                 $ sudo dmesg
@@ -138,10 +138,10 @@
 
 
             <!-- System Administration: Systemd -->
-            <h2 class="mt5b1" id="sysadmin-systemd">System Administration: Systemd</h2>
+            <h2 class="mt3 mb1" id="sysadmin-systemd">System Administration: Systemd</h2>
 
             <!-- TODO: systemctl commands (status, start/stop/restart, daemon-reload, enable/disable, edit)-->
-            <h3 class="mt2b1" id="systemctl-status">Show Systemd Unit Status</h3>
+            <h3 class="mt2 mb1" id="systemctl-status">Show Systemd Unit Status</h3>
             <pre><code class="language-bash">
                 # The '.service' is optional if there are no other Systemd units w/ same name
                 # The bottom of the output is the same as would be output by 'journalctl -b -0 -u NetworkManager-wait-online'
@@ -158,7 +158,7 @@
                 Dec 23 11:41:06 meadowlark systemd[1]: Finished Network Manager Wait Online.
             </code></pre>
 
-            <h3 class="mt2b1" id="systemctl-mgmt">Manage and Configure Systemd Unit</h3>
+            <h3 class="mt2 mb1" id="systemctl-mgmt">Manage and Configure Systemd Unit</h3>
             <p class="mv1">
                 <b>NOTE:</b> After editing a Systemd unit file, you must run <code>systemctl daemon-reload</code>
                 for the changes to take effect.
@@ -174,7 +174,7 @@
                 # daemon-reload
             </code></pre>
 
-            <h3 class="mt2b1" id="journalctl">View Service (Daemon) Logs</h3>
+            <h3 class="mt2 mb1" id="journalctl">View Service (Daemon) Logs</h3>
             <pre><code class="language-bash">
                 # Prints all log lines. Will be very long
                 $ journalctl
@@ -207,9 +207,9 @@
 
 
             <!-- Querying HW info -->
-            <h2 class="mt5b1" id="querying-hw-info">Querying Hardware Information</h2>
+            <h2 class="mt3 mb1" id="querying-hw-info">Querying Hardware Information</h2>
 
-            <h3 class="mt2b1" id="lshw">Show System Hardware Information</h3>
+            <h3 class="mt2 mb1" id="lshw">Show System Hardware Information</h3>
             <p class="mv1">
                 It is recommended to run this command with root privileges to get the most detailed information.
             </p>
@@ -231,7 +231,7 @@
                 ...
             </code></pre>
 
-            <h3 class="mt2b1" id="lsusb">Show USB Device Information</h3>
+            <h3 class="mt2 mb1" id="lsusb">Show USB Device Information</h3>
             <pre><code class="language-bash">
                 # Use '-v' for more verbose output
                 $ lsusb
@@ -251,7 +251,7 @@
                 Bus 003 Device 002: ID 0489:e0cd Foxconn / Hon Hai Wireless_Device
             </code></pre>
 
-            <h3 class="mt2b1" id="lspci">Show PCI(e) Device Information</h3>
+            <h3 class="mt2 mb1" id="lspci">Show PCI(e) Device Information</h3>
             <pre><code class="language-bash">
                 # Use the '-v', '-vv', '-vvv' options to show more information with increasing verbosity
                 # Use the '-k' option to show kernel drivers used (on by default w/ '-v')
@@ -266,7 +266,7 @@
                 03:00.0 Network controller: MEDIATEK Corp. MT7921 802.11ax PCI Express Wireless Network Adapter
             </code></pre>
 
-            <h3 class="mt2b1" id="lsblk">List Block Devices</h3>
+            <h3 class="mt2 mb1" id="lsblk">List Block Devices</h3>
             <p class="mv1">
                 For more disk-specific utilization info, see <code>df</code>.
             </p>
@@ -281,7 +281,7 @@
                 └─nvme0n1p2 259:2    0 476.4G  0 part /
             </code></pre>
 
-            <h3 class="mt2b1" id="df">Show Disk Usage</h3>
+            <h3 class="mt2 mb1" id="df">Show Disk Usage</h3>
             <pre><code class="language-bash">
                 # Use the '-h' flag for human-readable output (in base 1024).
                 # NOTE: The '-H' flag is human-readable but in base 1000s units
@@ -295,7 +295,7 @@
                 tmpfs           2.3G  124K  2.3G   1% /run/user/1000
             </code></pre>
 
-            <h3 class="mt2b1" id="du">Show Disk Usage by Directory</h3>
+            <h3 class="mt2 mb1" id="du">Show Disk Usage by Directory</h3>
             <pre><code class="language-bash">
                 # Use the '-h' flag for human-readable output (unsure what base is used)
                 # NOTE: The '-H' flag for 'du' is not the same as the '-H' flag for 'df'
@@ -309,9 +309,9 @@
 
             <!-- Managing Networking (L2/L3): iproute2 Commands -->
             <!-- TODO: 1q vlan, vrf -->
-            <h2 class="mt5b1" id="networking-iproute2">Managing Networking (L2/L3): <code>iproute2</code></h2>
+            <h2 class="mt3 mb1" id="networking-iproute2">Managing Networking (L2/L3): <code>iproute2</code></h2>
 
-            <h3 class="mt2b1" id="ip-link">Show Network Interface Link-Layer Info</h3>
+            <h3 class="mt2 mb1" id="ip-link">Show Network Interface Link-Layer Info</h3>
             <p class="mv1">
                 Displays interface status and MAC address. More detailed output is possible by
                 using the <code>-d</code> option (without the <code>-br</code> option).
@@ -330,7 +330,7 @@
                 wlan0            UP             3c:55:76:04:68:b9 <BROADCAST,MULTICAST,UP,LOWER_UP>
             </code></pre>
 
-            <h3 class="mt2b1" id="ip-addr">Show Network Interface IP-Layer Info</h3>
+            <h3 class="mt2 mb1" id="ip-addr">Show Network Interface IP-Layer Info</h3>
             <p class="mv1">
                 Displays IPv4 and IPv6 information in addition to interface status, MAC address, MTU, and interface
                 routing table, among other things (some of which require <code>-d</code> option). More detailed output is
@@ -350,7 +350,7 @@
                 $ ip -6 addr show
             </code></pre>
 
-            <h3 class="mt2b1" id="ip-neigh">Show ARP Tables</h3>
+            <h3 class="mt2 mb1" id="ip-neigh">Show ARP Tables</h3>
             <pre><code class="language-bash">
                 # Shorthand is 'ip n'
                 $ ip neigh
@@ -361,7 +361,7 @@
                 10.199.0.1 dev wlan0 lladdr 00:50:e8:04:57:ab REACHABLE
             </code></pre>
 
-            <h3 class="mt2b1" id="ip-route">Show Routing Tables</h3>
+            <h3 class="mt2 mb1" id="ip-route">Show Routing Tables</h3>
             <pre><code class="language-bash">
                 # Shorthand is 'ip r'. Will show all IPv4 routing tables.
                 # The '169.254.0.0/16' route is link-local IPv4 and is mostly default.
@@ -387,9 +387,9 @@
 
             <!-- TODO: nmap? -->
             <!-- Managing Networking (L2/L3): Non-iproute2 -->
-            <h2 class="mt5b1" id="networking-non-iproute2">Managing Networking (L2/L3): Non-<code>iproute2</code></h2>
+            <h2 class="mt3 mb1" id="networking-non-iproute2">Managing Networking (L2/L3): Non-<code>iproute2</code></h2>
 
-            <h3 class="mt2b1" id="ss">Show Open Sockets (Existing Connections)</h3>
+            <h3 class="mt2 mb1" id="ss">Show Open Sockets (Existing Connections)</h3>
             <p class="mv1">
                 I typically use this as <code>ss -tulpn</code> and <code>grep</code> for what I want.
                 If you run as root (e.g. with <code>sudo</code>), you will also see the program that
@@ -411,9 +411,9 @@
 
 
             <!-- Managing WiFi -->
-            <h2 class="mt5b1" id="wifi">Managing WiFi</h2>
+            <h2 class="mt3 mb1" id="wifi">Managing WiFi</h2>
 
-            <h3 class="mt2b1" id="iw-iface-info">Show WiFi Interface General Info</h3>
+            <h3 class="mt2 mb1" id="iw-iface-info">Show WiFi Interface General Info</h3>
             <p class="mv1">
                 Includes STA MAC, SSID, phy device, channel, frequency, transmit power.
             </p>
@@ -435,7 +435,7 @@
                         0       0       0       0       0       0       0       0               0
             </code></pre>
 
-            <h3 class="mt2b1" id="iw-link">Show WiFi Interface Link Information</h3>
+            <h3 class="mt2 mb1" id="iw-link">Show WiFi Interface Link Information</h3>
             <p class="mv1">
                 Includes AP MAC (if station), SSID, frequency, bandwidth, RSSI (if station), and phy rate (MCS),
                 among other things. Phy rate may or may not include NSS.
@@ -457,7 +457,7 @@
                     beacon int: 100
             </code></pre>
 
-            <h3 class="mt2b1" id="iw-phy-info">Show WiFi Radio Info</h3>
+            <h3 class="mt2 mb1" id="iw-phy-info">Show WiFi Radio Info</h3>
             <p class="mv1">
                 Includes channels and bands in current regulatory domain, ciphers, MCS rates, and antennas, among other things.
             </p>
@@ -482,7 +482,7 @@
                     ...
             </code></pre>
 
-            <h3 class="mt2b1" id="iw-reg-get">Show Wireless Regulatory Domain Info</h3>
+            <h3 class="mt2 mb1" id="iw-reg-get">Show Wireless Regulatory Domain Info</h3>
             <pre><code class="language-bash">
                 $ iw reg get
                 global
