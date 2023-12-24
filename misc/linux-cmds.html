@@ -309,8 +309,22 @@
             <!-- Managing Networking (L2/L3): iproute2 Commands -->
             <!-- TODO: 1q vlan, vrf -->
             <h2 class="mt3 mb1" id="networking-iproute2">Managing Networking (L2/L3): <code>iproute2</code></h2>
+            <p class="mv1">
+                <b>NOTE:</b> Given that, these commands are listed for diagnostic purposes.
+                Use NetworkManager to configure your networking instead.
+            </p>
+            <p class="mv1">
+                Most Linux distributions run NetworkManager to configure and manage networking. This
+                is a common point of confusion, as there is still material available online which
+                assumes older, network-scripts based network management.
+            </p>
+            <p class="mv1">
+                It is possible to configure networking with variations of these commands. Unless you know
+                what you're doing, though, you're better off just using NetworkManager. See the
+                <a href="#networking-non-iproute2">next section</a> for more details.
+            </p>
 
-            <h3 class="mt2 mb1" id="ip-link">Show Network Interface Link-Layer Info</h3>
+            <h3 class="mt3 mb1" id="ip-link">Show Network Interface Link-Layer Info</h3>
             <p class="mv1">
                 Displays interface status and MAC address. More detailed output is possible by
                 using the <code>-d</code> option (without the <code>-br</code> option).
@@ -325,9 +339,9 @@
             <pre><code class="language-bash">
                 # Shorthand shown. Full command would be 'ip link show', but the 'show' is optional.
                 $ ip -br l
-                lo               UNKNOWN        00:00:00:00:00:00 <LOOPBACK,UP,LOWER_UP> 
-                enp2s0           DOWN           6c:24:08:d5:14:c9 <NO-CARRIER,BROADCAST,MULTICAST,UP> 
-                wlan0            UP             3c:55:76:04:68:b9 <BROADCAST,MULTICAST,UP,LOWER_UP>
+                lo               UNKNOWN        00:00:00:00:00:00 &lt;LOOPBACK,UP,LOWER_UP&gt;
+                enp2s0           DOWN           6c:24:08:d5:14:c9 &lt;NO-CARRIER,BROADCAST,MULTICAST,UP&gt;
+                wlan0            UP             3c:55:76:04:68:b9 &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt;
             </code></pre>
 
             <h3 class="mt2 mb1" id="ip-addr">Show Network Interface IP-Layer Info</h3>
