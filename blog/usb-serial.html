@@ -81,13 +81,13 @@
                 For example, see the last line of the output where it lists ttyUSB1:
             </p>
             <pre><code class="language-bash">
-                    $ sudo dmesg | grep "usb"
-                    [21.944277] usb 1-4: USB disconnect, device number 6
-                    [21.637095] usb 1-4: new full-speed USB device number 7 using xhci_hcd
-                    [21.764180] usb 1-4: New USB device found, idVendor=1a86, idProduct=7523, bcdDevice= 2.64
-                    [21.764184] usb 1-4: New USB device strings: Mfr=0, Product=2, SerialNumber=0
-                    [21.764186] usb 1-4: Product: USB Serial
-                    [21.766670] usb 1-4: ch341-uart converter now attached to ttyUSB1
+$ sudo dmesg | grep "usb"
+[21.944277] usb 1-4: USB disconnect, device number 6
+[21.637095] usb 1-4: new full-speed USB device number 7 using xhci_hcd
+[21.764180] usb 1-4: New USB device found, idVendor=1a86, idProduct=7523, bcdDevice= 2.64
+[21.764184] usb 1-4: New USB device strings: Mfr=0, Product=2, SerialNumber=0
+[21.764186] usb 1-4: Product: USB Serial
+[21.766670] usb 1-4: ch341-uart converter now attached to ttyUSB1
                 </code></pre>
             </p>
 
@@ -99,9 +99,9 @@
                 device.
             </p>
             <pre><code class="language-bash">
-                $ udevadm info /dev/ttyUSB1 | grep "ID_VENDOR_ID\|ID_MODEL_ID"
-                E: ID_VENDOR_ID=0403
-                E: ID_MODEL_ID=6015
+$ udevadm info /dev/ttyUSB1 | grep "ID_VENDOR_ID\|ID_MODEL_ID"
+E: ID_VENDOR_ID=0403
+E: ID_MODEL_ID=6015
             </code></pre>
 
             <!-- 3. Create udev rule -->
@@ -114,8 +114,8 @@
             </p>
 
             <pre><code>
-                # Contents of udev rule
-                SUBSYSTEM=="tty", ENV{ID_VENDOR_ID}=="0403", ENV{ID_MODEL_ID}="6015", MODE="0666"
+# Contents of udev rule
+SUBSYSTEM=="tty", ENV{ID_VENDOR_ID}=="0403", ENV{ID_MODEL_ID}="6015", MODE="0666"
             </code></pre>
 
             <p class="mv1">
@@ -126,8 +126,8 @@
             </p>
 
             <pre><code>
-                # Contents of udev rule with symlink
-                SUBSYSTEM=="tty", ENV{ID_VENDOR_ID}=="0403", ENV{ID_MODEL_ID}="6015", SYMLINK+="ttyUART", MODE="0666"
+# Contents of udev rule with symlink
+SUBSYSTEM=="tty", ENV{ID_VENDOR_ID}=="0403", ENV{ID_MODEL_ID}="6015", SYMLINK+="ttyUART", MODE="0666"
             </code></pre>
 
             <p class="mv1">
@@ -158,10 +158,10 @@
             </p>
 
             <pre><code class="language-bash">
-                $ sudo udevadm test $(udevadm info --query=path --name=/dev/ttyUSB0) 2>&1 | grep "80-usb-serial.rules"
-                Reading rules file: /etc/udev/rules.d/80-usb-serial.rules
-                ttyUSB0: /etc/udev/rules.d/80-usb-serial.rules:7 MODE 0666
-                ttyUSB0: /etc/udev/rules.d/80-usb-serial.rules:7 LINK 'ttyUART'
+$ sudo udevadm test $(udevadm info --query=path --name=/dev/ttyUSB0) 2>&1 | grep "80-usb-serial.rules"
+Reading rules file: /etc/udev/rules.d/80-usb-serial.rules
+ttyUSB0: /etc/udev/rules.d/80-usb-serial.rules:7 MODE 0666
+ttyUSB0: /etc/udev/rules.d/80-usb-serial.rules:7 LINK 'ttyUART'
             </code></pre>
 
             <!-- 5. Reload udev rules -->
@@ -171,7 +171,7 @@
             </p>
 
             <pre><code class="language-bash">
-                $ sudo udevadm control --reload && sudo udevadm trigger
+$ sudo udevadm control --reload && sudo udevadm trigger
             </code></pre>
 
             <p class="mv1">
