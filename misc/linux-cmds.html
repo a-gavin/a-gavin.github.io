@@ -51,14 +51,13 @@
                 <a class="prjLink" href="#querying-hw-info">Querying Hardware Information</a>
             </p>
             <p class="mv1">
-                <a class="prjLink" href="#networking-iproute2">Managing Networking (L2/L3): <code>iproute2</code></a>
+                <a class="prjLink" href="#querying-network-info">Querying Network Information</a>
             </p>
             <p class="mv1">
-                <a class="prjLink" href="#networking-non-iproute2">Managing Networking (L2/L3):
-                    Non-<code>iproute2</code></a>
+                <a class="prjLink" href="#managing-networking">Managing Networking (Network Manager)</a>
             </p>
             <p class="mv1">
-                <a class="prjLink" href="#wifi">Managing WiFi</a>
+                <a class="prjLink" href="#querying-wifi-info">Querying WiFi Info</a>
             </p>
 
             <!-- General commands -->
@@ -306,22 +305,23 @@ $ du -h
 5.4M    .
             </code></pre>
 
-            <!-- Managing Networking (L2/L3): iproute2 Commands -->
-            <!-- TODO: 1q vlan, vrf -->
-            <h2 class="mt3 mb1" id="networking-iproute2">Managing Networking (L2/L3): <code>iproute2</code></h2>
+            <!-- Querying Network Information -->
+            <!-- TODO: nmap -->
+            <!-- TODO: Advanced networking section with 1q vlan, vrf -->
+            <h2 class="mt3 mb1" id="querying-network-info">Querying Network Information</h2>
             <p class="mv1">
-                <b>NOTE:</b> Given that, these commands are listed for diagnostic purposes.
-                Use NetworkManager to configure your networking instead.
+                <b>NOTE:</b> These commands are listed for diagnostic purposes.
+                You probably want to use Network Manager to configure your networking instead.
+                See the <a href="#managing-networking">next section</a> for more details.
             </p>
             <p class="mv1">
-                Most Linux distributions run NetworkManager to configure and manage networking. This
+                Most Linux distributions run Network Manager to configure and manage networking. This
                 is a common point of confusion, as there is still material available online which
                 assumes older, network-scripts based network management.
             </p>
             <p class="mv1">
                 It is possible to configure networking with variations of these commands. Unless you know
-                what you're doing, though, you're better off just using NetworkManager. See the
-                <a href="#networking-non-iproute2">next section</a> for more details.
+                what you're doing, though, you're better off just using Network Manager.
             </p>
 
             <h3 class="mt3 mb1" id="ip-link">Show Network Interface Link-Layer Info</h3>
@@ -399,10 +399,6 @@ cache
 $ ip route show table 10
             </code></pre>
 
-            <!-- TODO: nmcli, nmap? -->
-            <!-- Managing Networking (L2/L3): Non-iproute2 -->
-            <h2 class="mt3 mb1" id="networking-non-iproute2">Managing Networking (L2/L3): Non-<code>iproute2</code></h2>
-
             <h3 class="mt2 mb1" id="ss">Show Open Sockets (Existing Connections)</h3>
             <p class="mv1">
                 I typically use this as <code>ss -tulpn</code> and <code>grep</code> for what I want.
@@ -423,11 +419,19 @@ udp   UNCONN 0      0            0.0.0.0:36755     0.0.0.0:*    users:(("avahi-d
 udp   UNCONN 0      0            0.0.0.0:5353      0.0.0.0:*    users:(("avahi-daemon",pid=1086,fd=7))
             </code></pre>
 
+            <!-- Managing Networking -->
+            <h2 class="mt3 mb1" id="managing-networking">Managing Networking (Network Manager)</h2>
+            TODO. Check back later for an update!
 
-            <!-- Managing WiFi -->
-            <h2 class="mt3 mb1" id="wifi">Managing WiFi</h2>
+            <!-- Querying WiFi Information -->
+            <h2 class="mt3 mb1" id="querying-wifi-info">Querying WiFi Information</h2>
+            <p class="mv1">
+                <b>NOTE:</b> Just as the <a href="#querying-network-info">Querying Network Information</a>
+                section details, most Linux systems use Network Manager to manage and configure networking,
+                including WiFi. See the <a href="#managing-networking">Managing Networking</a> section for more details.
+            </p>
 
-            <h3 class="mt2 mb1" id="iw-iface-info">Show WiFi Interface General Info</h3>
+            <h3 class="mt3 mb1" id="iw-iface-info">Show WiFi Interface General Info</h3>
             <p class="mv1">
                 Includes STA MAC, SSID, phy device, channel, frequency, transmit power.
             </p>
