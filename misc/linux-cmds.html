@@ -421,7 +421,114 @@ udp   UNCONN 0      0            0.0.0.0:5353      0.0.0.0:*    users:(("avahi-d
 
             <!-- Managing Networking -->
             <h2 class="mt3 mb1" id="managing-networking">Managing Networking (Network Manager)</h2>
-            TODO. Check back later for an update!
+            <p class="mv1">
+                At a high level, Network Manager configures 'connections' which are established
+                with a backing network interface, or in Network Manager terms, 'device'.
+                These devices are either managed or unmanaged from the perspective of
+                Network Manager.
+            </p>
+            <p class="mv1">
+                Generally, most users will be fine with Network Manager configuring all of their
+                network interfaces, typically only WiFi and Ethernet (although Network Manager can do much more).
+                There are times, though, where it is appropriate to have Network Manager
+                <a href="#nmcli-device-set-managed">ignore specific interfaces</a>,
+                for example, WiFi packet capture.
+            </p>
+            <p class="mv1">
+                See <code>man nmcli-examples</code> for more examples and more advanced usage of Network Manager.
+            </p>
+
+            <h3 class="mt3 mb1" id="nmcli-device">Show All Devices</h3>
+            <p class="mv1">
+                Shows all Network Manager-tracked network devices, including both devices 
+                that are managed and unmanaged by Network Manager.
+            </p>
+            <pre><code class="language-bash">
+# Shorthand shown. Full command is 'nmcli device'
+$ nmcli d
+DEVICE  TYPE      STATE        CONNECTION
+wlan0   wifi      connected    SSID_NAME
+enp2s0  ethernet  unavailable  --
+lo      loopback  unmanaged    --
+            </code></pre>
+
+            <h3 class="mt3 mb1" id="nmcli-conn">Show All Connections</h3>
+            <p class="mv1">
+                Shows both active and inactive connections.
+            </p>
+            <p class="mv1">
+                Naming is typically the SSID (WiFi network name) for WiFi connections
+                and 'Wired Connection X' for Ethernet connections.
+            </p>
+            <p class="mv1">
+                When typing <code>nmcli connection</code> commands,
+                active connections will tab complete, but sadly inactive connections do not.
+            </p>
+            <pre><code class="language-bash">
+# Shorthand shown. Full command is 'nmcli connection show'
+$ nmcli c
+NAME                UUID                                  TYPE      DEVICE
+SSID_NAME           2c5fc1ff-565f-495c-b6d3-59d5be6facde  wifi      wlan0
+Wired Connection 1  167b3f3b-acb7-4ca2-9480-c41868641214  ethernet  --
+            </code></pre>
+
+            <h3 class="mt3 mb1" id="nmcli-device-show">Show Specific Device Info</h3>
+            <p class="mv1">
+                Only shows device-specific information. The command in used in
+                <a href="#nmcli-connection-show">Show Specific Connection Info</a>
+                will provide more information, assuming there is a connection
+                which uses the device.
+            </p>
+            <pre><code class="language-bash">
+# Shorthand shown. Full command is 'nmcli device show enp2s0'
+$ nmcli device show enp2s0
+GENERAL.DEVICE:                         enp2s0
+GENERAL.TYPE:                           ethernet
+GENERAL.HWADDR:                         6C:24:08:D5:14:C9
+GENERAL.MTU:                            1500
+GENERAL.STATE:                          20 (unavailable)
+GENERAL.CONNECTION:                     --
+...
+            </code></pre>
+
+            <h3 class="mt3 mb1" id="nmcli-connection-show">Show Specific Connection Info</h3>
+            <pre><code class="language-bash">
+# Shorthand shown. Full command is 'nmcli connection show "Wired Connection 1"'
+$ nmcli c show "Wired Connection 1"
+connection.id:                          Wired Connection 1
+connection.uuid:                        167b3f3b-acb7-4ca2-9480-c41868641214
+connection.stable-id:                   --
+connection.type:                        802-3-ethernet
+connection.interface-name:              enp2s0
+...
+            </code></pre>
+
+            <h3 class="mt3 mb1" id="nmcli-connection-show">Set Device Management</h3>
+            <pre><code class="language-bash">
+# Set device as 'unmanaged'
+$ nmcli device set wlan0 managed false
+
+# Set device as 'managed'
+$ nmcli device set wlan0 managed true
+            </code></pre>
+
+            <h3 class="mt3 mb1" id="nmcli-device-set-managed">Set DHCP for Connection</h3>
+            <pre><code class="language-bash">
+# Sets connection 'SSID_NAME' to use DHCP for IPv4 address, subnet, and gateway
+# Shorthand for 'nmcli connection modify'
+$ nmcli c m SSID_NAME ipv4.method auto
+            </code></pre>
+
+            <h3 class="mt3 mb1" id="nmcli-device-set-managed">Set Static IPv4 Info for Connection</h3>
+            <pre><code class="language-bash">
+# Sets connection 'SSID_NAME' to use static IPv4 address, subnet, and gateway
+# NOTE: The subnet mask is included in the address, here '/24'
+# Shorthand for 'nmcli connection modify'
+$ nmcli c m SSID_NAME \
+    ipv4.method     manual \
+    ipv4.addresses  192.168.0.20/24 \
+    ipv4.gateway    192.168.0.1
+            </code></pre>
 
             <!-- Querying WiFi Information -->
             <h2 class="mt3 mb1" id="querying-wifi-info">Querying WiFi Information</h2>
