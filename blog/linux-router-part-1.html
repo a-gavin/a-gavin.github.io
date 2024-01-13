@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alex Gavin</title>
+  <link rel="icon" href="../images/fav.png">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Recursive&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+</head>
+
+<div class="wrapper">
+  <header>
+    <nav id="nav">
+      <a href="../index.html" id="name">Alex Gavin</a>
+      <ul>
+        <li><a href="../index.html">About</a></li>
+        <li><a href="../blog.html">Blog</a></li>
+        <li><a href="https://alw32c9tw.s3.us-west-2.amazonaws.com/AlexGavinResume.pdf" target="blank">CV</a>
+        </li>
+        <li><a href="../misc.html">Misc</a></li>
+      </ul>
+    </nav>
+    <script src="../script.js"></script>
+  </header>
+
+  <body>
+    <div class="body">
+      <!-- Title -->
+      <h1 class="mt5 mb1">Off-the-Shelf Linux Router: Part 1, Wired IPv4 Router</h1>
+
+      <!-- Overview -->
+      <h2 class="mt5 mb2" id="overview">Overview</h2>
+      <p class="mv1">
+        This is the first post in a series which demonstrates how to configure an off-the-shelf
+        Linux machine into a homelab router. I will primarily target Fedora and Ubuntu systems,
+        given their widespread use. However, concepts here will be generally applicable to all
+        Linux distributions.
+      </p>
+      <p class="mv1">
+        <b>This first post will demonstrate a wired-only IPv4 router setup, including DHCPv4 server
+          configuration and basic firewalling</b>.
+        Later posts will introduce more complex configurations, but I'm going to focus on
+        getting something working first!
+      </p>
+      <p class="mv1">
+        <b>NOTE:</b> This guide and the suggested hardware will not focus on squeezing out
+        the best routing performance. Other posts, like Mete Balci's
+        <a href="https://metebalci.com/blog/how-a-nic-rx-works/">well-researched guide</a>
+        cover Linux Ethernet performance tuning in detail.
+      </p>
+
+      <!-- Acknowledgements -->
+      <h2 class="mt5 mb2" id="acknowledgments">Acknowledgements</h2>
+      <p class="mv1">
+        This series will be very similar to <a
+          href="https://oxcrag.net/projects/linux-router-part-1-routing-nat-and-nftables/">another series</a>
+        by Mikael Hansson. While his series thoroughly walks through a similar Linux router setup,
+        it leverages Netplan instead of Network Manager. As he said in his series, time marches
+        on. Nowadays, the big two distributions (and many others) use Network Manager instead.
+        The first post in this guide (and a DNS post if I get around to it), update a similar
+        configuration to that described in Mikael's series using Network Manager instead.
+      </p>
+
+      <!-- Prerequisites -->
+      <h2 class="mt5 mb2" id="prereqs">Prerequisites</h2>
+      <h3 class="mv1" id="prereqs-hw">1. You have root access to a suitable Linux machine</h3>
+      <p class="mv1">
+        <b>Your machine will need at least two Ethernet ports</b>, one for
+        the WAN and the other for the LAN.
+      </p>
+      <p class="mv1">
+        If desired, a slot for a WiFi radio will prove useful later in this series.
+        Look for mini-PCIe or M.2 E-keyed or B-keyed slots on the motherboard. Which slot
+        you need depends on the radio you use (most newer radios use M.2 connectors).
+        If you also want to use Bluetooth on the radio, make sure the motherboard slot
+        supports USB as well. Generally, M.2 slots will, but not all mini-PCIe slots do.
+        If you find a machine with mini-PCIe but want to use a M.2-connected radio,
+        an adapter like <a href="https://www.amazon.com/Express-Adapter-Converter-Support-MPCIe/dp/B00N2PRRA6">
+          this one</a>
+        will help.
+      </p>
+      <p class="mv1">
+        In my setup, I will use a four gigabit Ethernet port mini-ITX machine
+        with an RJ45 RS232 serial port for non-network access and a mini-PCIe slot for WiFi later on.
+        <a
+          href="https://store.rack-matrix.com/en/ready-to-use-system/1540-appliance-mitx1-4-ports-25-gbe-4-cores-2-ghz-m41v-fanless.html">
+          This machine</a> is very similar, but you can find much cheaper machines used
+        and in different form factors.
+      </p>
+
+      <h3 class="mt3 mb1" id="prereqs-non-network-access">2. You have non-network access to the machine</h3>
+      <p class="mv1">
+        Given that we will be configuring networking on the machine, <i>you should plan and expect
+          to lose network access</i> at some point.
+      </p>
+
+      <p class="mv1">
+        In order to maintain access to the
+        machine while doing so, you will need non-networked access of some sort.
+        <b>I recommend a machine with display output and/or a serial port</b>.
+      </p>
+
+      <h3 class="mt3 mb1" id="prereqs-network-manager">3. Network Manager is available on the machine's distribution
+      </h3>
+      <p class="mv1">
+        <b>Fedora and Debian are common choices</b> that fit the bill (including
+        their downstream distributions like Ubuntu/Linux Mint and RHEL), but any
+        Linux distribution that supports Network Manager will suffice. Just make sure
+        they don't use any other network management software before you go
+        messing with network configuration (like Netplan or the older network scripts,
+        both are uncommon nowadays).
+      </p>
+      <p class="mv1">
+        I also recommend that you <b>enable SSH access</b> before getting started
+        (you should be able to do this during installation). Keep in mind that you
+        will still need non-network access like a display or serial cable, though.
+      </p>
+
+      <h3 class="mt3 mb1" id="prereqs-firewalls">4. The machine has no configured firewalls</h3>
+      <p class="mv1">
+        <b>NOTE:</b> While I am suggesting that you check for and disable the system's
+        firewall, we will be replacing it in a later step using <code>nftables</code> rules
+        (which <code>firewalld</code> uses as a backend).
+      </p>
+      <p class="mv1">
+        <b>The main concern here is</b> <code>firewalld</code> <b>on Fedora
+          and Fedora-based distributions</b>. However, it is possible you have
+        other programs which may interfere (e.g. <code>ufw</code> on Ubuntu).
+      </p>
+      <p class="mv1">
+        <code>nftables</code> and its predecessor <code>iptables</code> (and company) are widely used
+        by Linux systems as firewalls and firewall backends. The following commands help determine
+        if your system uses them already.
+      </p>
+      <pre><code class="language-bash">
+# nftables rules (including IPv4 and IPv6)
+#
+# Default should be no output
+$ nft list tables
+
+# iptables IPv4 and IPv6 rules (separate commands)
+#
+# Anything output other than the following is non-default as far as I am aware:
+#       -P INPUT ACCEPT
+#       -P FORWARD ACCEPT
+#       -P OUTPUT ACCEPT
+$ iptables -S
+$ ip6tables -S
+      </code></pre>
+
+      <!-- Instructions -->
+      <h2 class="mt5 mb2" id="instructions">Instructions</h2>
+
+      <!-- Install required packages -->
+      <h3 class="mt3 mb1" id="instructions-install-dhcp">1. Install required packages</h3>
+      <p class="mv1">
+        Assuming the machine runs Ubuntu or Fedora, we will only need to install <code>dhcpd</code>.
+        Other distributions may need other packages and may refer to the packages
+        by other names.
+      </p>
+      <pre><code class="language-bash">
+# Fedora
+$ yum install dhcp-server
+
+# Ubuntu
+$ apt install isc-dhcp-server
+      </code></pre>
+
+      <!-- Disable dhcpd and dhcpd6 on Ubuntu -->
+      <h3 class="mt3 mb1" id="instructions-disable-dhcp">2. Ubuntu only: Disable DHCPv4 and DHCPv6 servers</h3>
+      <p class="mv1">
+        The Ubuntu distributors of <code>dhcpd</code> decided to package it
+        enabled by default, so disable both the IPv4 and IPv6 versions for now.
+      </p>
+      <pre><code class="language-bash">
+# Disable DHCPv4
+$ systemctl disable isc-dhcp-server.service
+
+# Disable DHCPv6
+$ systemctl disable isc-dhcp-server6.service
+      </code></pre>
+
+      <!-- Clean up network configuration -->
+      <h3 class="mt3 mb1" id="instructions-rm-cfg">3. Remove any existing networking configuration that may conflict
+      </h3>
+      <p class="mv1">
+        <b>NOTE:</b> Ensure you have a back up access method before doing this (e.g. monitor/keyboard or serial cable).
+        It's always a good idea to have physical access to the machine when making network
+        configuration changes.
+      </p>
+      <p class="mv1">
+        On a freshly-installed machine, this step only really entails deleting the
+        auto-created Network Manager Ethernet connections.
+      </p>
+      <pre><code class="language-bash">
+# Show all connections (shorthand for 'nmcli connection show')
+$ nmcli conn
+
+# Show all existing Ethernet connections
+$ nmcli conn | grep "ethernet"
+
+# Delete an existing Ethernet connections (do this for all existing Ethernet connections)
+# You can also tab-complete this command. For example:
+$ nmcli conn del "Wired Connection 1"
+      </code></pre>
+
+      <!-- Configure WAN Ethernet and LAN -->
+      <h3 class="mt3 mb1" id="instrs-cfg-eth-conns">4. Configure Ethernet port connections</h3>
+      <p class="mv1">
+        There are a couple options for this IPv4 router setup. Both options will use
+        the same WAN Ethernet port configuration but modify the LAN Ethernet port configuration.
+        Adjust IPv4 addresses and subnet masks used here as desired.
+      </p>
+
+      <h4 class="mt3 mb1" id="instrs-cfg-eth-conns-wan">WAN Ethernet Port Configuration</h4>
+      <p class="mv1">
+        This WAN setup configures the WAN Ethernet port to receive an IPv4 address
+        from your upstream, be it an ISP (e.g. through a modem) or another router.
+        This step is common for both LAN configuration options.
+      </p>
+      <pre><code class="language-bash">
+$ nmcli c add \
+    type            ethernet \
+    ifname          enp1s0 \
+    connection.id   WAN1 \
+    ipv4.method     auto
+      </code></pre>
+
+      <h4 class="mt3 mb1" id="instrs-cfg-eth-conns-single-lan">Option 1: Single LAN Ethernet Port</h4>
+      <p class="mv1">
+        The first option only configures a single LAN Ethernet port. This option is
+        <b>best for a machine with only two Ethernet ports</b>. Here, we configure a
+        single LAN Ethernet port as the IPv4 LAN gateway (we'll get to IPv6
+        in a later post). If you want more available LAN Ethernet ports with this option,
+        connect the single LAN Ethernet port to a switch for more options.
+      </p>
+      <p class="mv1">
+        The pro here is the configuration simplicity. However, for a machine with more
+        than two Ethernet ports, this configuration may cause confusion when determining
+        which non-WAN Ethernet port is the IPv4 LAN gateway port. Additionally,
+        if you have more than one Ethernet port available for LAN use, why let it/them sit
+        unused?
+      </p>
+      <pre><code class="language-bash">
+$ nmcli connection add \
+    type            ethernet \
+    ifname          enp2s0 \
+    connection.id   LAN1 \
+    ipv4.method     manual \
+    ipv4.addresses  192.168.0.1/24
+      </code></pre>
+
+      <h4 class="mt3 mb1" id="instrs-cfg-eth-conns-multi-lan">Option 2: Multiple LAN Ethernet Ports</h4>
+      <p class="mv1">
+        The second option configures one or more LAN Ethernet ports to work together.
+        This option is <b>best for a machine with more than two Ethernet ports</b>.
+        This setup configures the LAN Ethernet ports as children of a parent bridge.
+        Together, the LAN Ethernet ports share the IPv4 LAN gateway address.
+      <p class="mv1">
+        While this does add complexity to the configuration, it's managable.
+        It also mirrors a traditional consumer router and reduces confusion,
+        as any LAN Ethernet port will function the same as any other.
+      </p>
+      <p class="mv1">
+        <b>NOTE:</b> Repeat the child interface command (second command) once for
+        as many LAN Ethernet ports you have available or are willing to use,
+        modifying the <code>connection.id</code> and <code>ifname</code> as necessary.
+      </p>
+      <pre><code class="language-bash">
+# Add bridge, setting static IP
+# Note that the bridge IPv4 address is shared by all child interfaces of the bridge
+$ nmcli connection add \
+    type            bridge \
+    connection.id   LAN-bridge \
+    ifname          lan-br0
+    ipv4.method     manual \
+    ipv4.addresses  192.168.0.1/24
+
+# Add a child interface to a bridge
+#
+# Repeat this for as many interfaces you desire,
+# modifying 'connection.id' and 'ifname' as necessary
+$ nmcli connection add \
+    type            ethernet \
+    connection.id   LAN1 \
+    ifname          enp2s0 \
+    master          lan-br0
+      </code></pre>
+
+      <!-- Connect WAN Ethernet Port -->
+      <h3 class="mt3 mb1" id="instrs-connect-wan-port">5. Connect WAN Ethernet Port</h3>
+      <p class="mv1">
+        Connect (or reconnect) the machine WAN Ethernet port to your upstream connection
+        (e.g. modem Ethernet port) and connect a LAN Ethernet port to a test machine
+        (any machine that will act as a DHCP client).
+      </p>
+
+      <!-- Validate IPv4 WAN/LAN Configuration -->
+      <h3 class="mt3 mb1" id="validate-cfg">6. Validate IPv4 WAN/LAN Configuration</h3>
+      <p class="mv1">
+        Verify that LAN Ethernet interface is properly configured with the static IPv4
+        and subnet mask set in a previous step and that WAN port gets a DHCP IPv4 address.
+        If you're having trouble, <a href="#validate-cfg-troubleshooting">see below</a>.
+      </p>
+      <pre><code class="language-bash">
+# Option 1: Single LAN Ethernet port
+# 'enp1s0' is WAN interface and 'enp2s0' is LAN interface
+$ ip -br addr show
+lo               UNKNOWN        127.0.0.1/8 ::1/128 
+enp1s0           UP             172.30.0.205/24 fe80::a02d:e205:631b:2fb0/64 
+enp2s0           UP             192.168.0.1/24 fe80::8412:a19:2387:970/64
+enp3s0           DOWN           
+enp4s0           DOWN           
+
+# Option 2: Multiple LAN Ethernet ports (bridged)
+# 'enp1s0' is WAN interface and 'lan-br0' is LAN bridge interface.
+#
+# Notice how only the bridge interface shows the IPv4 address.
+# This address is shared amongst all child interfaces of the bridge.
+$ ip -br addr show
+lo               UNKNOWN        127.0.0.1/8 ::1/128 
+enp1s0           UP             172.30.0.205/24 fe80::a02d:e205:631b:2fb0/64 
+enp2s0           UP             
+enp3s0           DOWN           
+enp4s0           DOWN           
+lan-br0          UP             192.168.0.1/24 fe80::8412:a19:2387:970/64
+      </code></pre>
+      <h4 class="mt3 mb1" id="instrs-validate-cfg-troubleshooting">Troubleshooting</h4>
+      <p class="mv1">
+        If the Ethernet ports weren't connected beforehand or weren't connected quickly
+        enough after creation, you will need to use <code>nmcli</code> to down and up
+        the interfaces again.
+      </p>
+      <pre><code class="language-bash">
+# Down connection
+$ nmcli connection down LAN1
+
+# Up connection
+$ nmcli connection up LAN1
+      </code></pre>
+      <p class="mv1">
+        If you encounter issues with the WAN port, down'ing the interface, possibly rebooting
+        your upstream (e.g. modem), and up-ing the interface again may solve your issue.
+        In my case, the WAN Ethernet port would not receive an IPv4 address.
+        My modem/ISP didn't serve me a public DHCP lease, even when the port
+        was clearly requesting a new IP.
+      </p>
+
+      <!-- Configure IPv4 LAN DHCPv4 Server -->
+      <h3 class="mt3 mb1" id="instrs-cfg-dhcpv4-server">7. Configure IPv4 LAN DHCPv4 Server</h3>
+      <p class="mv1">
+        While there are other alternatives like <code>dnsmasq</code> (which also does DNS),
+        we will use <code>dhcpd</code>, which we installed in a previous step.
+      </p>
+      <p class="mv1">
+        The following is a simple <code>dhcpd</code> for a IPv4 LAN subnet <code>192.168.0.0/24</code>.
+        This configuration will serve DHCP leases for IPv4 addresses <code>192.168.0.10-254</code>,
+        which are within the subnet.
+      </p>
+      <p class="mv1">
+        Simply place the contents into file /etc/dhcpd/dhcpd.conf using your preferred text editor:
+      </p>
+      <p class="mv1">
+        <b>NOTE:</b> If you changed the IPv4 addresses in previous commands, make sure you
+        reflect that change below. The IPv4 gateway should match between the DHCP and LAN
+        Ethernet port configuration.
+      </p>
+      <pre><code class="language-bash">
+# --- Global options (apply to all subnets defined) ---
+default-lease-time              600;
+max-lease-time                  7200;
+option domain-name-servers      1.1.1.1; # CloudFlare DNS server
+
+# --- 192.168.0.0/24 subnet ---
+subnet 192.168.0.0 netmask 255.255.255.0 {
+    # Leaves some lower IPs for reserved machines (e.g. managed switch)
+    # The 192.168.0.255 address is used for broadcast
+    range 192.168.0.10 192.168.0.254;
+
+    option routers                  192.168.0.1;
+    option broadcast-address        192.168.0.255;
+}
+    </code></pre>
+
+      <!-- Start DHCPv4 Server -->
+      <h3 class="mt3 mb1" id="instrs-start-dhcpv4-server">8. Start DHCPv4 Server</h3>
+      <pre><code class="language-bash">
+# Fedora
+$ systemctl unmask dhcp.service # Just in case
+$ systemctl enable dhcp.service # Start on every boot
+$ systemctl start  dhcp.service
+$ systemctl status dhcp.service # Should show running
+
+# Ubuntu
+$ systemctl unmask isc-dhcp-server.service # Just in case
+$ systemctl enable isc-dhcp-server.service # Start on every boot
+$ systemctl start  isc-dhcp-server.service
+$ systemctl status isc-dhcp-server.service # Should show running
+      </code></pre>
+
+      <!-- Validate IPv4 DHCP Server -->
+      <h3 class="mt3 mb1" id="instrs-validate-dhcpv4-server">9. Validate IPv4 DHCP Server</h3>
+      <p class="mv1">
+        Reconnect the LAN client to a LAN Ethernet port and validate
+        that it receives an IPv4 address in the range you configured in previous step
+        (example configuration uses <code>192.168.0.10-254</code> range).
+      </p>
+
+      <!-- Enable IPv4 Forwarding -->
+      <h3 class="mt3 mb1" id="instrs-enable-ipv4-fwding">10. Enable IPv4 Forwarding</h3>
+      <p class="mv1">
+        To enable IPv4 forwarding <i>for the current boot</i>, run the following:
+      <pre><code class="language-bash">
+# 'sysctl' only modifies current runtime parameters, next boot will not retain this configuration
+$ sysctl -w net.ipv4.ip_forward
+      </code></pre>
+      </p>
+      <p class="mv1">
+        Double check the configuration took:
+      <pre><code class="language-bash">
+# 0 = disabled, 1 = enabled
+$ sysctl net.ipv4.ip_forward
+      </code></pre>
+      </p>
+      <p class="mv1">
+        To enable IPv4 forwarding for all subsequent boots, run the following:
+      </p>
+      <pre><code class="language-bash">
+# Prints to both file and stdout, '-a' to append in case any other data in file
+$ echo "net.ipv4.ip_forward = 1" | sudo tee -a /etc/sysctl.conf
+      </code></pre>
+
+      <!-- Configure Firewall -->
+      <h3 class="mt3 mb1" id="instrs-cfg-firewall">11. Configure Firewall</h3>
+      <p class="mv1">
+      </p>
+
+      <!-- Enable and Start Firewall -->
+      <h3 class="mt3 mb1" id="instrs-start-frewall">12. Enable and Start Firewall</h3>
+      <pre><code class="language-bash">
+$ systemctl enable nftables.service  # It's disabled by default
+$ systemctl start nftables.service
+      </code></pre>
+
+      <!-- Validate Firewall Rules -->
+      <h3 class="mt3 mb1" id="instrs-validate-firewall">13. Validate Firewall Rules</h3>
+      <pre><code class="language-bash">
+# Should print tables defined in nftables.conf configured in a previous step.
+# You will see the values of variables used substituted in to the rules.
+$ nft list table nat
+      </code></pre>
+
+      <!-- Validate Routing -->
+      <h3 class="mt3 mb1" id="instrs-validate-routing">14. Validate Routing</h3>
+      <p class="mv1">
+        The quickest test for this would be to reach the internet by
+        opening a web browser and connecting to a website of your choice.
+        You can also try by running <code>ping 1.1.1.1</code>,
+        although some network administrators may block ping requests.
+      </p>
+    </div>
+  </body>
+
+  <div class="footer">
+    <ul>
+      <script src="../emailJS.js"></script>
+      <li> <button onclick="copyText('a_gavin@icloud.com')">Email</button> </li>
+      <li><a href="https://github.com/a-gavin" target="blank">Github</a></li>
+      <li><a href="https://www.linkedin.com/in/alex-gavin/" target="blank">LinkedIn</a></li>
+    </ul>
+  </div>
+</div>
+
+</html>
