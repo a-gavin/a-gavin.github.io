@@ -1,0 +1,22 @@
+base_url = "https://a-gavin.github.io"
+build_search_index = false
+
+[markdown]
+highlight_code = true
+
+[extra]
+favicon = "favicon.ico"
+
+# The profile on home page
+[extra.profile]
+professional_interests = [
+    "Computer Networks and Wireless Systems",
+    "Systems Software Development",
+]
+about_me_paragraphs = [
+    "Hi there, I'm Alex [he/they]. I love working with computers and am passionate about open source!",
+    "In my role as Software Engineer at Candela Technologies, I contribute to and support a platform for network and wireless testing. It's possible it was used to test the WiFi access point you're using right now!",
+]
+name = "Alex Gavin"
+position = "Software Engineer, Candela Technologies"
+avatar_url = "images/avatar.jpg"

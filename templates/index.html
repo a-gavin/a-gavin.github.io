@@ -1,0 +1,14 @@
+<!doctype html>
+<html class="not-ready lg:text-base" lang="en">
+  {% include "partials/head.html" %}
+
+  <body>
+    {% include "partials/header.html" %}
+
+    <main class="prose prose-neutral relative mx-auto max-w-4xl px-4 pt-4">
+      {% block main %} {% include "partials/profile.html" %} {% endblock main %}
+    </main>
+
+    {% include "partials/footer.html" %}
+  </body>
+</html>
