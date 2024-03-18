@@ -15,7 +15,7 @@ professional_interests = [
 ]
 about_me_paragraphs = [
     "Hi there, I'm Alex [he/they]. I love working with computers and am passionate about open source!",
-    "In my role as Software Engineer at Candela Technologies, I contribute to and support a platform for network and wireless testing. It's possible it was used to test the WiFi access point you're using right now!",
+    "I currently work at the intersection of computer networking and software engineering, contributing to and supporting a Linux-based wireless and network testing platform.",
 ]
 name = "Alex Gavin"
 position = "Software Engineer, Candela Technologies"
