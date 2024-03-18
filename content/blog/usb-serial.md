@@ -4,7 +4,7 @@ date = "2024-03-03"
 description = "How to use udev rules to give non-root users access to a USB serial device."
 
 #[taxonomies]
-#tags = ["Linux", "udev", "USB"]
+#tags = ["linux", "udev", "usb"]
 +++
 
 ## Motivation
