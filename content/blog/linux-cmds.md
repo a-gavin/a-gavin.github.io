@@ -1,6 +1,6 @@
 +++
 title = "Linux Command Cheatsheet"
-date = "2024-03-17"
+date = "2023-12-26"
 
 #[taxonomies]
 #tags = ["linux", "sysadmin"]
@@ -10,6 +10,8 @@ date = "2024-03-17"
 <!-- TODO: grep w/ regex -->
 
 ## General Commands
+
+These commands aren't necessarily Linux machine-specific, but they may come in handy when using one.
 
 #### Run Command Every N Seconds
 
@@ -468,7 +470,7 @@ $ nmcli c m SSID_NAME \
 
 <!-- Querying WiFi Information -->
 
-#### Querying WiFi Information
+## Querying WiFi Information
 
 **NOTE:** Just as the [Querying Network Information](#querying-network-information) section details, most Linux systems use Network Manager to manage and configure networking, including WiFi. See the [Managing Networking](#managing-networking-network-manager) section for more details.
 

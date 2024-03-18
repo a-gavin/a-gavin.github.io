@@ -1,6 +1,6 @@
 +++
-title = "Linux Non-Root USB Serial Permissions"
-date = "2024-03-03"
+title = "Accessing Serial Devices on Linux w/o sudo"
+date = "2022-12-13"
 description = "How to use udev rules to give non-root users access to a USB serial device."
 
 #[taxonomies]
@@ -9,6 +9,8 @@ description = "How to use udev rules to give non-root users access to a USB seri
 
 ## Motivation
 
+**NOTE:** This assumes you have root privileges on the machine you will use and are fine with giving _all users_ access to serial devices on the system.
+
 If you're using a USB serial device like an FTDI USB UART serial converter on Linux,
 only root can access the device by default. To allow users to use the USB serial device
 _without being root_, you need to configure a udev rule for the device.
@@ -16,9 +18,6 @@ _without being root_, you need to configure a udev rule for the device.
 If you aren't familiar with udev, [this article]("https://wiki.archlinux.org/title/udev")
 explains the basics and a bit of history. The main takeaway is that udev controls USB serial devices,
 among other things. This necessitates the creating an appropriate udev rule to use the device as a non-root user.
-
-**NOTE:** This assumes you have root privileges on the machine you will use and are fine with giving
-_all users_ access to serial devices on the system.
 
 ## Instructions
 
