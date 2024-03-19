@@ -1,0 +1,191 @@
+<!doctype html>
+<html class="not-ready lg:text-base" lang="en">
+  <head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <!-- 'shrint-to-fit=no' is a post-Safari 9.0 workaround
+        https://stackoverflow.com/questions/33767533/what-does-the-shrink-to-fit-viewport-meta-attribute-do
+    -->
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, shrink-to-fit=no"
+  />
+
+  <title>Alex Gavin</title>
+  <link rel="icon" type="image/x-icon" href="https://a-gavin.github.io/favicon.ico" />
+
+  <!-- Author/description -->
+  <meta name="author" content="Alex Gavin" />
+  <meta name="description" content="Portfolio website" />
+
+  <!-- CSS & JS -->
+  <link rel="stylesheet" href="https://a-gavin.github.io/main.css" />
+  <link
+    href="https://pvinis.github.io/iosevka-webfont/3.4.1/iosevka.css"
+    rel="stylesheet"
+  />
+</head>
+
+
+  <body>
+    <!-- Header -->
+<header class="sticky top-0 z-40 min-h-[3.5rem] w-full">
+  <div class="top-3 mx-auto w-full max-w-4xl bg-white p-3 lg:flex lg:justify-between">
+    <!-- Left top menu -->
+    <div class="flex justify-between">
+      <a class="text-xl" href="https:&#x2F;&#x2F;a-gavin.github.io">Alex Gavin</a>
+    </div>
+
+    <!-- Right top menu-->
+    <nav class="flex w-full items-center lg:w-auto">
+      <ul
+        class="nav-wrapper flex w-full flex-col py-2 lg:w-auto lg:flex-row lg:self-center lg:py-0"
+      >
+        <li>
+          <a
+            class="primary-link block py-2 text-center text-xl lg:px-3 lg:py-0"
+            href="https:&#x2F;&#x2F;a-gavin.github.io"
+            >About</a
+          >
+        </li>
+
+        <li>
+          <a
+            class="primary-link block py-2 text-center text-xl lg:px-3 lg:py-0"
+            href="https://alw32c9tw.s3.us-west-2.amazonaws.com/AlexGavinResume.pdf"
+            >CV</a
+          >
+        </li>
+
+        <li>
+          <a
+            class="primary-link block py-2 text-center text-xl lg:px-3 lg:py-0"
+            href="https:&#x2F;&#x2F;a-gavin.github.io/blog.html"
+            >Blog</a
+          >
+        </li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+
+    <main class="prose prose-neutral relative mx-auto max-w-4xl px-4 pt-4">
+      <!---->
+
+<div class="mb-8">
+  <div class="flex items-center justify-center text-2xl">Accessing Serial Devices on Linux w&#x2F;o sudo</div>
+  <time class="my-0 flex items-center justify-center opacity-60"
+    >12-13-22</time
+  >
+</div>
+
+<section><h2 id="motivation">Motivation</h2>
+<p><strong>NOTE:</strong> This assumes you have root privileges on the machine you will use and are fine with giving <em>all users</em> access to serial devices on the system.</p>
+<p>If you're using a USB serial device like an FTDI USB UART serial converter on Linux,
+only root can access the device by default. To allow users to use the USB serial device
+<em>without being root</em>, you need to configure a udev rule for the device.</p>
+<p>If you aren't familiar with udev, <a href="https://a-gavin.github.io/blog/usb-serial/%22https://wiki.archlinux.org/title/udev%22">this article</a>
+explains the basics and a bit of history. The main takeaway is that udev controls USB serial devices,
+among other things. This necessitates the creating an appropriate udev rule to use the device as a non-root user.</p>
+<h2 id="instructions">Instructions</h2>
+<h3 id="1-identify-the-device">1. Identify the device</h3>
+<p>Run <code>ls /dev/</code>. The device will show up as a <code>/dev/ttyACMx</code> or
+<code>/dev/ttyUSBx</code>, where <code>x</code> is some positive number.</p>
+<p>If there are multiple ACM and/or USB devices visible, unplug and re-plug in the USB device.
+Then, search for the USB event in the kernel message buffer using command
+<code>sudo dmesg | grep &quot;usb&quot;</code>. This should print out enough information
+to identify the desired USB device's tty.</p>
+<p>For example, see the last line of the output where it lists ttyUSB1:</p>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#bf616a;">$</span><span> sudo dmesg | </span><span style="color:#bf616a;">grep </span><span>&quot;</span><span style="color:#a3be8c;">usb</span><span>&quot;
+</span><span style="color:#bf616a;">[21.944277]</span><span> usb 1-4: USB disconnect, device number 6
+</span><span style="color:#bf616a;">[21.637095]</span><span> usb 1-4: new full-speed USB device number 7 using xhci_hcd
+</span><span style="color:#bf616a;">[21.764180]</span><span> usb 1-4: New USB device found, idVendor=1a86, idProduct=7523, bcdDevice= 2.64
+</span><span style="color:#bf616a;">[21.764184]</span><span> usb 1-4: New USB device strings: Mfr=0, Product=2, SerialNumber=0
+</span><span style="color:#bf616a;">[21.764186]</span><span> usb 1-4: Product: USB Serial
+</span><span style="color:#bf616a;">[21.766670]</span><span> usb 1-4: ch341-uart converter now attached to ttyUSB1
+</span></code></pre>
+<h3 id="2-get-the-device-model-id-and-vendor-id">2. Get the device model ID and vendor ID</h3>
+<p>Search for the model and vendor ID using the <code>udevadm info</code> command.
+For example, the following searches for the model and vendor ID of the <code>/dev/ttyUSB1</code> device.</p>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#bf616a;">$</span><span> udevadm info /dev/ttyUSB1 | </span><span style="color:#bf616a;">grep </span><span>&quot;</span><span style="color:#a3be8c;">ID_VENDOR_ID\|ID_MODEL_ID</span><span>&quot;
+</span><span style="color:#bf616a;">E:</span><span> ID_VENDOR_ID=0403
+</span><span style="color:#bf616a;">E:</span><span> ID_MODEL_ID=6015
+</span></code></pre>
+<h3 id="3-create-the-udev-rule">3. Create the udev rule</h3>
+<p>As super user, create a new udev rule file in <code>/etc/udev/rules.d/</code>, for example
+<code>80-usb-serial.rules</code>. Then add the below line, substituting in the model and vendor ID
+you found in the previous step. Note that the number prefix of the file name matters.
+It indicates priority when checking udev rules, the lower the higher.</p>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#65737e;"># Contents of udev rule
+</span><span style="color:#bf616a;">SUBSYSTEM</span><span>=</span><span style="color:#a3be8c;">=</span><span>&quot;</span><span style="color:#a3be8c;">tty</span><span>&quot;</span><span style="color:#a3be8c;">, </span><span style="color:#bf616a;">ENV{ID_VENDOR_ID}</span><span>=</span><span style="color:#a3be8c;">=</span><span>&quot;</span><span style="color:#a3be8c;">0403</span><span>&quot;</span><span style="color:#a3be8c;">, </span><span style="color:#bf616a;">ENV{ID_MODEL_ID}</span><span>=&quot;</span><span style="color:#a3be8c;">6015</span><span>&quot;</span><span style="color:#a3be8c;">, </span><span style="color:#bf616a;">MODE</span><span>=&quot;</span><span style="color:#a3be8c;">0666</span><span>&quot;
+</span></code></pre>
+<p>If you'd like to give your device a more meaningful name or you find the device file
+changing (e.g. <code>/dev/ttyUSB1</code>) because you have multiple USB serial devices,
+you can add a symlink for the device's tty file. The following extends the above rule file,
+note the <code>SYMLINK</code> in the rule:</p>
+<h4 id="contents-of-udev-rule-with-symlink">Contents of udev rule with symlink</h4>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#bf616a;">SUBSYSTEM</span><span>=</span><span style="color:#a3be8c;">=</span><span>&quot;</span><span style="color:#a3be8c;">tty</span><span>&quot;</span><span style="color:#a3be8c;">, </span><span style="color:#bf616a;">ENV{ID_VENDOR_ID}</span><span>=</span><span style="color:#a3be8c;">=</span><span>&quot;</span><span style="color:#a3be8c;">0403</span><span>&quot;</span><span style="color:#a3be8c;">, </span><span style="color:#bf616a;">ENV{ID_MODEL_ID}</span><span>=&quot;</span><span style="color:#a3be8c;">6015</span><span>&quot;</span><span style="color:#a3be8c;">, </span><span style="color:#bf616a;">SYMLINK</span><span>+=&quot;</span><span style="color:#a3be8c;">ttyUART</span><span>&quot;</span><span style="color:#a3be8c;">, </span><span style="color:#bf616a;">MODE</span><span>=&quot;</span><span style="color:#a3be8c;">0666</span><span>&quot;
+</span></code></pre>
+<p><strong>NOTE:</strong> When multiple USB serial devices with the same model and vendor ID are added, udev will
+match on all of them and overwrite the symlink each time. The end result is only the last device matched
+will be symlinked. As far as I am aware, the order is indeterminate, so there's no guarantees that the
+symlink will map to the same device each time.</p>
+<p>If this is the case, there may be other device information you can match on to ensure <em>only</em> your
+desired device is symlinked. The command <code>udevadm info</code> will prove useful for this. See <code>man 7 udevadm</code> for more info.</p>
+<h3 id="4-verify-the-udev-rule">4. Verify the udev rule</h3>
+<p>Using the <code>udevadm test</code> command, simulate the application of udev rules to your
+desired USB serial device. You'll also need the <code>/sys/</code> device path, but you can
+get this with the <code>udevadm info</code> command.</p>
+<p>Substituting in your device's <code>/dev/</code> path, run the following command. Look
+for a line which contains 'MODE' and optionally a line that contains 'LINK', if you
+configured a symlink for your device. These are visible in the command:</p>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#bf616a;">$</span><span> sudo udevadm test $(</span><span style="color:#bf616a;">udevadm</span><span> info</span><span style="color:#bf616a;"> --query</span><span>=path</span><span style="color:#bf616a;"> --name</span><span>=/dev/ttyUSB0) </span><span style="color:#d08770;">2</span><span>&gt;&amp;</span><span style="color:#d08770;">1 </span><span>| </span><span style="color:#bf616a;">grep </span><span>&quot;</span><span style="color:#a3be8c;">80-usb-serial.rules</span><span>&quot;
+</span><span style="color:#bf616a;">Reading</span><span> rules file: /etc/udev/rules.d/80-usb-serial.rules
+</span><span style="color:#bf616a;">ttyUSB0:</span><span> /etc/udev/rules.d/80-usb-serial.rules:7 MODE 0666
+</span><span style="color:#bf616a;">ttyUSB0:</span><span> /etc/udev/rules.d/80-usb-serial.rules:7 LINK &#39;</span><span style="color:#a3be8c;">ttyUART</span><span>&#39;
+</span></code></pre>
+<h3 id="5-reload-udev-rules">5. Reload udev rules</h3>
+<p>After this step, non-root users will have access to the device.</p>
+<p>To do so, run the following command:</p>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#bf616a;">$</span><span> sudo udevadm control</span><span style="color:#bf616a;"> --reload </span><span>&amp;&amp; </span><span style="color:#bf616a;">sudo</span><span> udevadm trigger
+</span></code></pre>
+<p>The <code>udevadm control --reload</code> command only reloads the rules for new events.
+The <code>udevadm trigger</code> command replays kernel events so that your newly-loaded rule
+applies to events which have already occured. This means you won't need to unplug and
+replug your device in order for the new udev rule to take effect!</p>
+<h2 id="references">References</h2>
+<ul>
+<li><a href="https://a-gavin.github.io/blog/usb-serial/%22https://wiki.archlinux.org/title/udev%22">Arch Linux Wiki udev Article</a></li>
+<li><a href="https://a-gavin.github.io/blog/usb-serial/%22http://www.reactivated.net/writing_udev_rules.html#terminology%22">udev Terminology</a></li>
+<li><a href="https://a-gavin.github.io/blog/usb-serial/%22http://hackaday.com/2009/09/18/how-to-write-udev-rules/%22">udev Rule Creation Tutorial</a></li>
+</ul>
+</section>
+
+
+    </main>
+
+    <footer class="w-full pt-6">
+  <div class="bottom-4 mx-auto max-w-3xl p-4">
+    <ul class="flex items-center justify-center text-lg">
+      <li>
+        <a class="primary-link block px-3 py-0 text-center" href="./index.html">Email</a>
+      </li>
+      <li>
+        <a class="primary-link l block px-3 py-0 text-center" href="https://github.com/a-gavin"
+          >Github</a
+        >
+      </li>
+      <li>
+        <a
+          class="primary-link block px-3 py-0 text-center"
+          href="https://www.linkedin.com/in/alex-gavin/"
+          >LinkedIn</a
+        >
+      </li>
+    </ul>
+  </div>
+</footer>
+
+  </body>
+</html>

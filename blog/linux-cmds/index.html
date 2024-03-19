@@ -1,0 +1,529 @@
+<!doctype html>
+<html class="not-ready lg:text-base" lang="en">
+  <head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <!-- 'shrint-to-fit=no' is a post-Safari 9.0 workaround
+        https://stackoverflow.com/questions/33767533/what-does-the-shrink-to-fit-viewport-meta-attribute-do
+    -->
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, shrink-to-fit=no"
+  />
+
+  <title>Alex Gavin</title>
+  <link rel="icon" type="image/x-icon" href="https://a-gavin.github.io/favicon.ico" />
+
+  <!-- Author/description -->
+  <meta name="author" content="Alex Gavin" />
+  <meta name="description" content="Portfolio website" />
+
+  <!-- CSS & JS -->
+  <link rel="stylesheet" href="https://a-gavin.github.io/main.css" />
+  <link
+    href="https://pvinis.github.io/iosevka-webfont/3.4.1/iosevka.css"
+    rel="stylesheet"
+  />
+</head>
+
+
+  <body>
+    <!-- Header -->
+<header class="sticky top-0 z-40 min-h-[3.5rem] w-full">
+  <div class="top-3 mx-auto w-full max-w-4xl bg-white p-3 lg:flex lg:justify-between">
+    <!-- Left top menu -->
+    <div class="flex justify-between">
+      <a class="text-xl" href="https:&#x2F;&#x2F;a-gavin.github.io">Alex Gavin</a>
+    </div>
+
+    <!-- Right top menu-->
+    <nav class="flex w-full items-center lg:w-auto">
+      <ul
+        class="nav-wrapper flex w-full flex-col py-2 lg:w-auto lg:flex-row lg:self-center lg:py-0"
+      >
+        <li>
+          <a
+            class="primary-link block py-2 text-center text-xl lg:px-3 lg:py-0"
+            href="https:&#x2F;&#x2F;a-gavin.github.io"
+            >About</a
+          >
+        </li>
+
+        <li>
+          <a
+            class="primary-link block py-2 text-center text-xl lg:px-3 lg:py-0"
+            href="https://alw32c9tw.s3.us-west-2.amazonaws.com/AlexGavinResume.pdf"
+            >CV</a
+          >
+        </li>
+
+        <li>
+          <a
+            class="primary-link block py-2 text-center text-xl lg:px-3 lg:py-0"
+            href="https:&#x2F;&#x2F;a-gavin.github.io/blog.html"
+            >Blog</a
+          >
+        </li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+
+    <main class="prose prose-neutral relative mx-auto max-w-4xl px-4 pt-4">
+      <!---->
+
+<div class="mb-8">
+  <div class="flex items-center justify-center text-2xl">Linux Command Cheatsheet</div>
+  <time class="my-0 flex items-center justify-center opacity-60"
+    >12-26-23</time
+  >
+</div>
+
+<section><!-- General commands -->
+<!-- TODO: grep w/ regex -->
+<h2 id="general-commands">General Commands</h2>
+<p>These commands aren't necessarily Linux machine-specific, but they may come in handy when using one.</p>
+<h4 id="run-command-every-n-seconds">Run Command Every N Seconds</h4>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#65737e;"># Prints &#39;Vale la pena&#39; once every half second
+</span><span style="color:#bf616a;">$</span><span> watch</span><span style="color:#bf616a;"> -n</span><span> 0.5 echo &#39;</span><span style="color:#a3be8c;">Vale la pena</span><span>&#39;
+</span></code></pre>
+<h4 id="view-file-contents-as-file-updates">View File Contents as File Updates</h4>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#65737e;"># The &#39;-F&#39; option may be useful as well. See &#39;man tail&#39;
+</span><span style="color:#bf616a;">$</span><span> tail</span><span style="color:#bf616a;"> -f</span><span> lanforge_log_1.txt
+</span></code></pre>
+<h4 id="search-for-file">Search for File</h4>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#65737e;"># The &#39;.&#39; here specifies to search in and all sub-directories of the &#39;$CWD&#39;
+</span><span style="color:#bf616a;">$</span><span> find .</span><span style="color:#bf616a;"> -name </span><span>&quot;</span><span style="color:#a3be8c;">\*.html</span><span>&quot;
+</span><span style="color:#bf616a;">./blog.html
+</span><span style="color:#bf616a;">./projects.html
+</span></code></pre>
+<!-- System Administration: Non-Systemd -->
+<h2 id="system-administration-non-systemd">System Administration: Non-Systemd</h2>
+<h4 id="show-all-running-processes">Show All Running Processes</h4>
+<p><strong>NOTE:</strong> Systemd command <code>systemctl status</code> does similar but includes Cgroup-specific information as well.</p>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#65737e;"># Show all current processes running for current user
+</span><span style="color:#bf616a;">$</span><span> ps a
+</span><span>    </span><span style="color:#bf616a;">PID</span><span> TTY      STAT   TIME COMMAND
+</span><span>   </span><span style="color:#bf616a;">2282</span><span> tty2     Sl+    0:00 /usr/libexec/gnome-session-binary</span><span style="color:#bf616a;"> --session</span><span>=ubuntu
+</span><span>   </span><span style="color:#bf616a;">5009</span><span> pts/0    Ss     0:00 zsh
+</span><span>   </span><span style="color:#bf616a;">...
+</span></code></pre>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#65737e;"># Show all processes running on system
+</span><span style="color:#bf616a;">$</span><span> ps</span><span style="color:#bf616a;"> -e
+</span><span>    </span><span style="color:#bf616a;">PID</span><span> TTY          TIME CMD
+</span><span>      </span><span style="color:#bf616a;">1 </span><span>?        00:00:01 systemd
+</span><span>      </span><span style="color:#bf616a;">2 </span><span>?        00:00:00 kthreadd
+</span><span>      </span><span style="color:#bf616a;">3 </span><span>?        00:00:00 rcu_gp
+</span><span>    </span><span style="color:#bf616a;">...
+</span></code></pre>
+<h4 id="get-all-pids-of-program-if-running">Get All PIDs of Program (if Running)</h4>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#65737e;"># Get PIDs of Firefox program
+</span><span style="color:#bf616a;">$</span><span> pgrep firefox
+</span><span style="color:#bf616a;">4602
+</span><span style="color:#bf616a;">5086
+</span></code></pre>
+<h4 id="kill-running-process-use-caution">Kill Running Process (USE CAUTION)</h4>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#65737e;"># Kill process w/ PID 921. Default signal to send is &#39;TERM&#39;, so command is same as &#39;kill -s TERM&#39;
+</span><span style="color:#65737e;"># More immediate (and potentially harmful) is the &#39;KILL&#39; signal.
+</span><span style="color:#bf616a;">$</span><span> kill 921
+</span></code></pre>
+<h4 id="view-kernel-logs">View Kernel Logs</h4>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#65737e;"># Run with &#39;-w&#39; to follow in real time (like &#39;tail -f&#39;)
+</span><span style="color:#bf616a;">$</span><span> sudo dmesg
+</span></code></pre>
+<!-- System Administration: Systemd -->
+<h2 id="system-administration-systemd">System Administration: Systemd</h2>
+<!-- TODO: systemctl commands (status, start/stop/restart, daemon-reload, enable/disable, edit)-->
+<h4 id="show-systemd-unit-status">Show Systemd Unit Status</h4>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#65737e;"># The &#39;.service&#39; is optional if there are no other Systemd units w/ same name
+</span><span style="color:#65737e;"># The bottom of the output is the same as would be output by &#39;journalctl -b -0 -u NetworkManager-wait-online&#39;
+</span><span style="color:#bf616a;">$</span><span> systemctl status NetworkManager-wait-online.service
+</span><span style="color:#bf616a;">●</span><span> NetworkManager-wait-online.service - Network Manager Wait Online
+</span><span>     </span><span style="color:#bf616a;">Loaded:</span><span> loaded (/lib/systemd/system/NetworkManager-wait-online.service; </span><span style="color:#bf616a;">enabled</span><span>; </span><span style="color:#bf616a;">vendor</span><span> preset: enabled)
+</span><span>     </span><span style="color:#bf616a;">Active:</span><span> active (exited) </span><span style="color:#bf616a;">since</span><span> Sun 2024-03-17 12:29:11 PDT; </span><span style="color:#bf616a;">5h</span><span> 59min ago
+</span><span>       </span><span style="color:#bf616a;">Docs:</span><span> man:nm-online(1)
+</span><span>    </span><span style="color:#bf616a;">Process:</span><span> 1035 ExecStart=/usr/bin/nm-online</span><span style="color:#bf616a;"> -s -q</span><span> (code=exited, status=0/SUCCESS)
+</span><span>   </span><span style="color:#bf616a;">Main</span><span> PID: 1035 (code=exited, status=0/SUCCESS)
+</span><span>        </span><span style="color:#bf616a;">CPU:</span><span> 71ms
+</span><span>
+</span><span style="color:#bf616a;">Mar</span><span> 17 12:29:02 meadowlark systemd</span><span style="color:#b48ead;">[</span><span>1</span><span style="color:#b48ead;">]</span><span>: Starting Network Manager Wait Online...
+</span><span style="color:#bf616a;">Mar</span><span> 17 12:29:11 meadowlark systemd</span><span style="color:#b48ead;">[</span><span>1</span><span style="color:#b48ead;">]</span><span>: Finished Network Manager Wait Online.
+</span></code></pre>
+<h4 id="manage-and-configure-systemd-unit">Manage and Configure Systemd Unit</h4>
+<p><strong>NOTE:</strong> After editing a Systemd unit file, you must run <code>systemctl daemon-reload</code> for the changes to take effect.</p>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#65737e;"># TODO
+</span><span style="color:#65737e;"># start
+</span><span style="color:#65737e;"># stop
+</span><span style="color:#65737e;"># restart
+</span><span style="color:#65737e;"># enable, disable
+</span><span style="color:#65737e;"># mask, unmask
+</span><span style="color:#65737e;"># edit
+</span><span style="color:#65737e;"># daemon-reload
+</span></code></pre>
+<h4 id="view-service-daemon-logs">View Service (Daemon) Logs</h4>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#65737e;"># Prints all log lines. Will be very long
+</span><span style="color:#bf616a;">$</span><span> journalctl
+</span><span>
+</span><span style="color:#65737e;"># Print only the last 100 log lines
+</span><span style="color:#bf616a;">$</span><span> journalctl</span><span style="color:#bf616a;"> -n</span><span> 100
+</span><span>
+</span><span style="color:#65737e;"># Follow logs in real time (similar to &#39;tail -f&#39;)
+</span><span style="color:#bf616a;">$</span><span> journalctl</span><span style="color:#bf616a;"> -f
+</span><span>
+</span><span style="color:#65737e;"># Only show logs for a specific ID, here &#39;test_program&#39;.
+</span><span style="color:#65737e;"># For example, the following would create a log message and
+</span><span style="color:#65737e;"># tag it with the &#39;test_program&#39; tag:
+</span><span style="color:#65737e;"># logger -t test_program &quot;This is a log message&quot;
+</span><span style="color:#65737e;">#
+</span><span style="color:#65737e;"># Note that this is different from the &#39;-u&#39; option
+</span><span style="color:#bf616a;">$</span><span> journalctl</span><span style="color:#bf616a;"> -t</span><span> test_program
+</span><span>
+</span><span style="color:#65737e;"># Only show logs for a specific service, here, &#39;wpa_supplicant.service&#39;
+</span><span style="color:#bf616a;">$</span><span> journalctl</span><span style="color:#bf616a;"> -u</span><span> wpa_supplicant
+</span><span style="color:#65737e;"># or
+</span><span style="color:#bf616a;">$</span><span> journalctl</span><span style="color:#bf616a;"> -u</span><span> wpa_supplicant.service
+</span><span>
+</span><span style="color:#65737e;"># Only show logs for this boot (can use &#39;-b&#39; option instead of &#39;--boot&#39;)
+</span><span style="color:#bf616a;">$</span><span> journalctl</span><span style="color:#bf616a;"> --boot -0
+</span><span>
+</span><span style="color:#65737e;"># Only show logs for the last boot (can use &#39;-b&#39; option instead of &#39;--boot&#39;)
+</span><span style="color:#bf616a;">$</span><span> journalctl</span><span style="color:#bf616a;"> --boot -1
+</span></code></pre>
+<!-- Querying HW info -->
+<h2 id="querying-hardware-information">Querying Hardware Information</h2>
+<h4 id="show-system-hardware-information">Show System Hardware Information</h4>
+<p>It is recommended to run this command with root privileges to get the most detailed information.</p>
+<p>For more CPU/NUMA-focused information in a pop-up GUI format, the <code>lstopo</code> command may prove useful. It has a text-only mode as well for non-GUI use cases.</p>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#bf616a;">$</span><span> sudo lshw
+</span><span>    </span><span style="color:#bf616a;">hostname
+</span><span>    </span><span style="color:#bf616a;">description:</span><span> Notebook
+</span><span>    </span><span style="color:#bf616a;">product:</span><span> XXXXXXXXXXX (XXXXXXXXXXX)
+</span><span>    </span><span style="color:#bf616a;">vendor:</span><span> XXXXXXXXXXX
+</span><span>    </span><span style="color:#bf616a;">version:</span><span> XXXXXXXXXXX
+</span><span>    </span><span style="color:#bf616a;">serial:</span><span> XXXXXXXXXXX
+</span><span>    </span><span style="color:#bf616a;">width:</span><span> 64 bits
+</span><span>    </span><span style="color:#bf616a;">capabilities:</span><span> smbios-3.3.0 dmi-3.3.0 smp vsyscall32
+</span><span>    </span><span style="color:#bf616a;">configuration:</span><span> administrator_password=disabled chassis=notebook family=XXX power-on_password=disabled sku=XXX uuid=9b2d86cc-2b0f-11b2-a85c-ad3b66e4d98e
+</span><span style="color:#bf616a;">...
+</span></code></pre>
+<h4 id="show-usb-device-information">Show USB Device Information</h4>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#65737e;"># Use &#39;-v&#39; for more verbose output
+</span><span style="color:#bf616a;">$</span><span> lsusb
+</span><span style="color:#bf616a;">Bus</span><span> 004 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
+</span><span style="color:#bf616a;">Bus</span><span> 003 Device 002: ID 0489:e0cd Foxconn / Hon Hai Wireless_Device
+</span><span style="color:#bf616a;">Bus</span><span> 003 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+</span><span style="color:#bf616a;">Bus</span><span> 002 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
+</span><span style="color:#bf616a;">Bus</span><span> 001 Device 002: ID 30c9:0030 Luxvisions Innotech Limited Integrated Camera
+</span><span style="color:#bf616a;">Bus</span><span> 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+</span><span>
+</span><span style="color:#65737e;"># Filter on vendor and product ID
+</span><span style="color:#bf616a;">$</span><span> lsusb</span><span style="color:#bf616a;"> -d</span><span> 0489:e0cd
+</span><span style="color:#bf616a;">Bus</span><span> 003 Device 002: ID 0489:e0cd Foxconn / Hon Hai Wireless_Device
+</span><span>
+</span><span style="color:#65737e;"># Filter on bus and device number
+</span><span style="color:#bf616a;">$</span><span> lsusb</span><span style="color:#bf616a;"> -s</span><span> 003:002
+</span><span style="color:#bf616a;">Bus</span><span> 003 Device 002: ID 0489:e0cd Foxconn / Hon Hai Wireless_Device
+</span></code></pre>
+<h4 id="show-pci-e-device-information">Show PCI(e) Device Information</h4>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#65737e;"># Use the &#39;-v&#39;, &#39;-vv&#39;, &#39;-vvv&#39; options to show more information with increasing verbosity
+</span><span style="color:#65737e;"># Use the &#39;-k&#39; option to show kernel drivers used (on by default w/ &#39;-v&#39;)
+</span><span style="color:#bf616a;">$</span><span> lspci
+</span><span style="color:#bf616a;">...
+</span><span style="color:#bf616a;">02:00.0</span><span> Ethernet controller: Realtek Semiconductor Co., Ltd. RTL8111/8168/8411 PCI Express Gigabit Ethernet Contr
+</span><span style="color:#bf616a;">03:00.0</span><span> Network controller: MEDIATEK Corp. MT7921 802.11ax PCI Express Wireless Network Adapter
+</span><span style="color:#bf616a;">...
+</span><span>
+</span><span style="color:#65737e;"># Filter on PCI(e) bus
+</span><span style="color:#bf616a;">$</span><span> lspci</span><span style="color:#bf616a;"> -s</span><span> 03:00.0
+</span><span style="color:#bf616a;">03:00.0</span><span> Network controller: MEDIATEK Corp. MT7921 802.11ax PCI Express Wireless Network Adapter
+</span></code></pre>
+<h4 id="list-block-devices">List Block Devices</h4>
+<p>For more disk-specific utilization info, see <code>df</code> command usage below.</p>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#bf616a;">$</span><span> lsblk
+</span><span style="color:#bf616a;">NAME</span><span> MAJ:MIN RM SIZE RO TYPE MOUNTPOINTS
+</span><span style="color:#bf616a;">...
+</span><span style="color:#bf616a;">loop18</span><span>      7:18    0 428K    1 loop /snap/snapd-desktop-integration/57
+</span><span style="color:#bf616a;">loop19</span><span>      7:19    0 452K    1 loop /snap/snapd-desktop-integration/83
+</span><span style="color:#bf616a;">nvme0n1</span><span>     259:0   0 476.9G  0 disk
+</span><span style="color:#bf616a;">├─nvme0n1p1</span><span> 259:1   0 512M    0 part /boot/efi
+</span><span style="color:#bf616a;">└─nvme0n1p2</span><span> 259:2   0 476.4G  0 part /
+</span></code></pre>
+<h4 id="show-disk-usage">Show Disk Usage</h4>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#65737e;"># Use the &#39;-h&#39; flag for human-readable output (in base 1024).
+</span><span style="color:#65737e;"># NOTE: The &#39;-H&#39; flag is human-readable but in base 1000 units
+</span><span style="color:#bf616a;">$</span><span> df</span><span style="color:#bf616a;"> -h
+</span><span style="color:#bf616a;">Filesystem</span><span>      Size  Used Avail Use% Mounted on
+</span><span style="color:#bf616a;">tmpfs</span><span>           2.3G  2.4M  2.3G   1% /run
+</span><span style="color:#bf616a;">efivarfs</span><span>        248K  154K   90K  64% /sys/firmware/efi/efivars
+</span><span style="color:#bf616a;">/dev/nvme0n1p2</span><span>  468G  131G  314G  30% /
+</span><span style="color:#bf616a;">tmpfs</span><span>            12G   21M   12G   1% /dev/shm
+</span><span style="color:#bf616a;">tmpfs</span><span>           5.0M  4.0K  5.0M   1% /run/lock
+</span><span style="color:#bf616a;">/dev/nvme0n1p1</span><span>  511M  6.1M  505M   2% /boot/efi
+</span><span style="color:#bf616a;">tmpfs</span><span>           2.3G  1.7M  2.3G   1% /run/user/1000
+</span></code></pre>
+<h4 id="show-disk-usage-by-directory">Show Disk Usage by Directory</h4>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#65737e;"># Use the &#39;-h&#39; flag for human-readable output (unsure what base is used)
+</span><span style="color:#65737e;"># NOTE: The &#39;-H&#39; flag for &#39;du&#39; is not the same as the &#39;-H&#39; flag for &#39;df&#39;
+</span><span style="color:#bf616a;">$</span><span> du</span><span style="color:#bf616a;"> -h
+</span><span style="color:#bf616a;">1.5M</span><span>    ./images
+</span><span style="color:#bf616a;">44K</span><span>     ./blog
+</span><span style="color:#bf616a;">...
+</span><span style="color:#bf616a;">5.4M</span><span>    .
+</span></code></pre>
+<!-- Querying Network Information -->
+<!-- TODO: nmap -->
+<!-- TODO: Advanced networking section with 1q vlan, vrf -->
+<h2 id="querying-network-information">Querying Network Information</h2>
+<p><strong>NOTE:</strong> These commands are listed for diagnostic purposes.
+You probably want to use Network Manager to configure your networking instead.
+See the <a href="https://a-gavin.github.io/blog/linux-cmds/#managing-networking-network-manager">next section</a> for more details.</p>
+<p>Most Linux distributions run Network Manager to configure and manage networking nowadays. This is a common point of confusion, as there is still material available online which assumes older, network-scripts based network management.</p>
+<p>It is possible to configure networking with variations of these commands. Unless you know
+what you're doing, though, you're better off just using Network Manager.</p>
+<h4 id="show-network-interface-link-layer-info">Show Network Interface Link-Layer Info</h3></h4>
+<p>Displays interface status and MAC address. More detailed output is possible by
+using the <code>-d</code> option (without the <code>-br</code> option).</p>
+<p><strong>NOTE:</strong> Take note of information beyond MAC address. 'UP' indicates interface is running. 'LOWER_UP' means the driver is functioning. For example, a non-configured but plugged in ethernet device may be 'DOWN' but 'LOWER_UP'. For Ethernet interfaces, 'NO-CARRIER' indicates that there is no signal on the wire (it's disconnected).</p>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#65737e;"># Shorthand shown. Full command would be &#39;ip link show&#39;, but the &#39;show&#39; is optional.
+</span><span style="color:#bf616a;">$</span><span> ip</span><span style="color:#bf616a;"> -br</span><span> l
+</span><span style="color:#bf616a;">lo</span><span>               UNKNOWN        00:00:00:00:00:00 &lt;LOOPBACK,UP,LOWER_UP&gt;
+</span><span style="color:#bf616a;">enp2s0</span><span>           DOWN           xx:xx:xx:xx:xx:xx &lt;NO-CARRIER,BROADCAST,MULTICAST,UP&gt;
+</span><span style="color:#bf616a;">wlan0</span><span>            UP             xx:xx:xx:xx:xx:xx &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt;
+</span></code></pre>
+<h4 id="show-network-interface-ip-layer-info">Show Network Interface IP-Layer Info</h4>
+<p>Displays IPv4 and IPv6 information in addition to interface status, MAC address, MTU, and interface routing table, among other things (some of which require <code>-d</code> option). More detailed output is possible by using the <code>-d</code> option (without the <code>-br</code> option).</p>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#65737e;"># Shorthand shown. Full command would be &#39;ip addr show&#39;, but the &#39;show&#39; is optional.
+</span><span style="color:#bf616a;">$</span><span> ip</span><span style="color:#bf616a;"> -br</span><span> a
+</span><span style="color:#bf616a;">lo</span><span>               UNKNOWN        127.0.0.1/8 ::1/128
+</span><span style="color:#bf616a;">enp2s0</span><span>           DOWN
+</span><span style="color:#bf616a;">wlan0</span><span>            UP             192.168.0.234/24 fe80::xxx:xxxx:xxxx:xxxx/64
+</span><span>
+</span><span style="color:#65737e;"># Only show IPv4 information
+</span><span style="color:#bf616a;">$</span><span> ip</span><span style="color:#bf616a;"> -4</span><span> addr show
+</span><span>
+</span><span style="color:#65737e;"># Only show IPv6 information
+</span><span style="color:#bf616a;">$</span><span> ip</span><span style="color:#bf616a;"> -6</span><span> addr show
+</span></code></pre>
+<h4 id="show-arp-tables">Show ARP Tables</h4>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#65737e;"># Shorthand is &#39;ip n&#39;
+</span><span style="color:#bf616a;">$</span><span> ip neigh
+</span><span style="color:#bf616a;">10.199.0.1</span><span> dev wlan0 lladdr 00:50:e8:04:57:ab REACHABLE
+</span><span>
+</span><span style="color:#65737e;"># Show specific interface&#39;s ARP table
+</span><span style="color:#bf616a;">$</span><span> ip neigh show dev wlan0
+</span><span style="color:#bf616a;">10.199.0.1</span><span> dev wlan0 lladdr 00:50:e8:04:57:ab REACHABLE
+</span></code></pre>
+<h4 id="show-routing-tables">Show Routing Tables</h4>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#65737e;"># Shorthand is &#39;ip r&#39;. Will show all IPv4 routing tables.
+</span><span style="color:#65737e;"># The &#39;169.254.0.0/16&#39; route is link-local IPv4 and is mostly default.
+</span><span style="color:#bf616a;">$</span><span> ip route
+</span><span style="color:#bf616a;">default</span><span> via 10.199.0.1 dev wlan0 proto dhcp metric 600
+</span><span style="color:#bf616a;">10.199.0.0/20</span><span> dev wlan0 proto kernel scope link src 10.199.4.142 metric 600
+</span><span style="color:#bf616a;">169.254.0.0/16</span><span> dev wlan0 scope link metric 1000
+</span><span>
+</span><span style="color:#65737e;"># Show IPv6 routing tables only
+</span><span style="color:#bf616a;">$</span><span> ip</span><span style="color:#bf616a;"> -6</span><span> route
+</span><span style="color:#bf616a;">::1</span><span> dev lo proto kernel metric 256 pref medium
+</span><span style="color:#bf616a;">fe80::/64</span><span> dev wlan0 proto kernel metric 1024 pref medium
+</span><span>
+</span><span style="color:#65737e;"># Determine what route traffic will take for a specific address, here &#39;8.8.8.8&#39;
+</span><span style="color:#bf616a;">$</span><span> ip route get 8.8.8.8
+</span><span style="color:#bf616a;">8.8.8.8</span><span> via 10.199.0.1 dev wlan0 src 10.199.4.142 uid 1000
+</span><span style="color:#bf616a;">cache
+</span><span>
+</span><span style="color:#65737e;"># Show routes in routing table 10
+</span><span style="color:#bf616a;">$</span><span> ip route show table 10
+</span></code></pre>
+<h4 id="show-open-sockets-existing-connections">Show Open Sockets (Existing Connections)</h4>
+<p>I typically use this as <code>ss -tulpn</code> and <code>grep</code> for what I want. If you run as root (e.g. with <code>sudo</code>), you will also see the program that is using the socket.</p>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#65737e;"># Main options are:
+</span><span style="color:#65737e;"># &#39;-u&#39; for UDP
+</span><span style="color:#65737e;"># &#39;-t&#39; for TCP
+</span><span style="color:#65737e;"># &#39;-p&#39; display process (if have permission for given process)
+</span><span style="color:#65737e;"># &#39;-l&#39; display only listening sockets
+</span><span style="color:#65737e;"># &#39;-a&#39; display listening and established sockets (no &#39;-a&#39; or &#39;-l&#39; will only display established)
+</span><span style="color:#65737e;"># &#39;-n&#39; do not attempt to resolve service name for port (to guarantee port num is printed)
+</span><span style="color:#bf616a;">$</span><span> sudo ss</span><span style="color:#bf616a;"> -tulpn
+</span><span style="color:#bf616a;">Netid</span><span>  State   Recv-Q  Send-Q    Local Address:Port      Peer Address:Port  Process
+</span><span style="color:#bf616a;">udp</span><span>    UNCONN  0       0         127.0.0.53%</span><span style="color:#bf616a;">lo</span><span>:53             0.0.0.0:*      users:((&quot;</span><span style="color:#a3be8c;">systemd-resolve</span><span>&quot;,pid=895,fd=13))
+</span><span style="color:#bf616a;">udp</span><span>    UNCONN  0       0               0.0.0.0:631            0.0.0.0:*      users:((&quot;</span><span style="color:#a3be8c;">cups-browsed</span><span>&quot;,pid=1845,fd=7))
+</span><span style="color:#bf616a;">....
+</span></code></pre>
+<!-- Managing Networking -->
+<h2 id="managing-networking-network-manager">Managing Networking (Network Manager)</h2>
+<p>At a high level, Network Manager configures 'connections' which are established using a backing network interface, or in Network Manager terms, 'device'. These devices are either managed or unmanaged from the perspective of Network Manager.</p>
+<p>Generally, most users will be fine with Network Manager configuring all of their
+network interfaces, typically only WiFi and Ethernet (although Network Manager can do much more). There are times, though, where it is appropriate to have Network Manager <a href="https://a-gavin.github.io/blog/linux-cmds/#set-device-management">ignore specific interfaces</a>, for example, when doing WiFi packet capture.</p>
+<p>This section details some of the most basic and more-useful (from my perspective) commands. See <code>man nmcli-examples</code> for more examples and more advanced usage of Network Manager.</p>
+<h4 id="show-all-devices">Show All Devices</h4>
+<p>Shows all Network Manager-tracked network devices, including both devices
+that are managed and unmanaged by Network Manager.</p>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#65737e;"># Shorthand shown. Full command is &#39;nmcli device&#39;
+</span><span style="color:#bf616a;">$</span><span> nmcli d
+</span><span style="color:#bf616a;">DEVICE</span><span>         TYPE      STATE         CONNECTION
+</span><span style="color:#bf616a;">wlan0</span><span>          wifi      disconnected  --
+</span><span style="color:#bf616a;">enp2s0</span><span>         ethernet  unavailable   --
+</span><span style="color:#bf616a;">lo</span><span>             loopback  unmanaged     --
+</span></code></pre>
+<h4 id="show-all-connections">Show All Connections</h4>
+<p>Shows both active and inactive connections.</p>
+<p>Naming is typically the SSID (WiFi network name) for WiFi connections and 'Wired Connection X' for Ethernet connections.</p>
+<p>When typing <code>nmcli connection</code> commands, active connections will tab complete, but sadly inactive connections do not.</p>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#65737e;"># Shorthand shown. Full command is &#39;nmcli connection show&#39;
+</span><span style="color:#bf616a;">$</span><span> nmcli c
+</span><span style="color:#bf616a;">NAME</span><span> UUID TYPE DEVICE
+</span><span style="color:#bf616a;">SSID_NAME</span><span> 2c5fc1ff-565f-495c-b6d3-59d5be6facde wifi wlan0
+</span><span style="color:#bf616a;">Wired</span><span> Connection 1 167b3f3b-acb7-4ca2-9480-c41868641214 ethernet --
+</span></code></pre>
+<h4 id="show-specific-device-info">Show Specific Device Info</h4>
+<!-- Link "Show Specific Connection Info" to the nmcli c s command -->
+<p>Only shows device-specific information. The command in used in
+Show Specific Connection Info will provide more information, assuming there is a connection which uses the device.</p>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#65737e;"># Shorthand shown. Full command is &#39;nmcli device show enp2s0&#39;
+</span><span style="color:#bf616a;">$</span><span> nmcli device show enp2s0
+</span><span style="color:#bf616a;">GENERAL.DEVICE:</span><span>                         enp2s0
+</span><span style="color:#bf616a;">GENERAL.TYPE:</span><span>                           ethernet
+</span><span style="color:#bf616a;">GENERAL.HWADDR:</span><span>                         xx:xx:xx:xx:xx:xx
+</span><span style="color:#bf616a;">GENERAL.MTU:</span><span>                            1500
+</span><span style="color:#bf616a;">GENERAL.STATE:</span><span>                          20 (unavailable)
+</span><span style="color:#bf616a;">GENERAL.CONNECTION:</span><span>                     --
+</span><span style="color:#bf616a;">...
+</span></code></pre>
+<h4 id="show-specific-connection-info">Show Specific Connection Info</h4>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#65737e;"># Shorthand shown. Full command is &#39;nmcli connection show &quot;Wired Connection 1&quot;&#39;
+</span><span style="color:#bf616a;">$</span><span> nmcli c show &quot;</span><span style="color:#a3be8c;">Wired Connection 1</span><span>&quot;
+</span><span style="color:#bf616a;">connection.id:</span><span>                          Wired Connection 1
+</span><span style="color:#bf616a;">connection.uuid:</span><span>                        167b3f3b-acb7-4ca2-9480-c41868641214
+</span><span style="color:#bf616a;">connection.stable-id:</span><span>                   --
+</span><span style="color:#bf616a;">connection.type:</span><span>                        802-3-ethernet
+</span><span style="color:#bf616a;">connection.interface-name:</span><span>              enp2s0
+</span><span style="color:#bf616a;">...
+</span></code></pre>
+<h4 id="set-device-management">Set Device Management</h4>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#65737e;"># Set device as &#39;unmanaged&#39;
+</span><span style="color:#bf616a;">$</span><span> nmcli device set wlan0 managed false
+</span><span>
+</span><span style="color:#65737e;"># Set device as &#39;managed&#39;
+</span><span style="color:#bf616a;">$</span><span> nmcli device set wlan0 managed true
+</span></code></pre>
+<h4 id="set-dhcp-for-connection">Set DHCP for Connection</h4>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#65737e;"># Sets connection &#39;SSID_NAME&#39; to use DHCP for IPv4 address, subnet, and gateway
+</span><span style="color:#65737e;"># Shorthand for &#39;nmcli connection modify&#39;
+</span><span style="color:#bf616a;">$</span><span> nmcli c m SSID_NAME ipv4.method auto
+</span></code></pre>
+<h4 id="set-static-ipv4-info-for-connection">Set Static IPv4 Info for Connection</h4>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#65737e;"># Sets connection &#39;SSID_NAME&#39; to use static IPv4 address, subnet, and gateway
+</span><span style="color:#65737e;"># NOTE: The subnet mask is included in the address, here &#39;/24&#39;
+</span><span style="color:#65737e;"># Shorthand for &#39;nmcli connection modify&#39;
+</span><span style="color:#bf616a;">$</span><span> nmcli c m SSID_NAME \
+</span><span>    ipv4.method manual \
+</span><span>    ipv4.addresses 192.168.0.20/24 \
+</span><span>    ipv4.gateway 192.168.0.1
+</span></code></pre>
+<!-- Querying WiFi Information -->
+<h2 id="querying-wifi-information">Querying WiFi Information</h2>
+<p><strong>NOTE:</strong> Just as the <a href="https://a-gavin.github.io/blog/linux-cmds/#querying-network-information">Querying Network Information</a> section details, most Linux systems use Network Manager to manage and configure networking, including WiFi. See the <a href="https://a-gavin.github.io/blog/linux-cmds/#managing-networking-network-manager">Managing Networking</a> section for more details.</p>
+<h4 id="show-wifi-interface-general-info">Show WiFi Interface General Info</h4>
+<p>Includes STA MAC, SSID, phy device, channel, frequency, transmit power.</p>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#65737e;"># Can also run &#39;iw dev wlan0 info&#39;, but &#39;dev&#39; is optional
+</span><span style="color:#bf616a;">$</span><span> iw wlan0 info
+</span><span style="color:#bf616a;">Interface</span><span> wlan0
+</span><span>        </span><span style="color:#bf616a;">ifindex</span><span> 3
+</span><span>        </span><span style="color:#bf616a;">wdev</span><span> 0x1
+</span><span>        </span><span style="color:#bf616a;">addr</span><span> xx:xx:xx:xx:xx:xx
+</span><span>        </span><span style="color:#96b5b4;">type</span><span> managed
+</span><span>        </span><span style="color:#bf616a;">wiphy</span><span> 0
+</span><span>        </span><span style="color:#bf616a;">channel</span><span> 48 (5240 MHz)</span><span style="color:#bf616a;">,</span><span> width: 80 MHz, center1: 5210 MHz
+</span><span>        </span><span style="color:#bf616a;">txpower</span><span> 3.00 dBm
+</span><span>        </span><span style="color:#bf616a;">multicast</span><span> TXQ:
+</span><span>                </span><span style="color:#bf616a;">qsz-byt</span><span> qsz-pkt flows   drops   marks   overlmt hashcol tx-bytes        tx-packets
+</span><span>                </span><span style="color:#bf616a;">0</span><span>       0       0       0       0       0       0       0               0
+</span></code></pre>
+<h4 id="show-wifi-interface-link-information">Show WiFi Interface Link Information</h4>
+<p>Includes AP MAC (if station), SSID, frequency, bandwidth, RSSI (if station), and phy rate (MCS),
+among other things. Phy rate may or may not include NSS.</p>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#65737e;"># Can also run &#39;iw dev wlan0 link&#39;, but &#39;dev&#39; is optional
+</span><span style="color:#65737e;"># Anonymized MAC here is the AP&#39;s BSSID
+</span><span style="color:#bf616a;">$</span><span> iw wlan0 link
+</span><span style="color:#bf616a;">Connected</span><span> to xx:xx:xx:xx:xx:xx (on wlan0)
+</span><span>        </span><span style="color:#bf616a;">SSID:</span><span> SSID_NAME
+</span><span>        </span><span style="color:#bf616a;">freq:</span><span> 5240
+</span><span>        </span><span style="color:#bf616a;">RX:</span><span> 2441322599 bytes (1762621 packets)
+</span><span>        </span><span style="color:#bf616a;">TX:</span><span> 37345389 bytes (416532 packets)
+</span><span>        </span><span style="color:#bf616a;">signal: -60</span><span> dBm
+</span><span>        </span><span style="color:#bf616a;">rx</span><span> bitrate: 115.6 MBit/s VHT-MCS 5 short GI VHT-NSS 2
+</span><span>        </span><span style="color:#bf616a;">tx</span><span> bitrate: 104.0 MBit/s VHT-MCS 5 VHT-NSS 2
+</span><span>
+</span><span>        </span><span style="color:#bf616a;">bss</span><span> flags:      short-slot-time
+</span><span>        </span><span style="color:#bf616a;">dtim</span><span> period:    1
+</span><span>        </span><span style="color:#bf616a;">beacon</span><span> int:     100
+</span></code></pre>
+<h4 id="show-wifi-radio-info">Show WiFi Radio Info</h4>
+<p>Includes channels and bands in current regulatory domain, ciphers, MCS rates, and antennas, among other things.</p>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#65737e;"># Can also run &#39;iw phy phy0 info&#39;, but &#39;phy&#39; is optional
+</span><span style="color:#65737e;"># Will show a &#39;Band 3&#39;, if supports 2.4 GHz, 5 GHz, and 6 GHz
+</span><span style="color:#bf616a;">$</span><span> iw phy0 info
+</span><span>        </span><span style="color:#bf616a;">...
+</span><span>        </span><span style="color:#bf616a;">Supported</span><span> Ciphers:
+</span><span>            </span><span style="color:#bf616a;">*</span><span> WEP40 (00-0f-ac:1)
+</span><span>            </span><span style="color:#bf616a;">*</span><span> WEP104 (00-0f-ac:5)
+</span><span>            </span><span style="color:#bf616a;">...
+</span><span>        </span><span style="color:#bf616a;">...
+</span><span>        </span><span style="color:#bf616a;">Band</span><span> 1:
+</span><span>            </span><span style="color:#bf616a;">...
+</span><span>            </span><span style="color:#bf616a;">Frequencies:
+</span><span>                </span><span style="color:#bf616a;">*</span><span> 2412 MHz </span><span style="color:#b48ead;">[</span><span>1</span><span style="color:#b48ead;">]</span><span> (30.0 dBm)
+</span><span>                </span><span style="color:#bf616a;">*</span><span> 2417 MHz </span><span style="color:#b48ead;">[</span><span>2</span><span style="color:#b48ead;">]</span><span> (30.0 dBm)
+</span><span>                </span><span style="color:#bf616a;">...
+</span><span>            </span><span style="color:#bf616a;">...
+</span><span>        </span><span style="color:#bf616a;">Band</span><span> 2:
+</span><span>            </span><span style="color:#bf616a;">Frequencies:
+</span><span>                </span><span style="color:#bf616a;">*</span><span> 5180 MHz </span><span style="color:#b48ead;">[</span><span>36</span><span style="color:#b48ead;">]</span><span> (20.0 dBm)
+</span><span>                </span><span style="color:#bf616a;">*</span><span> 5200 MHz </span><span style="color:#b48ead;">[</span><span>40</span><span style="color:#b48ead;">]</span><span> (20.0 dBm)
+</span><span>                </span><span style="color:#bf616a;">...
+</span><span>            </span><span style="color:#bf616a;">...
+</span><span>        </span><span style="color:#bf616a;">...
+</span></code></pre>
+<h4 id="show-wireless-regulatory-domain-info">Show Wireless Regulatory Domain Info</h4>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#bf616a;">$</span><span> iw reg get
+</span><span style="color:#bf616a;">global
+</span><span style="color:#bf616a;">country</span><span> 00: DFS-UNSET
+</span><span>        (</span><span style="color:#bf616a;">2402</span><span> - 2472 @ 40), (6, 20)</span><span style="color:#bf616a;">,</span><span> (N/A)
+</span><span>        (</span><span style="color:#bf616a;">2457</span><span> - 2482 @ 20), (6, 20)</span><span style="color:#bf616a;">,</span><span> (N/A)</span><span style="color:#bf616a;">,</span><span> AUTO-BW, PASSIVE-SCAN
+</span><span>        (</span><span style="color:#bf616a;">2474</span><span> - 2494 @ 20), (6, 20)</span><span style="color:#bf616a;">,</span><span> (N/A)</span><span style="color:#bf616a;">,</span><span> NO-OFDM, PASSIVE-SCAN
+</span><span>        (</span><span style="color:#bf616a;">5170</span><span> - 5250 @ 80), (6, 20)</span><span style="color:#bf616a;">,</span><span> (N/A)</span><span style="color:#bf616a;">,</span><span> AUTO-BW, PASSIVE-SCAN
+</span><span>        (</span><span style="color:#bf616a;">5250</span><span> - 5330 @ 80), (6, 20)</span><span style="color:#bf616a;">,</span><span> (0 ms)</span><span style="color:#bf616a;">,</span><span> DFS, AUTO-BW, PASSIVE-SCAN
+</span><span>        (</span><span style="color:#bf616a;">5490</span><span> - 5730 @ 160), (6, 20)</span><span style="color:#bf616a;">,</span><span> (0 ms)</span><span style="color:#bf616a;">,</span><span> DFS, PASSIVE-SCAN
+</span><span>        (</span><span style="color:#bf616a;">5735</span><span> - 5835 @ 80), (6, 20)</span><span style="color:#bf616a;">,</span><span> (N/A)</span><span style="color:#bf616a;">,</span><span> PASSIVE-SCAN
+</span><span>        (</span><span style="color:#bf616a;">57240</span><span> - 63720 @ 2160), (N/A, 0)</span><span style="color:#bf616a;">,</span><span> (N/A)
+</span></code></pre>
+</section>
+
+
+    </main>
+
+    <footer class="w-full pt-6">
+  <div class="bottom-4 mx-auto max-w-3xl p-4">
+    <ul class="flex items-center justify-center text-lg">
+      <li>
+        <a class="primary-link block px-3 py-0 text-center" href="./index.html">Email</a>
+      </li>
+      <li>
+        <a class="primary-link l block px-3 py-0 text-center" href="https://github.com/a-gavin"
+          >Github</a
+        >
+      </li>
+      <li>
+        <a
+          class="primary-link block px-3 py-0 text-center"
+          href="https://www.linkedin.com/in/alex-gavin/"
+          >LinkedIn</a
+        >
+      </li>
+    </ul>
+  </div>
+</footer>
+
+  </body>
+</html>
