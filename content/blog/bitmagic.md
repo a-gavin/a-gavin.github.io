@@ -27,20 +27,20 @@ This is a quick guide which details how to install PulseView logic analyzer soft
 
 3. Add udev rule:
 
-**UPDATE:** If you're unfamiliar with udev, I wrote [another post](@/blog/usb-serial.md) which details the process (specifically targeted at USB serial devices). The tl;dr is you will need to run PulseView as root unless you perform this step.
+   **UPDATE:** If you're unfamiliar with udev, I wrote [another post](@/blog/usb-serial.md) which details the process (specifically targeted at USB serial devices). **TL;DR: you need to run PulseView as root unless you perform this step.**
 
-Place the following in a file like `/etc/udev/rules.d/99-bitmagic.rules` (the number prefix matters).
+   Place the following in a file like `/etc/udev/rules.d/99-bitmagic.rules` (the number prefix matters).
 
-```
-# BitMagic Basic Logic Analyzer
-ATTRS{idVendor}=="1d50", ATTRS{idProduct}=="0004", MODE="0666"
-```
+   ```
+   # BitMagic Basic Logic Analyzer
+   ATTRS{idVendor}=="1d50", ATTRS{idProduct}=="0004", MODE="0666"
+   ```
 
-Then run the following command to load your newly-created udev rule and apply it to the BitMagic.
+   Then run the following command to load your newly-created udev rule and apply it to the BitMagic.
 
-```Bash
-sudo udevadm control --reload-rules && sudo udevadm trigger
-```
+   ```Bash
+   sudo udevadm control --reload-rules && sudo udevadm trigger
+   ```
 
 4. Connect the BitMagic device to a USB port on your machine using a USB-C to USB-A cable.
 
