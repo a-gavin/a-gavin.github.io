@@ -1,5 +1,4 @@
 +++
-path = "blog.html"
 template = "blog.html"
 
 [extra]
