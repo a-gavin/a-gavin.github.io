@@ -1,0 +1,148 @@
+<!doctype html>
+<html class="not-ready lg:text-base" lang="en">
+  <head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <!-- 'shrint-to-fit=no' is a post-Safari 9.0 workaround
+        https://stackoverflow.com/questions/33767533/what-does-the-shrink-to-fit-viewport-meta-attribute-do
+    -->
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, shrink-to-fit=no"
+  />
+
+  <title>Alex Gavin</title>
+  <link rel="icon" type="image/x-icon" href="https://a-gavin.github.io/favicon.ico" />
+
+  <!-- Author/description -->
+  <meta name="author" content="Alex Gavin" />
+  <meta name="description" content="Portfolio website" />
+
+  <!-- CSS & JS -->
+  <link rel="stylesheet" href="https://a-gavin.github.io/main.css" />
+  <link
+    href="https://pvinis.github.io/iosevka-webfont/3.4.1/iosevka.css"
+    rel="stylesheet"
+  />
+</head>
+
+
+  <body>
+    <!-- Header -->
+<header class="sticky top-0 z-40 min-h-[3.5rem] w-full">
+  <div class="top-3 mx-auto w-full max-w-4xl bg-white p-3 lg:flex lg:justify-between">
+    <!-- Left top menu -->
+    <div class="flex justify-between">
+      <a class="text-xl" href="https:&#x2F;&#x2F;a-gavin.github.io">Alex Gavin</a>
+    </div>
+
+    <!-- Right top menu-->
+    <nav class="flex w-full items-center lg:w-auto">
+      <ul
+        class="nav-wrapper flex w-full flex-col py-2 lg:w-auto lg:flex-row lg:self-center lg:py-0"
+      >
+        <li>
+          <a
+            class="primary-link block py-2 text-center text-xl lg:px-3 lg:py-0"
+            href="https:&#x2F;&#x2F;a-gavin.github.io"
+            >About</a
+          >
+        </li>
+
+        <li>
+          <a
+            class="primary-link block py-2 text-center text-xl lg:px-3 lg:py-0"
+            href="https://alw32c9tw.s3.us-west-2.amazonaws.com/AlexGavinResume.pdf"
+            >CV</a
+          >
+        </li>
+
+        <li>
+          <a
+            class="primary-link block py-2 text-center text-xl lg:px-3 lg:py-0"
+            href="https:&#x2F;&#x2F;a-gavin.github.io/blog"
+            >Blog</a
+          >
+        </li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+
+    <main class="prose prose-neutral relative mx-auto max-w-4xl px-4 pt-4">
+      <!---->
+
+<div class="mb-8">
+  <div class="flex items-center justify-center text-2xl">Renaming Linux Network Interfaces</div>
+  <time class="my-0 flex items-center justify-center opacity-60"
+    >03-18-24</time
+  >
+</div>
+
+<section><h2 id="motivation">Motivation</h2>
+<p><strong>NOTE:</strong> This assumes you have root privileges on the machine you will configure.</p>
+<p>Depending on the machine and Linux distribution, different network interfaces can and will appear with different names. For example, <code>eth0</code>, <code>eno1</code>, <code>ens1</code>, <code>enp1s0</code>, and <code>enx0c9863d1a379</code> are all <a href="https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/networking_guide/ch-consistent_network_device_naming">valid Ethernet interface names</a>. Whether you like consistency or just want to give your interfaces more meaningful names, <code>udev</code> makes renaming network interfaces straightforward.</p>
+<p>This guide generally targets WiFi and Ethernet interfaces, although concepts will apply to other interface types as well (except Bluetooth). It also assumes no pre-requisite software beyond a text editor, although <code>ethtool</code> may be useful.</p>
+<h2 id="before-getting-started">Before Getting Started</h2>
+<p><strong>Proceed with caution.</strong> It's always a good idea to have physical access to the system when performing networking-related or system-level changes. This is especially true for static configurations which largely rely on the interface name. It's possible that changes made here will disable networking.</p>
+<p>If you're unfamiliar with using or configuring networking on Linux, I encourage you to familiarize yourself with the <a href="https://a-gavin.github.io/blog/linux-cmds/#querying-network-information">Querying Network Information</a> and <a href="https://a-gavin.github.io/blog/linux-cmds/#managing-networking-network-manager">Managing Networking (Network Manager)</a> sections of my Linux command cheatsheet.</p>
+<h2 id="instructions">Instructions</h2>
+<h3 id="1-identify-network-interface-mac-addresses">1. Identify Network Interface MAC Addresses</h3>
+<p>Before renaming network interfaces, we'll need the MAC address for each network interface to rename. MAC addresses for non-Bluetooth devices will appear in the output of <code>ip link show</code> (or <code>ip -br link show</code> for less verbose output).</p>
+<p>If your system has easily identifiable interfaces, you can move to the next step. However, should your system contain multiple, harder to identify interfaces of the same type, read on.</p>
+<h4 id="uh-oh-you-have-ten-of-the-same-nic">Uh-Oh You have Ten of the Same NIC</h4>
+<p>There are a couple different ways to identify specific interfaces. Generally, for wired interfaces the <code>ethtool</code> command's <code>-p</code> option identifies interfaces by blinking the port's LED (when run as root). Wireless interfaces often times list their MAC address on a sticker on the RF shield (silver casing on the chip's PCB), often including both WiFi and Bluetooth when implemented on the same NIC.</p>
+<p>Should neither of these be an option, <code>ip -d link show</code> lists the interface's PCI(e) parent device which can then be cross-referenced to the output of <code>lspci</code>, should you know the specific interface brand and model you're looking for.</p>
+<h3 id="2-create-the-udev-rule">2. Create the udev Rule</h3>
+<p>Similar to my post on <a href="https://a-gavin.github.io/blog/usb-serial/#3-create-the-udev-rule">configuring USB serial ports details</a> details, we'll now create a udev rule to rename the device.</p>
+<h4 id="udev-background">udev Background</h4>
+<p>The tl;dr of udev rules for the unfamiliar is that <code>udev</code> is a daemon program that runs on many Linux distributions to manage and configure devices.</p>
+<p>When configuring a device, be it a network interface or otherwise, <code>udev</code> iterates through the rules available on the system pattern matching. Should the rule match, <code>udev</code> will perform an action. These actions vary from renaming the network interface to running a custom script.</p>
+<p>Distributions generally come with a number of pre-configured rules ready to use on first boot. It's generally a good idea to not touch these, though. On my Ubuntu and Fedora machines, these are available in <code>/usr/lib/udev/rules.d/</code> and <code>/usr/local/lib/udev/rules.d/</code>.</p>
+<h4 id="configuring-the-udev-rule">Configuring the udev Rule</h4>
+<p>With your MAC addresses and desired network interface names handy, create a rule in <code>/etc/udev/rules.d</code> of the format <code>XX-name.rule</code>, where <code>XX</code> is some positive number. Note that the higher the number here, the lower the priority of the rule when <code>udev</code> attempts to pattern match.</p>
+<p>On my systems, I use <code>70</code>, as this comes before most of the pre-configured <code>udev</code> network interface configuration rules (ensuring the name I configure isn't ignored and doesn't potentially cause issues later).</p>
+<p>For example, here is a rule I have on a multi-Ethernet port system I use as my home router. It relabels the Ethernet ports from the strange, hardware-based naming scheme (e.g. formats <code>enpXs0</code> and <code>enoX</code> in a non-intuitive ordering) to names that reflect how they're used. Note that each line is a separate rule.</p>
+<pre style="background-color:#2b303b;color:#c0c5ce;"><code><span># /etc/udev/rules.d/70-rename-ethernet-ports.rules
+</span><span>
+</span><span># Single WAN port (leftmost port, labeled WAN1)
+</span><span>SUBSYSTEM==&quot;net&quot;, ACTION==&quot;add&quot;, ATTR{address}==&quot;xx:xx:xx:xx:xx:xx&quot;, NAME=&quot;wan1&quot;
+</span><span>
+</span><span># Three LAN port (right three ports, labeled LAN1, LAN2, LAN3)
+</span><span>SUBSYSTEM==&quot;net&quot;, ACTION==&quot;add&quot;, ATTR{address}==&quot;xx:xx:xx:xx:xx:xx&quot;, NAME=&quot;lan1&quot;
+</span><span>SUBSYSTEM==&quot;net&quot;, ACTION==&quot;add&quot;, ATTR{address}==&quot;xx:xx:xx:xx:xx:xx&quot;, NAME=&quot;lan2&quot;
+</span><span>SUBSYSTEM==&quot;net&quot;, ACTION==&quot;add&quot;, ATTR{address}==&quot;xx:xx:xx:xx:xx:xx&quot;, NAME=&quot;lan3&quot;
+</span></code></pre>
+<p>To use a similar rule on your system, substitute in the MAC address for the quoted address listed after the <code>ATTR{address}==</code> section and your desired interface name for the quoted name that comes after <code>NAME=</code>.</p>
+<h3 id="3-reboot-and-validate-names-changed">3. Reboot and Validate Names Changed</h3>
+<p>Unlike USB serial devices, reloading udev rules won't necessarily work to rename the interfaces. A reboot is basically required, especially given networking configuration that typically only happens on startup.</p>
+</section>
+
+
+    </main>
+
+    <footer class="w-full pt-6">
+  <div class="bottom-4 mx-auto max-w-3xl p-4">
+    <ul class="flex items-center justify-center text-lg">
+      <li>
+        <a class="primary-link block px-3 py-0 text-center" href="./index.html">Email</a>
+      </li>
+      <li>
+        <a class="primary-link l block px-3 py-0 text-center" href="https://github.com/a-gavin"
+          >Github</a
+        >
+      </li>
+      <li>
+        <a
+          class="primary-link block px-3 py-0 text-center"
+          href="https://www.linkedin.com/in/alex-gavin/"
+          >LinkedIn</a
+        >
+      </li>
+    </ul>
+  </div>
+</footer>
+
+  </body>
+</html>
