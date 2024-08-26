@@ -48,6 +48,8 @@ This website uses the following open source tools:
 
 4. Generate tailwind CSS from config
 
+   **NOTE**: To update CSS, make sure to regenerate using following command and manually check the updated CSS in.
+
    ```Bash
    # Zola looks for CSS and favicon in './static/' by default
    # Add '--watch' to run in the background if not using editor Tailwind plugins
