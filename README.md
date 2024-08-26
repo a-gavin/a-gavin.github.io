@@ -26,22 +26,55 @@ This website uses the following open source tools:
 ## Development Setup
 
 1. Install Zola (static website generator)
-   - [Zola install guide](https://www.getzola.org/documentation/getting-started/installation/)
+   - Follow the [Zola install guide](https://www.getzola.org/documentation/getting-started/installation/)
 2. Install `npm` (via `nvm`)
-   **TODO**
+
+   - Follow the [`nvm` install guide](https://github.com/nvm-sh/nvm?tab=readme-ov-file#installing-and-updating)
+   - After installing `nvm`, run:
+
+     ```Bash
+     # Install NodeJS v22
+     nvm install v22
+
+     # Redundant, but just for reference
+     nvm use v22
+     ```
+
 3. Install required node packages
+
    ```Bash
    npm install
    ```
+
 4. Generate tailwind CSS from config
+
    ```Bash
-   # Zola looks for CSS and favicon in `./static/` by default
-   npx tailwindcss -i ./static/app.css -o ./static/main.css --watch
+   # Zola looks for CSS and favicon in './static/' by default
+   # Add '--watch' to run in the background if not using editor Tailwind plugins
+   npx tailwindcss -i ./static/app.css -o ./static/main.css
    ```
+
 5. Serve webpage locally
    ```Bash
-   # The `shalzz/zola-deploy-action` GitHub action generates
+   # The 'shalzz/zola-deploy-action' GitHub action generates
    # the required directory structure for hosting on GitHub Pages
    # by running on all pushes to main.
    zola serve
    ```
+
+## Reference `npm` Commands
+
+```Bash
+# List both development and production dependencies
+npm list
+
+# List only production dependencies
+npm list --omit=dev -depth 0
+
+# List only development dependencies
+npm list --include=dev -depth 0
+
+# Install and add new dependency to tracked packages
+# Add '--save-dev' to install as development dependency
+npm install $PKG_NAME@$PKG_VERSION
+```
