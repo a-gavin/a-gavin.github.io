@@ -14,8 +14,8 @@ This website uses the following open source tools:
 - [`content/`](./content/)
   - Website content written in Markdown
   - Directory structure corresponds to structure used on website
-    - [`content/blog.md`](./content/blog.md) served at [`https://a-gavin.github.io/blog.html`](https://a-gavin.github.io/blog.html)
-    - [`content/blog/bitmagic.md`](./content/blog/bitmagic.md) served at [`https://a-gavin.github.io/blog/bitmagic.html`](https://a-gavin.github.io/blog/bitmagic.html)
+    - [`content/blog.md`](./content/blog.md) served at [`https://a-gavin.github.io/blog/`](https://a-gavin.github.io/blog/)
+    - [`content/blog/bitmagic.md`](./content/blog/bitmagic.md) served at [`https://a-gavin.github.io/blog/bitmagic/`](https://a-gavin.github.io/blog/bitmagic/)
 - [`static/`](./static/)
   - Website static content, including CSS and images.
 - [`templates/`](./templates/)
