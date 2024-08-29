@@ -97,7 +97,7 @@ $ sudo dmesg
 
 ```Bash
 # The '.service' is optional if there are no other Systemd units w/ same name
-# The bottom of the output is the same as would be output by 'journalctl -b -0 -u NetworkManager-wait-online'
+# The bottom of the output is the same as would be output by 'journalctl -b 0 -u NetworkManager-wait-online'
 $ systemctl status NetworkManager-wait-online.service
 ● NetworkManager-wait-online.service - Network Manager Wait Online
      Loaded: loaded (/lib/systemd/system/NetworkManager-wait-online.service; enabled; vendor preset: enabled)
@@ -115,18 +115,46 @@ Mar 17 12:29:11 meadowlark systemd[1]: Finished Network Manager Wait Online.
 
 **NOTE:** After editing a Systemd unit file, you must run `systemctl daemon-reload` for the changes to take effect.
 
+The following assumes an example _system-level_ Systemd unit called `run_periodically.timer`. You can use the same commands for _user-level_ Systemd units like `pulseaudio.service`, e.g. `systemctl status --user pulseaudio.service`.
+
 ```Bash
-# TODO
-# start
-# stop
-# restart
-# enable, disable
-# mask, unmask
-# edit
-# daemon-reload
+# Start the unit
+$ sudo systemctl start run_periodically.timer
+
+# Stop the unit
+$ sudo systemctl stop run_periodically.timer
+
+# Restart the unit
+$ sudo systemctl restart run_periodically.timer
+
+# Enable the unit (start automatically)
+$ sudo systemctl enable run_periodically.timer
+
+# Disable the unit (do not start automatically)
+$ sudo systemctl disable run_periodically.timer
+
+# Mask the unit
+# This prevents users from starting or enabling the unit
+$ sudo systemctl mask run_periodically.timer
+
+# Unmask the unit
+# This undoes the effect of a 'systemctl mask'
+$ sudo systemctl unmask run_periodically.timer
+
+# Edit the unit (opens in editor specified in $EDITOR environment variable)
+#
+# You can also manually edit the unit file by finding it in '/etc/systemd/'.
+# Do not edit the unit files in '/usr/lib/systemd/' or '/usr/lib64/systemd'.
+# The exact directory will depend on your Linux distribution.
+$ sudo systemctl disable run_periodically.timer
+
+# Reload the unit files for all Systemd units
+$ sudo systemctl daemon-reload
 ```
 
 #### View Service (Daemon) Logs
+
+Just as Systemd `systemctl` commands support both system-level and user-level units, `journalctl` does as well using the same `--user` argument.
 
 ```Bash
 # Prints all log lines. Will be very long
@@ -152,7 +180,8 @@ $ journalctl -u wpa_supplicant
 $ journalctl -u wpa_supplicant.service
 
 # Only show logs for this boot (can use '-b' option instead of '--boot')
-$ journalctl --boot -0
+# When using the '--boot' and '-b' arguments, '0' and '-0' function the same (this boot)
+$ journalctl --boot 0
 
 # Only show logs for the last boot (can use '-b' option instead of '--boot')
 $ journalctl --boot -1
@@ -201,6 +230,17 @@ Bus 003 Device 002: ID 0489:e0cd Foxconn / Hon Hai Wireless_Device
 # Filter on bus and device number
 $ lsusb -s 003:002
 Bus 003 Device 002: ID 0489:e0cd Foxconn / Hon Hai Wireless_Device
+
+# Show USB devices in a tree format
+# Remove the '-v' option to only see bus/device numbers
+$ lsusb -t -v
+/:  Bus 04.Port 1: Dev 1, Class=root_hub, Driver=xhci_hcd/2p, 10000M
+    ID 1d6b:0003 Linux Foundation 3.0 root hub
+/:  Bus 03.Port 1: Dev 1, Class=root_hub, Driver=xhci_hcd/4p, 480M
+    ID 1d6b:0002 Linux Foundation 2.0 root hub
+    |__ Port 4: Dev 2, If 0, Class=Wireless, Driver=btusb, 480M
+        ID 0489:e0cd Foxconn / Hon Hai
+        ...
 ```
 
 #### Show PCI(e) Device Information
@@ -217,6 +257,18 @@ $ lspci
 # Filter on PCI(e) bus
 $ lspci -s 03:00.0
 03:00.0 Network controller: MEDIATEK Corp. MT7921 802.11ax PCI Express Wireless Network Adapter
+
+# Show PCI(e) devices in a tree format
+# Remove the '-v' option to only see bus/device numbers
+$ lspci -t -v
+-[0000:00]-+-00.0  Advanced Micro Devices, Inc. [AMD] Renoir/Cezanne Root Complex                                 [3/140]
+           ...
+           +-02.2-[02]----00.0  Realtek Semiconductor Co., Ltd. RTL8111/8168/8411 PCI Express Gigabit Ethernet Controller
+           +-02.3-[03]----00.0  MEDIATEK Corp. MT7921 802.11ax PCI Express Wireless Network Adapter
+           +-08.0  Advanced Micro Devices, Inc. [AMD] Renoir PCIe Dummy Host Bridge
+           +-08.1-[04]--+-00.0  Advanced Micro Devices, Inc. [AMD/ATI] Barcelo
+           |            +-00.1  Advanced Micro Devices, Inc. [AMD/ATI] Renoir Radeon High Definition Audio Controller
+           ...
 ```
 
 #### List Block Devices
@@ -282,7 +334,7 @@ what you're doing, though, you're better off just using Network Manager.
 Displays interface status and MAC address. More detailed output is possible by
 using the `-d` option (without the `-br` option).
 
-**NOTE:** Take note of information beyond MAC address. 'UP' indicates interface is running. 'LOWER_UP' means the driver is functioning. For example, a non-configured but plugged in ethernet device may be 'DOWN' but 'LOWER_UP'. For Ethernet interfaces, 'NO-CARRIER' indicates that there is no signal on the wire (it's disconnected).
+**NOTE:** Take note of information to the right of the MAC addresses. 'UP' indicates interface is running. 'LOWER_UP' means the driver is functioning. For example, a non-configured but plugged in ethernet device may be 'DOWN' but 'LOWER_UP'. For Ethernet interfaces, 'NO-CARRIER' indicates that there is no signal on the wire (it's disconnected).
 
 ```Bash
 # Shorthand shown. Full command would be 'ip link show', but the 'show' is optional.
@@ -369,12 +421,12 @@ udp    UNCONN  0       0               0.0.0.0:631            0.0.0.0:*      use
 
 ## Managing Networking (Network Manager)
 
-At a high level, Network Manager configures 'connections' which are established using a backing network interface, or in Network Manager terms, 'device'. These devices are either managed or unmanaged from the perspective of Network Manager.
+At a high level, Network Manager configures 'connections' which are established using a backing network interface, or in Network Manager terms, 'device'. These network interfaces are either managed or unmanaged from Network Manager's perspective.
 
 Generally, most users will be fine with Network Manager configuring all of their
-network interfaces, typically only WiFi and Ethernet (although Network Manager can do much more). There are times, though, where it is appropriate to have Network Manager [ignore specific interfaces](#set-device-management), for example, when doing WiFi packet capture.
+network interfaces, typically only WiFi and Ethernet (although Network Manager can do much more). There are times, though, where it is appropriate to have Network Manager [ignore specific interfaces](#set-device-management), for example, when doing [WiFi packet capture](@/blog/wifi-packet-capture.md).
 
-This section details some of the most basic and more-useful (from my perspective) commands. See `man nmcli-examples` for more examples and more advanced usage of Network Manager.
+This section details some of the most basic and more-useful (from my perspective) NetworkManager CLI commands. See `man nmcli-examples` for more examples and more advanced usage of Network Manager.
 
 #### Show All Devices
 
@@ -396,7 +448,7 @@ Shows both active and inactive connections.
 
 Naming is typically the SSID (WiFi network name) for WiFi connections and 'Wired Connection X' for Ethernet connections.
 
-When typing `nmcli connection` commands, active connections will tab complete, but sadly inactive connections do not.
+When typing `nmcli connection` commands, active connections will tab complete, but inactive connections do not.
 
 ```Bash
 # Shorthand shown. Full command is 'nmcli connection show'
@@ -411,7 +463,7 @@ Wired Connection 1 167b3f3b-acb7-4ca2-9480-c41868641214 ethernet --
 <!-- Link "Show Specific Connection Info" to the nmcli c s command -->
 
 Only shows device-specific information. The command in used in
-Show Specific Connection Info will provide more information, assuming there is a connection which uses the device.
+[Show Specific Connection Info](#show-specific-connection-info) will provide this and more information, assuming there is a connection which uses the device.
 
 ```Bash
 # Shorthand shown. Full command is 'nmcli device show enp2s0'
@@ -472,7 +524,7 @@ $ nmcli c m SSID_NAME \
 
 ## Querying WiFi Information
 
-**NOTE:** Just as the [Querying Network Information](#querying-network-information) section details, most Linux systems use Network Manager to manage and configure networking, including WiFi. See the [Managing Networking](#managing-networking-network-manager) section for more details.
+**NOTE:** Most Linux systems use Network Manager to manage and configure networking, including WiFi. See the [Managing Networking](#managing-networking-network-manager) section for more details.
 
 #### Show WiFi Interface General Info
 
