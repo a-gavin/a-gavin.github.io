@@ -10,7 +10,9 @@ date = "2023-10-21"
 
 **NOTE:** This guide assumes you have admin access to the machine you're using.
 
-This guide walks you through how to configure and use a WiFi radio on a Linux system for WiFi packet capture. It assumes you are familiar with general networking concepts and are comfortable in a Linux terminal.
+This guide demonstrates how to configure and use a WiFi radio on a Linux system to perform WiFi packet capture. It assumes you are familiar with general networking concepts and are comfortable in a Linux terminal.
+
+If you're looking to capture only TCP/UDP and higher layer traffic _for your device only_, performing packet capture using the existing WiFi interface on your system will suffice. However, should you want to see MAC layer traffic, _including from WiFi devices other than system used for capture_, using the existing interface will not suffice.
 
 If you want more background information on WiFi or would like to watch my talk on the subject, watching [the recording](https://www.youtube.com/watch?v=Hi-tt3Cdf0M&list=PLjDc7gDlIAST09nqYxYxpn_VdQPVzyAcs&index=6) may prove useful.
 
@@ -42,23 +44,23 @@ For example:
 
 - An AX210 does 6GHz, but AX200 does not. Both are 802.11ax, but only the AX210 is WiFi 6E (AX200 is WiFi 6)
 - A MTK7922 can do 160MHz channels, but MTK7921 can only do 80MHz
-- AX210 and BE200 radios must first detect that they are in a regulatory domain which supports 6GHz in order to use the 6GHz band. There's a bit of a dance to get that done (see [this section](#6ghz-sniffing-with-ax210-be200-radios))
+- AX210 and BE200 radios must first detect that they are in a regulatory domain which supports 6GHz in order to use the 6GHz band. There's a bit of a dance to get that done (see [this section](#6ghz-packet-capture-with-intel-radios))
 
 #### Ensure you have a backup internet connection method
 
-Creating a monitor mode interface as this guide instructs will disable your internet connection on its parent radio. **I recommend connecting to Ethernet if possible.**
+You can perform packet capture offline. However, creating a monitor mode interface as this guide instructs will effectively disable any use of parent radio for other usage. **I recommend connecting a backup network interface if possible (e.g. Ethernet).**
 
 #### Ensure that you have admin access on machine
 
-The commands used here will require `sudo` access.
+The commands used here require `sudo` access.
 
 #### Ensure no other programs will interfere
 
-**NOTE:** **If you decide to delete the existing interface later on in this guide, this step is not necessary**. This step is only necessary if you intend to keep any managed network interface when doing WiFi packet capture. This is generally possible if you 'DOWN' the managed interface before using the monitor.
+**NOTE:** **If you decide to delete the existing interface later on in this guide, this step is not necessary**. This step is only necessary if you intend to keep any managed network interface when doing WiFi packet capture. This is generally possible if you 'DOWN' the managed interface before using the monitor and avoid using it while performing captures.
 
-Assuming you do need to keep the existing wireless interface around, it is possible that other system programs will get in the way of your packet capture fun. **The likely culprit here is NetworkManager**, which is the de-facto network configuration tool on Linux these days. We don't want to disable NetworkManager entirely. Otherwise, you'll lose all internet access. We're going to instead instruct it to ignore the wireless interface we're going to use.
+If you opt to keep the existing wireless interface around, other system programs may get in the way of your packet capture fun. **The likely culprit here is NetworkManager**, which is the de-facto network configuration tool on Linux these days. There's no need to disable NetworkManager entirely. Otherwise, you may lose all network access. Instead we'll configure NetworkManager to ignore the wireless interface (and by extension the wireless radio) we're going to use.
 
-First, determine if NetworkManager is running. Next, determine if there are wireless network interfaces that use the radio you want to use (see [these](#3-determine-radio-s-phy-name) [sections](#4-1-find-all-interfaces-using-radio)). Finally, instruct NetworkManager to ignore the interface. The following demonstrates this process for an interface `wlan0`:
+To do so, first determine if NetworkManager is active. Next, determine if any wireless interfaces exist that use the radio you want to use for packet capture (see [these](#3-determine-radio-s-phy-name) [sections](#4-1-find-all-interfaces-using-radio)). Finally, instruct NetworkManager to ignore the interface. The following demonstrates this process for an interface `wlan0`:
 
 ```Bash
 # Check if NetworkManager is running (it is with PID 1072)
@@ -104,7 +106,7 @@ If you’d like NetworkManager to explicitly ignore specific network interfaces 
 
 ### 2\. Install Required Packages
 
-In this guide, we'll use `iw` to configure the wireless monitor interface and Wireshark for performing and analyzing a packet capture. These are generally not installed by default on most Linux distros, though.
+In this guide, we'll use `iw` to configure the wireless monitor interface and Wireshark to perform and analyze packet captures. These are generally not installed by default on most Linux distros, though, so install them as follows:
 
 ```Bash
 # Debian/Ubuntu:
@@ -129,7 +131,7 @@ $ lspci | grep Network
 
 #### 3\.2 Determine PHY name of radio
 
-**NOTE:** You can use the [`list_interfaces.py`](https://github.com/a-gavin/talks/blob/main/lfnw_2023_wifi_pcap/list_interfaces.py) script to both determine the PHY of the radio and all interfaces created on the radio. With this information in hand, you can then skip to the [Manage existing interfaces using radio](#4-2-manage-existing-interfaces-using-radio) section.
+**NOTE:** You can use the [`list_interfaces.py`](https://github.com/a-gavin/talks/blob/main/lfnw_2023_wifi_pcap/list_interfaces.py) script to both determine the radio PHY name/number and all interfaces created using that radio. With this information in hand, you can then skip to the [Manage existing interfaces using radio](#4-2-manage-existing-interfaces-using-radio) section.
 
 Find the `phyX` which matches the PCI bus found in the previous step:
 
@@ -144,11 +146,11 @@ phy0 0000:03:00.0
 
 ### 4\. Manage Radio's Other Interfaces
 
-As a bit of background, some radios support virtual interfaces on Linux (i.e. you can create multiple virtual stations or virtual APs). The limitation for these virtual stations (vSTA) and access points (vAP) is that they must all operate on the same channel and will likely not enable things like OFDMA.
+For context, some radios support virtual interfaces on Linux (i.e. you can create multiple simultaneous WiFi client or virtual AP interfaces). There are some limitations with this, though, namely all interfaces on one radio must operate on the same channel and more advanced WiFi features like OFDMA may not be supported.
 
-Some radios, like the AX200 and AX210, do not support virtual interfaces at all on Linux. They only permit a single STA or AP (non-virtual) per radio (limited to 2.4GHz only for APs on AX200 and AX210s). Although, they do allow for a monitor to coexist on the same radio as a STA (monitors count a bit differently).
+Some radios, like many Intel radios (e.g. BE200), do not support virtual interfaces at all on Linux. They only permit a single STA or AP (non-virtual) per radio (limited to 2.4GHz only for APs on AX200, AX210, BE200 radios). These radios (and most others) do support simultaneous monitor and STA coexistence, but this has limitations and is generally not suggested.
 
-Thus, **ensuring that other network interfaces do not interfere** with the packet capture **depends on the radio you’re using**. My personal suggestion is to remove all network interfaces from the radio before creating the monitor, unless required not to (i.e. [6GHz sniffing on AX210](#6ghz-sniffing-with-ax210-be200-radios)). This simplifies things if you need debug your configuration later on.
+With that said, **ensuring that other network interfaces do not interfere** with the packet capture **depends on the radio you’re using**. My personal suggestion is to remove all network interfaces from the radio before creating the monitor, unless required not to (i.e. [6GHz Packet Capture on Intel Radios](#6ghz-packet-capture-with-intel-radios)). This simplifies things if you need debug your configuration later on.
 
 #### 4\.1 Find all interfaces using radio
 
@@ -163,8 +165,7 @@ phy0 wlan0
 
 #### 4\.2 Manage existing interfaces using radio
 
-The command you run here depends on how you intend to configure the network interfaces which use the radio. You're likely to only have one interface
-which uses the radio on your system, but if you find more, repeat your chosen step for each interface using the radio.
+The step depends on whether you plan to delete any existing interfaces or not. You're likely to only have one interface which uses the radio on your system, but if you find more, repeat your chosen step for each interface using the radio.
 
 **Choose one:**
 
@@ -178,12 +179,12 @@ which uses the radio on your system, but if you find more, repeat your chosen st
 $ sudo iw dev wlan0 del
 ```
 
-2. You want the keep the existing network interface which uses the radio and have it coexist with the monitor interface.
+2. You want to keep the existing network interface which uses the radio (coexist with the monitor interface).
 
    You must first ensure that no other system programs will attempt to use the existing wireless interface (see [this section](#ensure-no-other-programs-will-interfere)).
 
 ```Bash
-# Down the interface first
+# Down the interface
 # Shorthand is `ip l s down dev wlan0`
 $ sudo ip link set down dev wlan0
 ```
@@ -192,7 +193,7 @@ $ sudo ip link set down dev wlan0
 
 ```Bash
 # Creates monitor interface 'moni0' (initially in 'DOWN' state)
-sudo iw phy phy0 interface add moni0 type monitor
+sudo iw phy0 interface add moni0 type monitor
 ```
 
 ### 6\. Set Monitor Interface 'UP'
@@ -209,7 +210,7 @@ $ sudo ip link set up dev moni0
 # Verify interface is 'UP'. Look for 'UP' and 'LOWER_UP' on right side.
 # 'UNKNOWN' state is expected.
 #
-# 'UP' indicates interface is running. 'LOWER_UP' L1 is up.
+# 'UP' indicates interface is running. 'LOWER_UP' indicates underlying phy is up.
 # For example, a non-configured but plugged in Ethernet device
 # may be 'DOWN' but 'LOWER_UP'. See netdevice(7).
 $ ip -br link show dev moni0
@@ -230,7 +231,7 @@ moni0            UNKNOWN        34:c9:3d:0e:79:64 <BROADCAST,MULTICAST,UP,LOWER_
 #
 # Typically, the bands are as follows (although depends on your radio):
 #    1: 2.4GHz, 2: 5GHz, 3: 6GHz (if your radio supports 6GHz)
-$ iw phy phy0 channels
+$ iw phy0 channels
 Band 1:
         * 2412 MHz [1]
           Maximum TX power: 22.0 dBm
@@ -262,9 +263,9 @@ Band 2:
 
 #### 7\.2 Configure monitor to desired channel
 
-**NOTE:** This assumes your radio supports the channel you would like to sniff. The [previous step](#7-1-verify-that-the-channel-you-want-to-sniff-is-supported) details how to check. Also, if you do not configure the channel, the monitor will default to the 2.4GHz channel 1 (20MHz channel width).
+**NOTE:** This assumes your radio supports the channel you would like to sniff. The [previous step](#7-1-verify-that-the-channel-you-want-to-sniff-is-supported) details how to check. Also, if you do not configure the channel, the monitor will default to the 2.4GHz channel 1 with 20MHz channel width.
 
-The following methods show how to configure the monitor frequency, each using a different command syntax:
+The following methods demonstrate how to configure the monitor frequency (channel), each using a different command syntax:
 
 1. Using channel width (generally easier)
 
@@ -282,7 +283,7 @@ $ sudo iw dev moni0 set freq 5180 80MHz
 $ sudo iw dev moni0 set freq 5955 80 5985
 ```
 
-If you encounter errors, even after verifying that your radio supports the specific channel, check the kernel message buffer (`sudo dmesg`).
+If you encounter errors, even after verifying that your radio supports the desired channel, check the kernel message buffer (`sudo dmesg`).
 
 I find it useful to watch the error output as it happens. To do so, use two terminals. In one, run `sudo dmesg -w` (`-w` lets you follow the output, similar to `tail -f`). In the other, run the `iw` command you’re using to configure the channel.
 
@@ -312,7 +313,7 @@ Interface moni0
 
 ### 8\. Run Wireshark Using Monitor
 
-**NOTE:** Don't forget about your packet capture if it's running. You may run out of disk space!
+**NOTE:** Don't forget about your packet capture if it's running. It will eat up your disk space if you let it!
 
 Open Wireshark with admin permissions (e.g. `sudo wireshark`) and select the created interface ('moni0' in the example below), then press ‘Enter’ to begin packet capture. If you know the interface you want to sniff on, then you can use the `-i` option, e.g. `sudo wireshark -i moni0`.
 
@@ -326,13 +327,13 @@ For more a quick-reference WiFi (802.11) Wireshark filter cheatsheet, see [this 
 
 ### 9\. Decrypting WPA-Personal & WPA2-Personal Wireless Traffic
 
-When attempting to network traffic to/from an access point (AP) that uses "open" authentication (i.e. no encryption), you don't need to do anything special. Wireshark just decodes the data as you'd expect. However, for APs which use encryption, you need to perform some extra steps.
+When attempting to capture network traffic to/from an access point (AP) that uses "open" authentication (i.e. no encryption), no extra configuration is necessary. Everything is plaintext and painfully insecure. Wireshark just decodes the data as you'd expect. However, for APs which use encryption, you need to perform some extra steps.
 
-If you know the password for the AP, it is straightforward to configure Wireshark to decrypt the data. All you need to do is enter the credentials for the AP (e.g. password and SSID) and capture the initial connection between the STA and the AP. In the industry, we call this 'association'. Specifically, **make sure you capture the 4-way handshake**. Otherwise, Wireshark will not decrypt the traffic, even if you have the correctly configured keys. To verify you have captured the 4-way handshake, filter for `eapol` or `eapol.type == 3`. You should see something similar to the following (source and destination MAC addresses removed):
+If you know the password for the AP, it is straightforward to configure Wireshark to decrypt the data. To do so, configure the credential for the AP in Wireshark (e.g. password and SSID) and capture the initial connection between the STA and the AP, specifically the 4-way handshake. In the WiFi world, the initial connection is known as 'association'. To verify you have captured the 4-way handshake, filter for `eapol` or `eapol.type == 3`. You should see something similar to the following (source and destination MAC addresses removed):
 
 ![Image of Wireshark capture showing a 4-way handshake](./assets/wireshark_4way_handshake.png)
 
-For WPA3-Personal, Wireshark is able to decrypt traffic, but the process is more involved due to the nature of WPA3-Personal authentication. Additionally, the traffic you can decrypt with one Wireshark-configured key is limited to traffic transmitted between one STA and one AP, rather than all STAs and one AP like WPA-Personal and WPA2-Personal. It is unclear if Wireshark can decrypt OWE (so-called 'Enhanced Open') authentication.
+For WPA3-Personal, Wireshark can decrypt traffic. However, the process has limitations and is more involved to configure due to the nature of WPA3-Personal authentication (oh darn, it's more secure! /s). The main limitation when decrypting WPA3-Personal is the traffic you can decrypt with one Wireshark-configured key is limited to traffic transmitted between a single STA and AP, and that's assuming you can easily get the key. This limitation contrasts with WPA-Personal and WPA2-Personal where knowing the credentials is enough to decrypt any traffic transmitted to/received from that AP. It is unclear if Wireshark can decrypt OWE (so-called 'Enhanced Open') authentication.
 
 See the [HowToDecrypt802.11 guide](https://wiki.wireshark.org/HowToDecrypt802.11) on Wireshark's Wiki for more information.
 
@@ -349,7 +350,7 @@ $ sudo iw dev moni0 del
 # Recreate virtual interface we previously deleted
 #
 # 'managed' is type STA
-$ sudo iw phy phy0 interface add wlan0 type managed
+$ sudo iw phy0 interface add wlan0 type managed
 
 # Tell NetworkManager to configure your radio (might do this by default, but just in case)
 #
@@ -357,15 +358,15 @@ $ sudo iw phy phy0 interface add wlan0 type managed
 $ nmcli device set wlan0 managed true
 ```
 
-## 6GHz Sniffing with AX210/BE200 Radios
+## 6GHz Packet Capture with Intel Radios
 
-**NOTE:** I have only tested this on AX210 and BE200 radios operating in a US wireless regulatory domain.
+**NOTE:** I have only tested this with AX210 and BE200 radios operating in a US wireless regulatory domain.
 
 **NOTE:** This assumes that you have [determined the radio's phy name](#3-determine-radio-s-phy-name) and know how to [find all interfaces using the radio](#4-1-find-all-interfaces-using-radio).
 
-The AX210 and BE200 radios are WiFi 6E and WiFi 7 radios, respectively (unlike the AX200 which is WiFi 6). For context, WiFi 6E is the first generation of WiFi which supports the new 6GHz band. While the both radios can only operate as an AP in the 2.4GHz band on Linux, both can operate as both a STA and monitor on 2.4GHz, 5GHz, and 6GHz bands. To use a monitor in the 6GHz band, though, you need to follow a couple steps first.
+The AX210 and BE200 radios are WiFi 6E and WiFi 7 radios, respectively (unlike the AX200 which is WiFi 6). For context, WiFi 6E is the first generation of WiFi which supports the new 6GHz band. While both radios can only operate as an AP in the 2.4GHz band on Linux, both can operate as both a STA and monitor on 2.4GHz, 5GHz, and 6GHz bands. To use a monitor in the 6GHz band, though, you need to follow a couple steps first.
 
-In order to configure a 6GHz AX210/BE200 monitor, the radio firmware must first detect that it is in the US wireless regulatory domain. Then, after it detects the US regulatory domain, you can create a monitor on the 6GHz channels that the radio supports. Steps to do so are as follows.
+To configure a 6GHz Intel radio monitor, the radio firmware must first detect that it is in the US wireless regulatory domain. Then, after detection, you can create a monitor on the 6GHz channels that the radio supports. To do so, perform the following steps.
 
 ### 1\. Delete All Other Interfaces Using Radio
 
@@ -375,7 +376,7 @@ Delete all network interfaces using the radio by following the instructions whic
 
 ```Bash
 # Create interface 'wlan0' on radio ('managed' is type STA)
-$ sudo iw phy phy0 interface add wlan0 type managed
+$ sudo iw phy0 interface add wlan0 type managed
 
 # Admin 'UP' the station, so you can use it
 # '-br' stands for brief and shortens output
@@ -383,7 +384,7 @@ $ sudo ip -br link set dev wlan0 up
 
 # OPTIONAL
 # Show channels permitted for use on radio
-$ iw phy phy0 channels
+$ iw phy0 channels
 ```
 
 ### 3\. Run a Scan on Station
@@ -397,7 +398,7 @@ $ sudo iw dev wlan0 scan
 
 ```Bash
 # Creates monitor interface 'moni0' (initially in 'DOWN' state)
-sudo iw phy phy0 interface add moni0 type monitor
+sudo iw phy0 interface add moni0 type monitor
 
 # 'UP' monitor interface, so you can use it
 $ sudo ip -br link set dev moni0 up
@@ -407,7 +408,7 @@ $ sudo ip -br link set dev moni0 up
 
 **NOTE:** Do not delete the STA interface, only 'DOWN' it. You **must** keep it in order to scan 6GHz.
 
-It is critical that this step comes after creating and 'UP'ing the monitor interface. Otherwise, you will be unable to configure the AX210/BE200 monitor for 6GHz channels.
+It is critical that this step comes after creating and 'UP'ing the monitor interface. Otherwise, you will be unable to configure the Intel radio monitor for 6GHz channels.
 
 ```Bash
 # Admin 'DOWN' the station. Does not delete it.
@@ -419,11 +420,11 @@ $ sudo ip -br link set dev wlan0 down
 
 **NOTE:** You may see output which only list 20MHz supported channel widths. You should be able to configure other channel widths (40MHz, 80MHz, 160MHz). However, it may take some trial and error. Your best bet is to reference the 6GHz supported channels. Primary scanning channels (PSC) have worked well in my experience.
 
-Look for any 6GHz channels in the output of this command (should be at the end). If you see them, then you are able to configure the monitor to use the 6GHz channels. If you jumped here from earlier in the guide, jump to the [configure monitor interface](#7-configure-monitor-interface) step and proceed.
+Look for any 6GHz channels in the output of this command (should be at the end). If you see them, then you can configure the monitor on 6GHz channels. If you jumped here from earlier in the guide, jump to the [configure monitor interface](#7-configure-monitor-interface) step and proceed.
 
 ```Bash
 # Prints out enabled channels on radio
-$ iw phy phy0 channels
+$ iw phy0 channels
 ```
 
 ## References
