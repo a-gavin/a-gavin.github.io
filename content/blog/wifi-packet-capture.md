@@ -331,7 +331,7 @@ When attempting to capture network traffic to/from an access point (AP) that use
 
 If you know the password for the AP, it is straightforward to configure Wireshark to decrypt the data. To do so, configure the credential for the AP in Wireshark (e.g. password and SSID) and capture the initial connection between the STA and the AP, specifically the 4-way handshake. In the WiFi world, the initial connection is known as 'association'. To verify you have captured the 4-way handshake, filter for `eapol` or `eapol.type == 3`. You should see something similar to the following (source and destination MAC addresses removed):
 
-![Image of Wireshark capture showing a 4-way handshake](./assets/wireshark_4way_handshake.png)
+![Image of Wireshark capture showing a 4-way handshake](/blog/wifi-packet-capture/wireshark_4way_handshake.png)
 
 For WPA3-Personal, Wireshark can decrypt traffic. However, the process has limitations and is more involved to configure due to the nature of WPA3-Personal authentication (oh darn, it's more secure! /s). The main limitation when decrypting WPA3-Personal is the traffic you can decrypt with one Wireshark-configured key is limited to traffic transmitted between a single STA and AP, and that's assuming you can easily get the key. This limitation contrasts with WPA-Personal and WPA2-Personal where knowing the credentials is enough to decrypt any traffic transmitted to/received from that AP. It is unclear if Wireshark can decrypt OWE (so-called 'Enhanced Open') authentication.
 
