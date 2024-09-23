@@ -4,10 +4,7 @@
   <!-- 'shrint-to-fit=no' is a post-Safari 9.0 workaround
         https://stackoverflow.com/questions/33767533/what-does-the-shrink-to-fit-viewport-meta-attribute-do
     -->
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0, shrink-to-fit=no"
-  />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
 
   <title>Alex Gavin</title>
   <link rel="icon" type="image/x-icon" href="{{ get_url(path=config.extra.favicon) }}" />
@@ -17,9 +14,10 @@
   <meta name="description" content="Portfolio website" />
 
   <!-- CSS & JS -->
-  <link rel="stylesheet" href="{{ get_url(path=`main.css`) }}" />
+  <link rel="preload stylesheet" href="{{ get_url(path=`main.css`) }}" />
   <link
     href="https://pvinis.github.io/iosevka-webfont/3.4.1/iosevka.css"
-    rel="stylesheet"
+    rel="stylesheet preload"
+    as="font"
   />
 </head>
