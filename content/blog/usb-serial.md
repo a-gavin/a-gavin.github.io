@@ -119,6 +119,6 @@ replug your device in order for the new udev rule to take effect!
 
 ## References
 
-- [Arch Linux Wiki udev Article]("https://wiki.archlinux.org/title/udev")
-- [udev Terminology]("http://www.reactivated.net/writing_udev_rules.html#terminology")
-- [udev Rule Creation Tutorial]("http://hackaday.com/2009/09/18/how-to-write-udev-rules/")
+- [Arch Linux Wiki udev Article](https://wiki.archlinux.org/title/udev)
+- [udev Terminology](http://www.reactivated.net/writing_udev_rules.html#terminology)
+- [udev Rule Creation Tutorial](http://hackaday.com/2009/09/18/how-to-write-udev-rules/)
