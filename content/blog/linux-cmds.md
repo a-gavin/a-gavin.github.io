@@ -9,6 +9,12 @@ date = "2023-12-26"
 <!-- General commands -->
 <!-- TODO: grep w/ regex -->
 
+## Overview
+
+This post serves to document useful Linux commands I use regularly or find useful. I intend to update it periodically as I find more and more useful commands.
+
+Some command explanation is included with each, but Linux and command line experience is assumed.
+
 ## General Commands
 
 These commands aren't necessarily Linux machine-specific, but they may come in handy when using one.
@@ -84,6 +90,7 @@ $ kill 921
 
 ```Bash
 # Run with '-w' to follow in real time (like 'tail -f')
+# The 'journalctl -k' command will also show kernel logs and is generally more flexible
 $ sudo dmesg
 ```
 
@@ -117,6 +124,9 @@ Mar 17 12:29:11 meadowlark systemd[1]: Finished Network Manager Wait Online.
 
 The following assumes an example _system-level_ Systemd unit called `run_periodically.timer`. You can use the same commands for _user-level_ Systemd units like `pulseaudio.service`, e.g. `systemctl status --user pulseaudio.service`.
 
+Active (enabled) systemd unit files are located in `/etc/systemd/system/` and `/etc/systemd/user/` directories.
+When modifying systemd units, modify files in these directories. Other unit files exist on Linux systems, primarily in a `/usr/lib/systemd/` directory (depends on distribution). However, generally do not modify these as they are installed by your package manager and are meant as defaults.
+
 ```Bash
 # Start the unit
 $ sudo systemctl start run_periodically.timer
@@ -130,7 +140,7 @@ $ sudo systemctl restart run_periodically.timer
 # Enable the unit (start automatically)
 $ sudo systemctl enable run_periodically.timer
 
-# Disable the unit (do not start automatically)
+# Disable the unit (only starts manually)
 $ sudo systemctl disable run_periodically.timer
 
 # Mask the unit
@@ -154,6 +164,8 @@ $ sudo systemctl daemon-reload
 
 #### View Service (Daemon) Logs
 
+The following is a list of `journalctl` commands, each with separate options. Many of these may be combined to perform a specific task. For example, `journalctl -k -b 50 -r` will show the last 50 lines of kernel logs in reverse order (most recent to least recent).
+
 Just as Systemd `systemctl` commands support both system-level and user-level units, `journalctl` does as well using the same `--user` argument.
 
 ```Bash
@@ -164,20 +176,34 @@ $ journalctl
 $ journalctl -n 100
 
 # Follow logs in real time (similar to 'tail -f')
+# Can also substitute '--follow' for '-f'
 $ journalctl -f
+
+# Show logs in reverse order (most recent to least recent)
+# Cannot use this option with '-f'
+$ journalctl -r
+
+# Show all logs that contain the provided pattern, here 'wlan0'
+# Can also substitute the '--grep' option for '-g'
+$ journalctl -g wlan0
 
 # Only show logs for a specific ID, here 'test_program'.
 # For example, the following would create a log message and
 # tag it with the 'test_program' tag:
-# logger -t test_program "This is a log message"
+#   echo "This is a warning message" | systemd-cat -t test_program -p warning
 #
 # Note that this is different from the '-u' option
 $ journalctl -t test_program
 
 # Only show logs for a specific service, here, 'wpa_supplicant.service'
+# Can also provide full Systemd unit name, e.g. here 'wpa_supplicant.service'
 $ journalctl -u wpa_supplicant
-# or
-$ journalctl -u wpa_supplicant.service
+
+# Show kernel logs (same output as 'dmesg' command)
+# Can also substitute the '--dmesg' option for '-k'
+#
+# This is the same as 'journalctl -t kernel'
+$ journalctl -k
 
 # Only show logs for this boot (can use '-b' option instead of '--boot')
 # When using the '--boot' and '-b' arguments, '0' and '-0' function the same (this boot)
@@ -324,10 +350,11 @@ $ du -h
 You probably want to use Network Manager to configure your networking instead.
 See the [next section](#managing-networking-network-manager) for more details.
 
-Most Linux distributions run Network Manager to configure and manage networking nowadays. This is a common point of confusion, as there is still material available online which assumes older, network-scripts based network management.
+Most Linux distributions run Network Manager to configure and manage networking nowadays. This is a common point of confusion, as many guides online reference older, network-scripts based network management and the deprecated `ifconfig` command.
 
-It is possible to configure networking with variations of these commands. Unless you know
-what you're doing, though, you're better off just using Network Manager.
+It is possible to configure networking with variations of these commands. Generally, though, you'll almost always be better off using a tool like `NetworkManager` or `systemd-networkd`, unless you have a very specific use case.
+
+For more information, see this [very detailed guide](https://axil.gitlab.io/iproute2/).
 
 #### Show Network Interface Link-Layer Info</h3>
 
@@ -346,7 +373,7 @@ wlan0            UP             xx:xx:xx:xx:xx:xx <BROADCAST,MULTICAST,UP,LOWER_
 
 #### Show Network Interface IP-Layer Info
 
-Displays IPv4 and IPv6 information in addition to interface status, MAC address, MTU, and interface routing table, among other things (some of which require `-d` option). More detailed output is possible by using the `-d` option (without the `-br` option).
+These commands display IPv4 and IPv6 information in addition to other detailed information including interface status, MAC address, MTU, and interface routing table, among other things (some of which require `-d` option). More detailed output is possible by using the `-d` option (without the `-br` option).
 
 ```Bash
 # Shorthand shown. Full command would be 'ip addr show', but the 'show' is optional.
@@ -526,7 +553,11 @@ $ nmcli c m SSID_NAME \
 
 **NOTE:** Most Linux systems use Network Manager to manage and configure networking, including WiFi. See the [Managing Networking](#managing-networking-network-manager) section for more details.
 
-#### Show WiFi Interface General Info
+On Linux WiFi interfaces are created using a parent radio device, referred to as 'phys'. These radios come in a variety of form factors, including single radio, single phy and single radio, multi-phy. To view all system phys, run `ls /sys/class/ieee80211/`, which lists all `ieee80211` devices (WiFi phys). Supported interfaces, combinations, and settings depend on the radio firmware and associated Linux device driver. By default, a single WiFi interface is created per phy on system boot in 'managed' mode (WiFi station).
+
+While most will be content with `NetworkManager` managing their WiFi interface settings, a more advanced user may find the `wpa_supplicant` and `hostapd` programs of interest. The program `wpa_supplicant` configures WiFi clients, whereas `hostapd` configures WiFi access points (APs, what most people refer to as a router). Both live under the `hostap` project and are widely used, including within tools like `NetworkManager` itself and within commercial APs as well. The configuration syntax is notoriously somewhat difficult, especially if you don't know the details of WiFi well.
+
+#### Show WiFi Interface General Information
 
 Includes STA MAC, SSID, phy device, channel, frequency, transmit power.
 
@@ -547,6 +578,8 @@ Interface wlan0
 ```
 
 #### Show WiFi Interface Link Information
+
+**NOTE:** This command will only show meaningful output when the WiFi interface is connected (associated).
 
 Includes AP MAC (if station), SSID, frequency, bandwidth, RSSI (if station), and phy rate (MCS),
 among other things. Phy rate may or may not include NSS.
@@ -569,9 +602,28 @@ Connected to xx:xx:xx:xx:xx:xx (on wlan0)
         beacon int:     100
 ```
 
-#### Show WiFi Radio Info
+#### Show Channels Supported by WiFi Radio/Phy
 
-Includes channels and bands in current regulatory domain, ciphers, MCS rates, and antennas, among other things.
+```Bash
+$ iw phy0 channels
+Band 1:
+        * 2412 MHz [1]
+          Maximum TX power: 30.0 dBm
+          Channel widths: 20MHz HT40+
+        ...
+        * 2467 MHz [12] (disabled)
+        * 2472 MHz [13] (disabled)
+        * 2484 MHz [14] (disabled)
+Band 2:
+        * 5180 MHz [36]
+          Maximum TX power: 23.0 dBm
+          Channel widths: 20MHz HT40+ VHT80
+        ...
+```
+
+#### Show All WiFi Radio/Phy Info
+
+This information is very verbose and includes channels and bands in current regulatory domain, ciphers, MCS rates, and antennas, and more.
 
 ```Bash
 # Can also run 'iw phy phy0 info', but 'phy' is optional
@@ -601,16 +653,138 @@ $ iw phy0 info
 
 #### Show Wireless Regulatory Domain Info
 
+You may see a combination of 'global' and per-phy regulatory configuration. The following shows both.
+
 ```Bash
+# Notice the inclusion of sub-1GHz (WiFi HaLow, 802.11ah) and 60GHz (WiGig) spectrum
 $ iw reg get
 global
+country US: DFS-FCC
+        (902 - 904 @ 2), (N/A, 30), (N/A)
+        (904 - 920 @ 16), (N/A, 30), (N/A)
+        (920 - 928 @ 8), (N/A, 30), (N/A)
+        (2400 - 2472 @ 40), (N/A, 30), (N/A)
+        (5150 - 5250 @ 80), (N/A, 23), (N/A), AUTO-BW
+        (5250 - 5350 @ 80), (N/A, 24), (0 ms), DFS, AUTO-BW
+        (5470 - 5730 @ 160), (N/A, 24), (0 ms), DFS
+        (5730 - 5850 @ 80), (N/A, 30), (N/A), AUTO-BW
+        (5850 - 5895 @ 40), (N/A, 27), (N/A), NO-OUTDOOR, AUTO-BW
+        (5925 - 7125 @ 320), (N/A, 12), (N/A), NO-OUTDOOR
+        (57240 - 71000 @ 2160), (N/A, 40), (N/A)
+
+phy#0 (self-managed)
 country 00: DFS-UNSET
-        (2402 - 2472 @ 40), (6, 20), (N/A)
-        (2457 - 2482 @ 20), (6, 20), (N/A), AUTO-BW, PASSIVE-SCAN
-        (2474 - 2494 @ 20), (6, 20), (N/A), NO-OFDM, PASSIVE-SCAN
-        (5170 - 5250 @ 80), (6, 20), (N/A), AUTO-BW, PASSIVE-SCAN
-        (5250 - 5330 @ 80), (6, 20), (0 ms), DFS, AUTO-BW, PASSIVE-SCAN
-        (5490 - 5730 @ 160), (6, 20), (0 ms), DFS, PASSIVE-SCAN
-        (5735 - 5835 @ 80), (6, 20), (N/A), PASSIVE-SCAN
-        (57240 - 63720 @ 2160), (N/A, 0), (N/A)
+        (2402 - 2437 @ 40), (6, 22), (N/A), AUTO-BW, NO-HT40MINUS, NO-80MHZ, NO-160MHZ
+        (2422 - 2462 @ 40), (6, 22), (N/A), AUTO-BW, NO-80MHZ, NO-160MHZ
+        (2447 - 2482 @ 40), (6, 22), (N/A), AUTO-BW, NO-HT40PLUS, NO-80MHZ, NO-160MHZ
+        (5170 - 5190 @ 160), (6, 22), (N/A), NO-OUTDOOR, AUTO-BW, IR-CONCURRENT, NO-HT40MINUS, PASSIVE-SCAN
+        (5190 - 5210 @ 160), (6, 22), (N/A), NO-OUTDOOR, AUTO-BW, IR-CONCURRENT, NO-HT40PLUS, PASSIVE-SCAN
+        (5210 - 5230 @ 160), (6, 22), (N/A), NO-OUTDOOR, AUTO-BW, IR-CONCURRENT, NO-HT40MINUS, PASSIVE-SCAN
+        (5230 - 5250 @ 160), (6, 22), (N/A), NO-OUTDOOR, AUTO-BW, IR-CONCURRENT, NO-HT40PLUS, PASSIVE-SCAN
+        (5250 - 5270 @ 160), (6, 22), (0 ms), DFS, AUTO-BW, NO-HT40MINUS, PASSIVE-SCAN
+        (5270 - 5290 @ 160), (6, 22), (0 ms), DFS, AUTO-BW, NO-HT40PLUS, PASSIVE-SCAN
+        ...
+        (5590 - 5610 @ 160), (6, 22), (0 ms), DFS, AUTO-BW, NO-HT40PLUS, PASSIVE-SCAN
+        (5610 - 5630 @ 160), (6, 22), (0 ms), DFS, AUTO-BW, NO-HT40MINUS, PASSIVE-SCAN
+        (5650 - 5670 @ 80), (6, 22), (0 ms), DFS, AUTO-BW, NO-HT40MINUS, NO-160MHZ, PASSIVE-SCAN
+        (5670 - 5690 @ 80), (6, 22), (0 ms), DFS, AUTO-BW, NO-HT40PLUS, NO-160MHZ, PASSIVE-SCAN
+        (5690 - 5710 @ 80), (6, 22), (0 ms), DFS, AUTO-BW, NO-HT40MINUS, NO-160MHZ, PASSIVE-SCAN
+        (5710 - 5730 @ 80), (6, 22), (0 ms), DFS, AUTO-BW, NO-HT40PLUS, NO-160MHZ, PASSIVE-SCAN
+        (5735 - 5755 @ 80), (6, 22), (N/A), AUTO-BW, IR-CONCURRENT, NO-HT40MINUS, NO-160MHZ, PASSIVE-SCAN
+        (5755 - 5775 @ 80), (6, 22), (N/A), AUTO-BW, IR-CONCURRENT, NO-HT40PLUS, NO-160MHZ, PASSIVE-SCAN
+        (5775 - 5795 @ 80), (6, 22), (N/A), AUTO-BW, IR-CONCURRENT, NO-HT40MINUS, NO-160MHZ, PASSIVE-SCAN
+        (5795 - 5815 @ 80), (6, 22), (N/A), AUTO-BW, IR-CONCURRENT, NO-HT40PLUS, NO-160MHZ, PASSIVE-SCAN
+        (5815 - 5835 @ 20), (6, 22), (N/A), AUTO-BW, IR-CONCURRENT, NO-HT40MINUS, NO-HT40PLUS, NO-80MHZ,NO-160MHZ, PASSIVE-SCAN
+```
+
+<!-- Querying DBus Information -->
+
+## Querying DBus Information
+
+#### List DBus Peers
+
+```Bash
+# The same output is displayed when just 'busctl' is run
+$ busctl list
+NAME    PID PROCESS         USER            CONNECTION    UNIT                     SESSION DESCRIPTION
+:1.0    719 systemd-resolve systemd-resolve :1.0          systemd-resolved.service -       -
+:1.1    718 systemd-oomd    systemd-oom     :1.1          systemd-oomd.service     -       -
+:1.10   821 NetworkManager  root            :1.10         NetworkManager.service   -       -
+:1.103 4099 busctl          lanforge        :1.103        session-3.scope          3       -
+:1.15  1023 fwupd           root            :1.15         fwupd.service            -       -
+...
+```
+
+#### Show DBus Peer Status
+
+```Bash
+# Can specify using either the 'UniqueName' identifier
+# or the more human-readable DBus peer name
+#
+# Run just 'busctl status' to view main DBus socket status
+$ busctl status org.freedesktop.ModemManager1
+PID=805
+...
+Comm=ModemManager
+CommandLine=/usr/sbin/ModemManager --debug
+CGroup=/system.slice/ModemManager.service
+Unit=ModemManager.service
+Slice=system.slice
+...
+UniqueName=:1.7
+EffectiveCapabilities=cap_net_admin cap_sys_admin
+PermittedCapabilities=cap_net_admin cap_sys_admin
+InheritableCapabilities=cap_sys_admin
+BoundingCapabilities=cap_net_admin cap_sys_admin
+```
+
+#### Show DBus Peer Object Tree
+
+```Bash
+# Identifier is same as that used by 'busctl status'.
+# See above for more information.
+#
+# Can specify more than one peer to list. For example,
+# show trees for both the ':1.7' and ':1.10' peers:
+#   busctl tree :1.7 :1.10
+#
+# Run just 'busctl' to view DBus tree for each DBus peer
+# active on the system (may take some time to fully complete)
+$ busctl tree org.freedesktop.ModemManager1
+└─ /org
+  └─ /org/freedesktop
+    └─ /org/freedesktop/ModemManager1
+      ├─ /org/freedesktop/ModemManager1/Modem
+      │ └─ /org/freedesktop/ModemManager1/Modem/0
+      └─ /org/freedesktop/ModemManager1/SIM
+        └─ /org/freedesktop/ModemManager1/SIM/0
+```
+
+#### Introspect DBus Peer Object
+
+```Bash
+# Shows very verbose information on components of DBus peer object
+#
+# Here the object is '/org/freedesktop/ModemManager1/Modem/0', a cellular modem
+# configured by the 'org.freedesktop.ModemManager1' DBus peer
+$ busctl introspect org.freedesktop.ModemManager1 /org/freedesktop/ModemManager1/Modem/0
+NAME                                TYPE      SIGNATURE RESULT/VALUE                             FLAGS
+...
+org.freedesktop.ModemManager1.Modem interface -         -                                        -
+.Command                            method    su        s                                        -
+.CreateBearer                       method    a{sv}     o                                        -
+.DeleteBearer                       method    o         -                                        -
+.Enable                             method    b         -                                        -
+...
+.CurrentBands                       property  au        57 5 6 7 8 9 10 12 31 32 33 34 35 37 38… emits-change
+.CurrentCapabilities                property  u         204                                      emits-change
+.CurrentModes                       property  (uu)      28 16                                    emits-change
+...
+.Drivers                            property  as        2 "option" "qmi_wwan"                    emits-change
+.EquipmentIdentifier                property  s         "XXXXXXXXXXXXXXX"                        emits-change
+.HardwareRevision                   property  s         "XXXXX"                                  emits-change
+.Manufacturer                       property  s         "Quectel"                                emits-change
+...
+.MaxBearers                         property  u         1                                        emits-change
+...
 ```
