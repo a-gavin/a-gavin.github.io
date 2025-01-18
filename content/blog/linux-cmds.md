@@ -42,6 +42,73 @@ $ find . -name "\*.html"
 ./projects.html
 ```
 
+#### Search for a Pattern (grep)
+
+```Bash
+# Search for a pattern in a file
+# By default, this is not a regular expression pattern (see the '-E' flag)
+$ grep "string" file.txt
+
+# Search for a pattern in text read from a pipe (equivalent to above)
+$ cat file.txt | grep "string"
+
+# Search for multiple patterns in a file
+$ grep -e "string1" -e "string2" file.txt
+
+# Search for the pattern case-insensitive
+$ grep -i "String" file.txt
+
+# Print line number for every matched pattern
+$ grep -i "String" file.txt
+
+# Search for anything that doesn't match the specified pattern
+$ grep -v "ath10k" dmesg.txt
+
+# When piping data from a file that's actively being written to
+# make sure to pass the '--line-buffered' argument. Otherwise,
+# it may not match the specified pattern, even if it's written
+# to the file
+$ tail -F log_file.txt | grep --line-buffered "canary"
+
+# Search for pattern in the output of text continuously read from a pipe
+# (don't forget the '--line-buffered'!) then write the output to both
+# the terminal (stdout) and a text file
+$ journalctl -f | grep --line-buffered "mt7921" | tee out.txt
+```
+
+#### Login to a Remote System (ssh)
+
+```Bash
+# Login into a remote system over SSH
+# Destination system is typically an IP address, hostname, or alias
+ssh user@192.168.1.1
+
+# Remote in using a non-standard port (default is 22)
+# Note that the 'scp' command uses the '-P' option for port
+ssh -p 2222 user@server
+
+# Remote in using SSH URI (equivalent to previous command)
+ssh ssh://user@server:2222
+
+# Generate a new SSH public/private key pair
+#
+# This is used both for authentication purposes on a remote system
+# and identifying a remote system to your system (~/.ssh/known_hosts)
+ssh-keygen -t ed25519
+
+# Copy an SSH public key to a remote system
+#
+# This allows you to login using the associated private key.
+# The '-i' flag specifies the specific key to copy. Otherwise,
+# the default is used (if no '.pub' specified, it's automatically added)
+#
+# You can also alternatively use the 'ssh' command to manually copy
+# your public key into the 'known_hosts' file on the remote system,
+# but this does it for you. Using 'scp':
+#   cat .ssh/id_ed25519.pub | ssh user@server 'cat >> ~/.ssh/authorized_keys'
+ssh-copy-id -i ~/.ssh/id_ed25519.pub user@server
+```
+
 <!-- System Administration: Non-Systemd -->
 
 ## System Administration: Non-Systemd
