@@ -58,14 +58,6 @@
     @apply w-6 -translate-y-[5.5px] -rotate-45;
   }
 
-  .nav-wrapper {
-    @apply hidden lg:flex;
-  }
-
-  .open .nav-wrapper {
-    @apply flex;
-  }
-
   article {
     @apply text-lg;
   }
@@ -95,10 +87,10 @@
   }
 
   .primary-link {
-    @apply text-black bg-transparent border-none hover:underline hover:decoration-4 hover:decoration-[#BECA9A] 
+    @apply bg-transparent border-none hover:underline hover:decoration-4 hover:decoration-[#BECA9A]
   }
 
   .secondary-link {
-    @apply text-gray-600 bg-transparent border-none hover:underline hover:decoration-2 hover:decoration-[#BECA9A] 
+    @apply bg-transparent border-none hover:underline hover:decoration-2 hover:decoration-[#BECA9A]
   }
 }

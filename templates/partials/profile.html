@@ -8,26 +8,26 @@
   </div>
   <div class="flex flex-col space-y-4">
     <div class="mb-1">
-      <div class="mb-1 text-lg font-bold">Current Position</div>
-      <div class="text-gray-600">
+      <div class="mb-1 text-xl font-semibold">Current Position</div>
+      <div class="text-opacity-80">
         {{ config.extra.profile.position | default(value=`Intriguing Position, Prestigious Company`)
         }}
       </div>
     </div>
     <div class="mb-1">
-      <div class="mb-1 text-lg font-bold">Professional Interests</div>
+      <div class="mb-1 text-xl font-semibold">Professional Interests</div>
       <ul class="my-0">
         <!-- TODO: Defaults -->
         {% for interest in config.extra.profile.professional_interests %}
-        <li class="text-gray-600">{{ interest }}</li>
+        <li class="text-opacity-80">{{ interest }}</li>
         {% endfor %}
       </ul>
     </div>
     <div class="mb-1">
-      <div class="mb-1 text-lg font-bold">About Me</div>
+      <div class="mb-1 text-xl font-semibold">About Me</div>
       <!-- TODO: Defaults -->
       {% for paragraph in config.extra.profile.about_me_paragraphs %}
-      <div class="mb-1.5 text-wrap text-gray-600">{{ paragraph }}</div>
+      <div class="mb-1.5 text-wrap text-opacity-80">{{ paragraph }}</div>
       {% endfor %}
     </div>
   </div>

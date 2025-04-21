@@ -5,7 +5,8 @@
   <body>
     {% include "partials/header.html" %}
 
-    <main class="prose prose-neutral relative mx-auto max-w-4xl p-4">
+    <!-- Maximum width and padding should match that in header -->
+    <main class="prose prose-neutral relative mx-auto max-w-3xl p-4">
       {% block main %} {% include "partials/profile.html" %} {% endblock main %}
     </main>
 
