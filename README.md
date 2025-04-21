@@ -25,6 +25,11 @@ This website uses the following open source tools:
 
 ## Development Setup
 
+**NOTE:** Tailwind CSS size tags are "mobile first", meaning the size tags set for
+a given class tag are only active for _that size tag and larger_. For example,
+`sm:flex` enables `flex` class tag for display sizes small or larger (anything smaller
+will not have it enabled).
+
 1. Install Zola (static website generator)
    - Follow the [Zola install guide](https://www.getzola.org/documentation/getting-started/installation/)
 2. Install `npm` (via `nvm`)
