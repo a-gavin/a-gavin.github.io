@@ -52,7 +52,7 @@ You can perform packet capture offline. However, creating a monitor mode interfa
 
 #### Ensure that you have admin access on machine
 
-The commands used here require `sudo` access.
+The commands used here require {{inline_code(text="sudo")}} access.
 
 #### Ensure no other programs will interfere
 
@@ -60,7 +60,7 @@ The commands used here require `sudo` access.
 
 If you opt to keep the existing wireless interface around, other system programs may get in the way of your packet capture fun. **The likely culprit here is NetworkManager**, which is the de-facto network configuration tool on Linux these days. There's no need to disable NetworkManager entirely. Otherwise, you may lose all network access. Instead we'll configure NetworkManager to ignore the wireless interface (and by extension the wireless radio) we're going to use.
 
-To do so, first determine if NetworkManager is active. Next, determine if any wireless interfaces exist that use the radio you want to use for packet capture (see [these](#3-determine-radio-s-phy-name) [sections](#4-1-find-all-interfaces-using-radio)). Finally, instruct NetworkManager to ignore the interface. The following demonstrates this process for an interface `wlan0`:
+To do so, first determine if NetworkManager is active. Next, determine if any wireless interfaces exist that use the radio you want to use for packet capture (see [these](#3-determine-radio-s-phy-name) [sections](#4-1-find-all-interfaces-using-radio)). Finally, instruct NetworkManager to ignore the interface. The following demonstrates this process for an interface {{inline_code(text="wlan0")}}:
 
 ```Bash
 # Check if NetworkManager is running (it is with PID 1072)
@@ -68,7 +68,7 @@ $ pgrep NetworkManager
 1072
 
 # Show devices visible to NetworkManager (note 'wlan0')
-# Shorthand is `nmcli d`
+# Shorthand is 'nmcli d'
 $ nmcli device show
 DEVICE           TYPE      STATE        CONNECTION
 wlan0            wifi      connected    wlancancan
@@ -106,7 +106,7 @@ If you’d like NetworkManager to explicitly ignore specific network interfaces 
 
 ### 2\. Install Required Packages
 
-In this guide, we'll use `iw` to configure the wireless monitor interface and Wireshark to perform and analyze packet captures. These are generally not installed by default on most Linux distros, though, so install them as follows:
+In this guide, we'll use {{inline_code(text="iw")}} to configure the wireless monitor interface and Wireshark to perform and analyze packet captures. These are generally not installed by default on most Linux distros, though, so install them as follows:
 
 ```Bash
 # Debian/Ubuntu:
@@ -131,9 +131,9 @@ $ lspci | grep Network
 
 #### 3\.2 Determine PHY name of radio
 
-**NOTE:** You can use the [`list_interfaces.py`](https://github.com/a-gavin/talks/blob/main/lfnw_2023_wifi_pcap/list_interfaces.py) script to both determine the radio PHY name/number and all interfaces created using that radio. With this information in hand, you can then skip to the [Manage existing interfaces using radio](#4-2-manage-existing-interfaces-using-radio) section.
+**NOTE:** You can use the [{{inline_code(text="list_interfaces.py")}}](https://github.com/a-gavin/talks/blob/main/lfnw_2023_wifi_pcap/list_interfaces.py) script to both determine the radio PHY name/number and all interfaces created using that radio. With this information in hand, you can then skip to the [Manage existing interfaces using radio](#4-2-manage-existing-interfaces-using-radio) section.
 
-Find the `phyX` which matches the PCI bus found in the previous step:
+Find the {{inline_code(text="phyX")}} which matches the PCI bus found in the previous step:
 
 ```Bash
 # Here the PHY is 'phy0'.
@@ -156,7 +156,7 @@ With that said, **ensuring that other network interfaces do not interfere** with
 
 ```Bash
 # Use sysfs directory structure to get interfaces
-# Example path: `/sys/class/ieee80211/phy0/device/net/wlan0`
+# Example path: '/sys/class/ieee80211/phy0/device/net/wlan0'
 #
 # Taken from this StackExchange answer: https://unix.stackexchange.com/a/552995
 $ ls /sys/class/ieee80211/*/device/net/* -d | sed -E 's|^.*(phy[^/]+)/.*/|\1 |'
@@ -185,7 +185,7 @@ $ sudo iw dev wlan0 del
 
 ```Bash
 # Down the interface
-# Shorthand is `ip l s down dev wlan0`
+# Shorthand is 'ip l s down dev wlan0'
 $ sudo ip link set down dev wlan0
 ```
 
@@ -269,8 +269,8 @@ The following methods demonstrate how to configure the monitor frequency (channe
 
 1. Using channel width (generally easier)
 
-   You can translate this syntax directly from the `iw phy X channels` output.
-   It's possible to specify 160MHz and 320MHz, but some versions of `iw` do not support those.
+   You can translate this syntax directly from the {{inline_code(text="iw phy X channels")}} output.
+   It's possible to specify 160MHz and 320MHz, but some versions of {{inline_code(text="iw")}} do not support those.
 
 ```Bash
 $ sudo iw dev moni0 set freq 5180 80MHz
@@ -283,9 +283,9 @@ $ sudo iw dev moni0 set freq 5180 80MHz
 $ sudo iw dev moni0 set freq 5955 80 5985
 ```
 
-If you encounter errors, even after verifying that your radio supports the desired channel, check the kernel message buffer (`sudo dmesg`).
+If you encounter errors, even after verifying that your radio supports the desired channel, check the kernel message buffer ({{inline_code(text="sudo dmesg")}}).
 
-I find it useful to watch the error output as it happens. To do so, use two terminals. In one, run `sudo dmesg -w` (`-w` lets you follow the output, similar to `tail -f`). In the other, run the `iw` command you’re using to configure the channel.
+I find it useful to watch the error output as it happens. To do so, use two terminals. In one, run {{inline_code(text="sudo dmesg -w")}} ({{inline_code(text="-w")}} lets you follow the output, similar to {{inline_code(text="tail -f")}}). In the other, run the {{inline_code(text="iw")}} command you’re using to configure the channel.
 
 The following is an example error output for a radio which does not support 160MHz channels:
 
