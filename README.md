@@ -32,6 +32,7 @@ will not have it enabled).
 
 1. Install Zola (static website generator)
    - Follow the [Zola install guide](https://www.getzola.org/documentation/getting-started/installation/)
+
 2. Install `npm` (via `nvm`)
 
    - Follow the [`nvm` install guide](https://github.com/nvm-sh/nvm?tab=readme-ov-file#installing-and-updating)

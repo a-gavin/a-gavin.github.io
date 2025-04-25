@@ -2,6 +2,7 @@
 title = "Linux Home Router w/ Open Source Tools"
 date = "2024-06-05"
 description = ""
+path = "blog/linux-home-router"
 
 #[taxonomies]
 #tags = ["linux", "networking", "wifi"]

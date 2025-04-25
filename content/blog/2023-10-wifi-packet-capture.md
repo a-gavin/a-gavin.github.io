@@ -1,6 +1,7 @@
 +++
 title = "WiFi Packet Capture on Linux"
 date = "2023-10-21"
+path = "blog/wifi-packet-capture"
 
 #[taxonomies]
 #tags = ["linux", "wifi", "wireshark"]

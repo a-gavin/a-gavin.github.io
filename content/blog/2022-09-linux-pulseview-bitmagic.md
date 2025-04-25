@@ -1,7 +1,8 @@
 +++
-title = "PulseView BitMagic Logic Analyzer Setup on Linux"
+title = "BitMagic Logic Analyzer PulseView Setup on Linux"
 date = "2022-09-01"
 description = ""
+path = "blog/linux-pulseview-bitmagic"
 
 #[taxonomies]
 #tags = ["linux", "embedded", "pulseview", "1bitsquared"]
@@ -35,7 +36,9 @@ _This guide targets Ubuntu and Fedora, but similar concepts will apply to other 
    ATTRS{idVendor}=="1d50", ATTRS{idProduct}=="0004", MODE="0666"
    ```
 
-   A quick note on udev, **the name of the udev rule file matters**. Udev processes rules in lexically sorted order. As all installed rules on the system (including the ones provided by your distribution) are sorted and processed together, **it's essential to name the udev rule file with a name like `99-bitmagic.rule`**. Doing so ensures that the BitMagic rule will not conflict with other system rules. For more information, see [another post](@/blog/usb-serial.md) I wrote which links to udev documentation at the end and details udev rule creation (specifically targeted at USB serial devices).
+   A quick note on udev, **the name of the udev rule file matters**. Udev processes rules in lexically sorted order. As all installed rules on the system (including the ones provided by your distribution) are sorted and processed together, **it's essential to name the udev rule file with a name like `99-bitmagic.rule`**. Doing so ensures that the BitMagic rule will not conflict with other system rules.
+   
+   **UPDATE:** For more information on udev rule creation and documentation, see [another post](@/blog/2022-12-linux-usb-serial.md) I wrote which details udev rule creation (specifically targeted at USB serial devices).
 
 3. **Reload and re-apply udev rules**
 

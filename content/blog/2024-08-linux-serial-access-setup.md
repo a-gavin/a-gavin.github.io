@@ -2,6 +2,7 @@
 title = "Configuring Linux Serial Access"
 date = "2024-08-26"
 description = ""
+path = "blog/linux-serial-access-setup"
 
 #[taxonomies]
 #tags = ["linux"]
@@ -149,7 +150,7 @@ Which program you choose depends on personal preference. I use `minicom` most of
 
    The specifics here will depend on the program you've chosen. If you're using `minicom` or `screen`, you must specify the TTY as an argument. For example, `minicom -D /dev/ttyUSB0`.
 
-   Most Linux systems will only permit access to USB serial devices by default with root permissions. It is possible to permit this as non-root user configuring udev rules or adding the user to a specific group, but this depends on the distribution. See [this post](@/blog/usb-serial.md) I wrote to configure this using udev rules.
+   Most Linux systems will only permit access to USB serial devices by default with root permissions. It is possible to permit this as non-root user configuring udev rules or adding the user to a specific group, but this depends on the distribution. See [this post](@/blog/2022-12-linux-usb-serial.md) I wrote to configure this using udev rules.
 
 4. **Boot target system**
 

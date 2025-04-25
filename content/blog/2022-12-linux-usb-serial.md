@@ -2,6 +2,7 @@
 title = "Accessing Serial Devices on Linux w/o sudo"
 date = "2022-12-13"
 description = "How to use udev rules to give non-root users access to a USB serial device."
+path = "blog/linux-usb-serial"
 
 #[taxonomies]
 #tags = ["linux", "udev", "usb"]

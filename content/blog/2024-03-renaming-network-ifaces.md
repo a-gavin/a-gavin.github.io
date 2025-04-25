@@ -1,6 +1,7 @@
 +++
 title = "Renaming Linux Network Interfaces"
 date = "2024-03-18"
+path = "blog/renaming-network-interfaces"
 
 #[taxonomies]
 #tags = ["linux", "udev"]
@@ -18,7 +19,7 @@ This guide generally targets WiFi and Ethernet interfaces, although concepts wil
 
 **Proceed with caution.** It's always a good idea to have physical access to the system when performing networking-related or system-level changes. This is especially true for static configurations which largely rely on the interface name. It's possible that changes made here will disable networking.
 
-If you're unfamiliar with using or configuring networking on Linux, I encourage you to familiarize yourself with the [Querying Network Information](@/blog/linux-cmds.md#querying-network-information) and [Managing Networking (Network Manager)](@/blog/linux-cmds.md#managing-networking-network-manager) sections of my Linux command cheatsheet.
+If you're unfamiliar with using or configuring networking on Linux, I encourage you to familiarize yourself with the [Querying Network Information](@/blog/2023-12-linux-cmds.md#querying-network-information) and [Managing Networking (Network Manager)](@/blog/2023-12-linux-cmds.md#managing-networking-network-manager) sections of my Linux command cheatsheet.
 
 ## Instructions
 
@@ -36,7 +37,7 @@ Should neither of these be an option, `ip -d link show` lists the interface's PC
 
 ### 2\. Create the udev Rule
 
-Similar to my post on [configuring USB serial ports details](@/blog/usb-serial.md#3-create-the-udev-rule) details, we'll create a udev rule to rename the device.
+Similar to my post on [configuring USB serial ports details](@/blog/2022-12-linux-usb-serial.md#3-create-the-udev-rule) details, we'll create a udev rule to rename the device.
 
 #### udev Background
 

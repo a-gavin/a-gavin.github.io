@@ -1,6 +1,7 @@
 +++
 title = "Linux Command Cheatsheet"
 date = "2023-12-26"
+path = "blog/linux-cmds"
 
 #[taxonomies]
 #tags = ["linux", "sysadmin"]
@@ -518,7 +519,7 @@ udp    UNCONN  0       0               0.0.0.0:631            0.0.0.0:*      use
 At a high level, Network Manager configures 'connections' which are established using a backing network interface, or in Network Manager terms, 'device'. These network interfaces are either managed or unmanaged from Network Manager's perspective.
 
 Generally, most users will be fine with Network Manager configuring all of their
-network interfaces, typically only WiFi and Ethernet (although Network Manager can do much more). There are times, though, where it is appropriate to have Network Manager [ignore specific interfaces](#set-device-management), for example, when doing [WiFi packet capture](@/blog/wifi-packet-capture.md).
+network interfaces, typically only WiFi and Ethernet (although Network Manager can do much more). There are times, though, where it is appropriate to have Network Manager [ignore specific interfaces](#set-device-management), for example, when doing [WiFi packet capture](@/blog/2023-10-wifi-packet-capture.md).
 
 This section details some of the most basic and more-useful (from my perspective) NetworkManager CLI commands. See `man nmcli-examples` for more examples and more advanced usage of Network Manager.
 
