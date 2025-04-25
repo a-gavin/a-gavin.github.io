@@ -67,6 +67,8 @@ will not have it enabled).
    # The 'shalzz/zola-deploy-action' GitHub action generates
    # the required directory structure for hosting on GitHub Pages
    # by running on all pushes to main.
+   #
+   # Run with '--drafts' argument to also serve draft pages
    zola serve
    ```
 
