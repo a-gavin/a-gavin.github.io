@@ -2,7 +2,9 @@
 {% block main %}<!---->
 
 <div class="mb-8">
-  <div class="flex items-center justify-center text-2xl">{{ page.title }}</div>
+  <div class="flex items-center justify-center text-2xl">
+    <p class="text-center">{{ page.title }}</p>
+  </div>
   <time class="my-0 flex items-center justify-center opacity-80"
     >{{ page.date | date(format="%m-%d-%y") }}</time
   >
