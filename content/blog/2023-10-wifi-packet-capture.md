@@ -11,9 +11,9 @@ path = "blog/wifi-packet-capture"
 
 **NOTE:** This guide assumes you have admin access to the machine you're using.
 
-This guide demonstrates how to configure and use a WiFi radio on a Linux system to perform WiFi packet capture. It assumes you are familiar with general networking concepts and are comfortable in a Linux terminal.
+This guide demonstrates how to configure and use a WiFi radio on a Linux system to perform WiFi packet capture. It assumes you are familiar with general networking concepts, are comfortable in a Linux terminal, and assumes at least a little bit of WiFi knowledge.
 
-If you're looking to capture only TCP/UDP and higher layer traffic _for your device only_, performing packet capture using the existing WiFi interface on your system will suffice. However, should you want to see MAC layer traffic, _including from WiFi devices other than system used for capture_, using the existing interface will not suffice.
+Unlike network interfaces like Ethernet, performing packet capture on the existing wireless interface (e.g. `wlan0`) will not necessarily capture arbitrary WiFi traffic. Different device drivers and firmware operate differently, so you may see some additional traffic. However, to capture WiFi traffic present over the air _not destined to your device_, one must configure a separate WiFi monitor interface. This guide details how to do so.
 
 If you want more background information on WiFi or would like to watch my talk on the subject, watching [the recording](https://www.youtube.com/watch?v=Hi-tt3Cdf0M&list=PLjDc7gDlIAST09nqYxYxpn_VdQPVzyAcs&index=6) may prove useful.
 
@@ -24,8 +24,8 @@ Since networking and WiFi use so many acronymns and abbreviations (and I will us
 - **Radio:** The physical hardware used to communicate over WiFi.
 - **Interface:** A logical abstraction created by an operating system for managing network devices. These can be virtual or physical.
 - **STA (or station):** Any client that connects to an access point (AP).
-- **vSTA (or virtual station):** Same as STA, but primarily used when discussing STA network interfaces on a system.
 - **AP (or access point):** What most people refer to as a 'router'. A device used to connect to a WiFi network.
+- **vSTA (or virtual station):** Same as STA, but primarily used when discussing STA network interfaces on a system.
 - **vAP (or virtual access point):** Same as AP, but primarily used when discussing AP network interfaces on a system.
 - **Monitor:** A network interface used to perform packet capture.
 - **Band:** A large slice of radio frequency (RF) spectrum available for use by WiFi. This includes 2.4GHz and 5GHz bands, as well as 6GHz band in some parts of the world.
@@ -320,11 +320,11 @@ Open Wireshark with admin permissions (e.g. `sudo wireshark`) and select the cre
 
 For on-the-fly analysis, editing a live or recently-stopped capture in Wireshark is sufficient. However, for longer running packet captures (or if you really don't wanna redo your capture), save the capture before analyzing or use a non-GUI CLI tool like `tshark` (generally a separate package to install) instead.
 
-For more a quick-reference WiFi (802.11) Wireshark filter cheatsheet, see [this PDF](/blog/2023-10-wifi-packet-capture/80211_wireshark_cheatsheet.pdf).
+For a more quick-reference WiFi (802.11) Wireshark filter cheatsheet, see [this PDF](/blog/2023-10-wifi-packet-capture/80211_wireshark_cheatsheet.pdf).
 
 {{ image(src="/blog/2023-10-wifi-packet-capture/wireshark_selecting_interface.png", align="center", alt="Image of selecting wireless interface to perform packet capture on") }}
 
-{{ image(src="/blog/2023-10-wifi-packet-capture/wireshark_selecting_interface.png", align="center", alt="Image of packet capture in progress using interface 'moni0'") }}
+{{ image(src="/blog/2023-10-wifi-packet-capture/wireshark_pcap_in_progress.png", align="center", alt="Image of packet capture in progress using interface 'moni0'") }}
 
 ### 9\. Decrypting WPA-Personal & WPA2-Personal Wireless Traffic
 
