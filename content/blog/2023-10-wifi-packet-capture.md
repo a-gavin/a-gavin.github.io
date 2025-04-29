@@ -31,7 +31,7 @@ Since networking and WiFi use so many acronymns and abbreviations (and I will us
 - **Band:** A large slice of radio frequency (RF) spectrum available for use by WiFi. This includes 2.4GHz and 5GHz bands, as well as 6GHz band in some parts of the world.
 - **Channel:** A pre-defined and regulated slice of a band which a STA and AP can use to transmit data.
 
-{{ image(src="/blog/wifi-packet-capture/80211_lan_topology.png", align="center", alt="802.11 LAN Topology") }}
+{{ image(src="/blog/2023-10-wifi-packet-capture/80211_lan_topology.png", align="center", alt="802.11 LAN Topology") }}
 
 ## Instructions
 
@@ -320,11 +320,11 @@ Open Wireshark with admin permissions (e.g. `sudo wireshark`) and select the cre
 
 For on-the-fly analysis, editing a live or recently-stopped capture in Wireshark is sufficient. However, for longer running packet captures (or if you really don't wanna redo your capture), save the capture before analyzing or use a non-GUI CLI tool like `tshark` (generally a separate package to install) instead.
 
-For more a quick-reference WiFi (802.11) Wireshark filter cheatsheet, see [this PDF](/blog/wifi-packet-capture/80211_wireshark_cheatsheet.pdf).
+For more a quick-reference WiFi (802.11) Wireshark filter cheatsheet, see [this PDF](/blog/2023-10-wifi-packet-capture/80211_wireshark_cheatsheet.pdf).
 
-{{ image(src="/blog/wifi-packet-capture/wireshark_selecting_interface.png", align="center", alt="Image of selecting wireless interface to perform packet capture on") }}
+{{ image(src="/blog/2023-10-wifi-packet-capture/wireshark_selecting_interface.png", align="center", alt="Image of selecting wireless interface to perform packet capture on") }}
 
-{{ image(src="/blog/wifi-packet-capture/wireshark_selecting_interface.png", align="center", alt="Image of packet capture in progress using interface 'moni0'") }}
+{{ image(src="/blog/2023-10-wifi-packet-capture/wireshark_selecting_interface.png", align="center", alt="Image of packet capture in progress using interface 'moni0'") }}
 
 ### 9\. Decrypting WPA-Personal & WPA2-Personal Wireless Traffic
 
@@ -332,7 +332,7 @@ When attempting to capture network traffic to/from an access point (AP) that use
 
 If you know the password for the AP, it is straightforward to configure Wireshark to decrypt the data. To do so, configure the credential for the AP in Wireshark (e.g. password and SSID) and capture the initial connection between the STA and the AP, specifically the 4-way handshake. In the WiFi world, the initial connection is known as 'association'. To verify you have captured the 4-way handshake, filter for `eapol` or `eapol.type == 3`. You should see something similar to the following (source and destination MAC addresses removed):
 
-{{ image(src="/blog/wifi-packet-capture/wireshark_4way_handshake.png", align="center", alt="Image of Wireshark capture showing a 4-way handshake") }}
+{{ image(src="/blog/2023-10-wifi-packet-capture/wireshark_4way_handshake.png", align="center", alt="Image of Wireshark capture showing a 4-way handshake") }}
 
 For WPA3-Personal, Wireshark can decrypt traffic. However, the process has limitations and is more involved to configure due to the nature of WPA3-Personal authentication (oh darn, it's more secure! /s). The main limitation when decrypting WPA3-Personal is the traffic you can decrypt with one Wireshark-configured key is limited to traffic transmitted between a single STA and AP, and that's assuming you can easily get the key. This limitation contrasts with WPA-Personal and WPA2-Personal where knowing the credentials is enough to decrypt any traffic transmitted to/received from that AP. It is unclear if Wireshark can decrypt OWE (so-called 'Enhanced Open') authentication.
 
