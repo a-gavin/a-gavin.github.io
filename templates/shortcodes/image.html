@@ -1,3 +1,8 @@
+{% set thumb = resize_image(path=src, width=600, height=10, op="fit_width") %}
+{% set image = resize_image(path=src, width=5000, height=5000, op="fit") %}
 <div {% if align %}align="{{align}}" {% endif %}>
-  <img src="{{src}}" {% if alt %}alt="{{alt}}" {% endif %} />
+  <a href="{{ image.url }}">
+    <img src="{{ thumb.url }}" {% if alt %}alt="{{alt}}" {% endif %} />
+  </a>
+  {% if caption %}<figcaption>{{ caption }}</figcaption>{% endif %}
 </div>
