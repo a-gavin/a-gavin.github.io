@@ -14,6 +14,6 @@ I initially embarked on this journey using NetworkManager. To do so, I configure
 
 Since then, I evolved this project to make it more easily-reproducible and flexible to different configurations. The project continues to use `dhcpd` and `nftables` but also leverages new tools as well. An Ansible playbook replaces configuration notes, and `systemd-networkd` takes the place of NetworkManager. I also introduced `hostapd` to optionally configure WiFi access points and Vagrant to streamline testing the Ansible playbook.
 
-This project is available [here](https://github.com/a-gavin/linux-home-router) on my GitHub and includes setup instructions in the [README](https://github.com/a-gavin/linux-home-router/blob/main/README.md). It currently supports Fedora and Ubuntu, but that may change in the future as I explore new tools to accomplish this.
+This project is available [here](https://codeberg.org/a-gavin/linux-home-router) on my GitHub and includes setup instructions in the [README](https://codeberg.org/a-gavin/linux-home-router/src/branch/main/README.md). It currently supports Fedora and Ubuntu, but that may change in the future as I explore new tools to accomplish this.
 
 To set this up on your own system, I recommend at least being familiar with [these commands](http://a-gavin.github.io/blog/linux-cmds/#querying-network-information), in addition to Linux generally. Please reach out if you have any questions!

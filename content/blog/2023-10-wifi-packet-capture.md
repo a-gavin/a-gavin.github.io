@@ -132,7 +132,7 @@ $ lspci | grep Network
 
 #### 3\.2 Determine PHY name of radio
 
-**NOTE:** You can use the [`list_interfaces.py`](https://github.com/a-gavin/talks/blob/main/lfnw_2023_wifi_pcap/list_interfaces.py) script to both determine the radio PHY name/number and all interfaces created using that radio. With this information in hand, you can then skip to the [Manage existing interfaces using radio](#4-2-manage-existing-interfaces-using-radio) section.
+**NOTE:** You can use the [`list_interfaces.py`](https://codeberg.org/a-gavin/talks/src/branch/main/lfnw_2023_wifi_pcap/list_interfaces.py) script to both determine the radio PHY name/number and all interfaces created using that radio. With this information in hand, you can then skip to the [Manage existing interfaces using radio](#4-2-manage-existing-interfaces-using-radio) section.
 
 Find the `phyX` which matches the PCI bus found in the previous step:
 
