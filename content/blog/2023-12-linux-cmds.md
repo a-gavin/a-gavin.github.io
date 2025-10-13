@@ -25,12 +25,16 @@ These commands aren't necessarily Linux machine-specific, but they may come in h
 ```Bash
 # Prints 'Vale la pena' once every half second
 $ watch -n 0.5 echo 'Vale la pena'
+
+# For when 'watch' is not available
+$ while true; do echo 'Vale la pena'; sleep 1; clear; done
 ```
 
 #### View File Contents as File Updates
 
 ```Bash
-# The '-F' option may be useful as well. See 'man tail'
+# I usually run with '-F' instead of '-f', as '-f' will terminate
+# when a file is deleted (e.g. log file rotates). See 'man tail'.
 $ tail -f lanforge_log_1.txt
 ```
 
@@ -108,6 +112,12 @@ ssh-keygen -t ed25519
 # but this does it for you. Using 'scp':
 #   cat .ssh/id_ed25519.pub | ssh user@server 'cat >> ~/.ssh/authorized_keys'
 ssh-copy-id -i ~/.ssh/id_ed25519.pub user@server
+
+# Port forwards the remote port to local system through a jumphost.
+# Here, the remote port is port 80 (generally HTTP) and the local
+# port is 8080. This would permit accessing the 'target-system'
+# webserver using the 'http://localhost:8080' URL.
+ssh -N -L 8080:target-system:80 user@jump-system
 ```
 
 <!-- System Administration: Non-Systemd -->
@@ -414,17 +424,33 @@ $ du -h
 
 ## Querying Network Information
 
-**NOTE:** These commands are listed for diagnostic purposes.
-You probably want to use Network Manager to configure your networking instead.
-See the [next section](#managing-networking-network-manager) for more details.
+**NOTE:** These commands are listed for diagnostic purposes. You probably want to use NetworkManager to
+configure your system's networking instead. See the [next section](#managing-networking-networkmanager) for more details.
 
-Most Linux distributions run Network Manager to configure and manage networking nowadays. This is a common point of confusion, as many guides online reference older, network-scripts based network management and the deprecated `ifconfig` command.
+Most Linux distributions run NetworkManager to configure and manage networking nowadays. This is a common point of confusion, as many guides online reference older, network-scripts based network management and the deprecated `ifconfig` command.
 
 It is possible to configure networking with variations of these commands. Generally, though, you'll almost always be better off using a tool like `NetworkManager` or `systemd-networkd`, unless you have a very specific use case.
 
 For more information, see this [very detailed guide](https://axil.gitlab.io/iproute2/).
 
-#### Show Network Interface Link-Layer Info</h3>
+#### Show Network Interface Driver and Firmware
+
+```Bash
+# Generally 'ethtool' is not installed on Linux systems by default
+$ ethtool -i enp2s0
+driver: r8169
+version: 6.14.8
+firmware-version: rtl8168h-2_0.0.2 02/26/15
+expansion-rom-version: 
+bus-info: 0000:02:00.0
+supports-statistics: yes
+supports-test: no
+supports-eeprom-access: no
+supports-register-dump: yes
+supports-priv-flags: no
+```
+
+#### Show Network Interface Link-Layer Info
 
 Displays interface status and MAC address. More detailed output is possible by
 using the `-d` option (without the `-br` option).
@@ -437,6 +463,29 @@ $ ip -br l
 lo               UNKNOWN        00:00:00:00:00:00 <LOOPBACK,UP,LOWER_UP>
 enp2s0           DOWN           xx:xx:xx:xx:xx:xx <NO-CARRIER,BROADCAST,MULTICAST,UP>
 wlan0            UP             xx:xx:xx:xx:xx:xx <BROADCAST,MULTICAST,UP,LOWER_UP>
+```
+
+#### Show Network Interface Link-Layer Stats
+
+Statistics available depend on the device.
+
+```Bash
+# Generally 'ethtool' is not installed on Linux systems by default
+$ ethtool -S enp2s0
+NIC statistics:
+     tx_packets: 0
+     rx_packets: 0
+     tx_errors: 0
+     rx_errors: 0
+     rx_missed: 0
+     align_errors: 0
+     tx_single_collisions: 0
+     tx_multi_collisions: 0
+     unicast: 0
+     broadcast: 0
+     multicast: 0
+     tx_aborted: 0
+     tx_underrun: 0
 ```
 
 #### Show Network Interface IP-Layer Info
@@ -493,6 +542,28 @@ cache
 $ ip route show table 10
 ```
 
+```Bash
+# Shorthand is 'ip r'. Will show all IPv4 routing tables.
+# The '169.254.0.0/16' route is link-local IPv4 and is mostly default.
+$ ip route
+default via 10.199.0.1 dev wlan0 proto dhcp metric 600
+10.199.0.0/20 dev wlan0 proto kernel scope link src 10.199.4.142 metric 600
+169.254.0.0/16 dev wlan0 scope link metric 1000
+
+# Show IPv6 routing tables only
+$ ip -6 route
+::1 dev lo proto kernel metric 256 pref medium
+fe80::/64 dev wlan0 proto kernel metric 1024 pref medium
+
+# Determine what route traffic will take for a specific address, here '8.8.8.8'
+$ ip route get 8.8.8.8
+8.8.8.8 via 10.199.0.1 dev wlan0 src 10.199.4.142 uid 1000
+cache
+
+# Show routes in routing table 10
+$ ip route show table 10
+```
+
 #### Show Open Sockets (Existing Connections)
 
 I typically use this as `ss -tulpn` and `grep` for what I want. If you run as root (e.g. with `sudo`), you will also see the program that is using the socket.
@@ -514,19 +585,19 @@ udp    UNCONN  0       0               0.0.0.0:631            0.0.0.0:*      use
 
 <!-- Managing Networking -->
 
-## Managing Networking (Network Manager)
+## Managing Networking (NetworkManager)
 
-At a high level, Network Manager configures 'connections' which are established using a backing network interface, or in Network Manager terms, 'device'. These network interfaces are either managed or unmanaged from Network Manager's perspective.
+At a high level, NetworkManager configures 'connections' which are established using a backing network interface, or in NetworkManager terms, 'device'. These network interfaces are either managed or unmanaged from NetworkManager's perspective.
 
-Generally, most users will be fine with Network Manager configuring all of their
-network interfaces, typically only WiFi and Ethernet (although Network Manager can do much more). There are times, though, where it is appropriate to have Network Manager [ignore specific interfaces](#set-device-management), for example, when doing [WiFi packet capture](@/blog/2023-10-wifi-packet-capture.md).
+Generally, most users will be fine with NetworkManager configuring all of their
+network interfaces, typically only WiFi and Ethernet (although NetworkManager can do much more). There are times, though, where it is appropriate to have NetworkManager [ignore specific interfaces](#set-device-management), for example, when doing [WiFi packet capture](@/blog/2023-10-wifi-packet-capture.md).
 
-This section details some of the most basic and more-useful (from my perspective) NetworkManager CLI commands. See `man nmcli-examples` for more examples and more advanced usage of Network Manager.
+This section details some of the most basic and more-useful (from my perspective) NetworkManager CLI commands. See `man nmcli-examples` for more examples and more advanced usage of NetworkManager.
 
 #### Show All Devices
 
-Shows all Network Manager-tracked network devices, including both devices
-that are managed and unmanaged by Network Manager.
+Shows all NetworkManager-tracked network devices, including both devices
+that are managed and unmanaged by NetworkManager.
 
 ```Bash
 # Shorthand shown. Full command is 'nmcli device'
@@ -619,7 +690,7 @@ $ nmcli c m SSID_NAME \
 
 ## Querying WiFi Information
 
-**NOTE:** Most Linux systems use Network Manager to manage and configure networking, including WiFi. See the [Managing Networking](#managing-networking-network-manager) section for more details.
+**NOTE:** Most Linux systems use NetworkManager to manage and configure networking, including WiFi. See the [Managing Networking](#managing-networking-networkmanager) section for more details.
 
 On Linux WiFi interfaces are created using a parent radio device, referred to as 'phys'. These radios come in a variety of form factors, including single radio, single phy and single radio, multi-phy. To view all system phys, run `ls /sys/class/ieee80211/`, which lists all `ieee80211` devices (WiFi phys). Supported interfaces, combinations, and settings depend on the radio firmware and associated Linux device driver. By default, a single WiFi interface is created per phy on system boot in 'managed' mode (WiFi station).
 
@@ -630,7 +701,6 @@ While most will be content with `NetworkManager` managing their WiFi interface s
 Includes STA MAC, SSID, phy device, channel, frequency, transmit power.
 
 ```Bash
-# Can also run 'iw dev wlan0 info', but 'dev' is optional
 $ iw wlan0 info
 Interface wlan0
         ifindex 3
@@ -652,8 +722,9 @@ Interface wlan0
 Includes AP MAC (if station), SSID, frequency, bandwidth, RSSI (if station), and phy rate (MCS),
 among other things. Phy rate may or may not include NSS.
 
+I often run this command in a loop while doing other testing using the commands in [this section](#run-command-every-n-seconds).
+
 ```Bash
-# Can also run 'iw dev wlan0 link', but 'dev' is optional
 # Anonymized MAC here is the AP's BSSID
 $ iw wlan0 link
 Connected to xx:xx:xx:xx:xx:xx (on wlan0)
@@ -668,6 +739,54 @@ Connected to xx:xx:xx:xx:xx:xx (on wlan0)
         bss flags:      short-slot-time
         dtim period:    1
         beacon int:     100
+```
+
+#### Show WiFi Interface Station Information
+
+**NOTE:** This command will only show meaningful output when the WiFi interface is connected (associated).
+
+This is effectively a combination of the `iw wlan0 info` and `iw wlan0 link` commands. For station interfaces,
+this lists information related to the AP the station is associated with. In 802.11 terminology,
+the station and AP are both stations, with the former (e.g. phone, laptop) being a non-AP station.
+
+For AP interfaces, this list information for all stations associated to that AP interface.
+
+```Bash
+# Anonymized MAC here is the AP's BSSID
+$ iw wlan0 station dump
+Station xx:xx:xx:xx:xx:xx (on wlan0)
+        inactive time:  2682 ms
+        rx bytes:       47808905
+        rx packets:     45274
+        tx bytes:       11417769
+        tx packets:     25222
+        tx retries:     3001
+        tx failed:      0
+        beacon loss:    0
+        rx drop misc:   0
+        signal:         -42 [-43, -46] dBm
+        signal avg:     -40 [-35, -45] dBm
+        tx bitrate:     51.6 MBit/s 40MHz HE-MCS 2 HE-NSS 1 HE-GI 0 HE-DCM 0
+        tx duration:    3694323 us
+        rx bitrate:     458.8 MBit/s 40MHz HE-MCS 9 HE-NSS 2 HE-GI 0 HE-DCM 0
+        rx duration:    3871820 us
+        last ack signal:-39 dBm
+        avg ack signal: -39 dBm
+        airtime weight: 256
+        authorized:     yes
+        authenticated:  yes
+        associated:     yes
+        preamble:       long
+        WMM/WME:        yes
+        MFP:            yes
+        TDLS peer:      no
+        DTIM period:    3
+        beacon interval:100
+        short slot time:yes
+        connected time: 777 seconds
+        associated at [boottime]:       13.231s
+        associated at:  1760385417521 ms
+        current time:   1760386194555 ms
 ```
 
 #### Show Channels Supported by WiFi Radio/Phy
@@ -694,8 +813,7 @@ Band 2:
 This information is very verbose and includes channels and bands in current regulatory domain, ciphers, MCS rates, and antennas, and more.
 
 ```Bash
-# Can also run 'iw phy phy0 info', but 'phy' is optional
-# Will show a 'Band 3', if supports 2.4 GHz, 5 GHz, and 6 GHz
+# Will show a 'Band 3', if supports 2.4 GHz, 5 GHz, and 6 GHz (varies by radio)
 $ iw phy0 info
         ...
         Supported Ciphers:
@@ -721,10 +839,16 @@ $ iw phy0 info
 
 #### Show Wireless Regulatory Domain Info
 
-You may see a combination of 'global' and per-phy regulatory configuration. The following shows both.
+You may see a combination of system ('global') and per-radio ('self-managed') regulatory configuration.
+The following shows both.
+
+Per-radio regulatory configuration refers to regulatory domain configuration that the radio configures
+on its own in the firmware/driver. Based on present conditions (e.g. beacons), the radio will override
+the system regulatory domain, restricting the user to what the radio permits. In my experience, this
+generally affects Intel radios (e.g. AX210, BE200).
 
 ```Bash
-# Notice the inclusion of sub-1GHz (WiFi HaLow, 802.11ah) and 60GHz (WiGig) spectrum
+# Note the inclusion of sub-1GHz (WiFi HaLow, 802.11ah) and 60GHz (WiGig) spectrum
 $ iw reg get
 global
 country US: DFS-FCC
@@ -763,6 +887,97 @@ country 00: DFS-UNSET
         (5775 - 5795 @ 80), (6, 22), (N/A), AUTO-BW, IR-CONCURRENT, NO-HT40MINUS, NO-160MHZ, PASSIVE-SCAN
         (5795 - 5815 @ 80), (6, 22), (N/A), AUTO-BW, IR-CONCURRENT, NO-HT40PLUS, NO-160MHZ, PASSIVE-SCAN
         (5815 - 5835 @ 20), (6, 22), (N/A), AUTO-BW, IR-CONCURRENT, NO-HT40MINUS, NO-HT40PLUS, NO-80MHZ,NO-160MHZ, PASSIVE-SCAN
+```
+
+## WiFi Configuration (Manual)
+
+This section is more advanced and the commands here will almost certainly interfere
+with any running network configuration daemons (e.g. NetworkManager).
+
+#### Add Virtual WiFi Interface
+
+The number and type of virtual interfaces varies both in terms of radio as well as driver/kernel.
+
+```Bash
+# Add station
+$ iw phy0 interface add wlan0 type managed
+
+# Add monitor
+$ iw phy0 interface add moni0 type monitor
+
+# Add AP
+# When using 'hostapd', the interface to use can be a station (managed).
+# The program will change the type as needed.
+$ iw phy0 interface add moni0 type __ap
+```
+
+#### Change Virtual WiFi Interface Type
+
+```Bash
+# Change to station
+$ iw wlan0 set type managed
+
+# Change to monitor
+$ iw wlan0 set type monitor
+
+# Change to AP
+$ iw wlan0 set type __ap
+```
+
+#### Delete Virtual WiFi Interface
+
+```Bash
+$ iw wlan0 del
+```
+
+#### Trigger WiFi Interface Scan
+
+Combinations of the following are permissible. See the help output of `iw` for more info/options.
+
+```Bash
+# General scan, will send probe requests
+$ iw wlan0 scan
+
+# Scan on specific frequency/frequencies
+$ iw wlan0 scan freq 2412 5180
+
+# Directed scan for specific SSID (exclusive with passive scan)
+$ iw wlan0 scan ssid SSIDNAME
+
+# Passive scan, no probe requests (exclusive with specific SSID)
+$ iw wlan0 scan passive
+```
+
+#### Rename WiFi Radio/Phy
+
+```Bash
+$ iw phy0 set name wiphy0
+```
+
+#### Move WiFi Radio/Phy to Network Namespace
+
+**Exercise caution here**, as this will make the radio (and any virtual interfaces, e.g. 'wlan0')
+visible only within the context of the network namespace. In other words, any WiFi interfaces
+for the radio will no longer be visible via 'ip' unless you're running within the network namespace.
+To move the radio back to the non-network namespace use, you will need to delete the network namespace.
+
+Interestingly, network namespaces names don't exist in the kernel, only ID. Named network namespaces
+appear to be a construct introduced by the 'iproute2' package (`ip` command) that is now defacto standard.
+When creating named network namespaces, `ip` bind mounts to `/var/run/netns/` as part of the process.
+More details [here](https://7bits.nl/journal/posts/what-does-ip-netns-add-actually-do/).
+
+```Bash
+# Specify netns by name
+$ iw phy0 set netns name mynetns
+
+# Specify netns by ID
+$ iw phy0 set netns $NETNS_ID
+
+# Show interfaces in network namespace (generally requires root permissions)
+$ ip netns exec $NETNS_NAME ip link show
+
+# Make radio available for non-network namespace use (requires deleting network namespace)
+$ ip netns delete $NETNS_NAME
 ```
 
 <!-- Querying DBus Information -->
