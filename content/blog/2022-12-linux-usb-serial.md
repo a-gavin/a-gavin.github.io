@@ -19,7 +19,7 @@ you'll need to either login as `root` or run your program with `sudo` permission
 For many reasons, this can be undesirable. However, for users without root permissions, this
 is a deal-breaker. A dedicated udev rule is one way to permit non-root usage.
 
-If you aren't familiar with udev, [this article]("https://wiki.archlinux.org/title/udev")
+If you aren't familiar with udev, [this article](https://wiki.archlinux.org/title/udev)
 explains the basics and a bit of history. The main takeaway is udev controls USB serial device
 system configuration, among other things, on many modern Linux distributions. Given this,
 creating a udev rule is the right way to go!
