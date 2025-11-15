@@ -9,33 +9,35 @@ path = "blog/wifi-packet-capture"
 
 ## Overview
 
-**NOTE:** This guide assumes you have admin access to the machine you're using.
+This guide demonstrates how to configure and use a WiFi radio on a Linux system to perform WiFi packet capture.
 
-This guide demonstrates how to configure and use a WiFi radio on a Linux system to perform WiFi packet capture. It assumes you are familiar with general networking concepts, are comfortable in a Linux terminal, and assumes at least a little bit of WiFi knowledge.
+It assumes you have some experience with Linux, are familiar with general networking concepts, and have maybe at a little bit of WiFi knowledge.
+Root permissions on the system used for packet capture are also assumed.
 
-Unlike network interfaces like Ethernet, performing packet capture on the existing wireless interface (e.g. `wlan0`) will not necessarily capture arbitrary WiFi traffic. Different device drivers and firmware operate differently, so you may see some additional traffic. However, to capture WiFi traffic present over the air _not destined to your device_, one must configure a separate WiFi monitor interface. This guide details how to do so.
+Unlike other network interfaces like Ethernet, performing packet capture on a default wireless interface (e.g. `wlan0`) without adjustments will generally only capture network traffic above the link-layer (i.e. not WiFi). To capture arbitrary WiFi traffic and not just data exchanged between a client and an AP, one must conifgure a monitor interface. This guide details how to do so and more.
 
-If you want more background information on WiFi or would like to watch my talk on the subject, watching [the recording](https://www.youtube.com/watch?v=Hi-tt3Cdf0M&list=PLjDc7gDlIAST09nqYxYxpn_VdQPVzyAcs&index=6) may prove useful.
+For some background information on WiFi, you may find [my ramblings on the subject](https://www.youtube.com/watch?v=Hi-tt3Cdf0M&list=PLjDc7gDlIAST09nqYxYxpn_VdQPVzyAcs&index=6) at LFNW 2023 useful.
 
 ## Definitions
 
-Since networking and WiFi use so many acronymns and abbreviations (and I will use them in this guide), here's a list of some common terms and what they mean:
+Networking and WiFi use many acronymns and abbreviations, and I will use them in this guide. Here's a list of some common terms
+and their definitions (non-exhaustive).
 
 - **Radio:** The physical hardware used to communicate over WiFi.
-- **Interface:** A logical abstraction created by an operating system for managing network devices. These can be virtual or physical.
-- **STA (or station):** Any client that connects to an access point (AP).
-- **AP (or access point):** What most people refer to as a 'router'. A device used to connect to a WiFi network.
-- **vSTA (or virtual station):** Same as STA, but primarily used when discussing STA network interfaces on a system.
-- **vAP (or virtual access point):** Same as AP, but primarily used when discussing AP network interfaces on a system.
-- **Monitor:** A network interface used to perform packet capture.
-- **Band:** A large slice of radio frequency (RF) spectrum available for use by WiFi. This includes 2.4GHz and 5GHz bands, as well as 6GHz band in some parts of the world.
-- **Channel:** A pre-defined and regulated slice of a band which a STA and AP can use to transmit data.
+- **Interface (or network interface):** A logical software abstraction created by an operating system to manage a network device.
+- **STA (or station):** Any client device that connects to an access point (AP).
+- **AP (or access point):** What most people refer to as a 'router'. This device runs a centralized WiFi network (as opposed to P2P).
+- **vSTA (or virtual station):** A network interface type. Same as STA, but primarily used when discussing STA network interfaces on a system.
+- **vAP (or virtual access point):** A network interface type. Same as AP, but primarily used when discussing AP network interfaces on a system.
+- **Monitor:** A network interface type used to perform packet capture.
+- **Band:** A large slice of radio frequency (RF) spectrum available for use by WiFi. This includes 2.4GHz and 5GHz bands, as well as 6GHz band in many parts of the world.
+- **Channel:** A pre-defined and regulated slice of a band which a STA and AP can use to transmit and receive data.
 
 {{ image(src="/blog/2023-10-wifi-packet-capture/80211_lan_topology.png", caption="802.11 LAN Topology", alt="802.11 LAN Topology") }}
 
 ## Instructions
 
-### 1\. Double-Check Some Things Before Starting
+### 1\. Assumptions and Recommendations
 
 #### Ensure that your radio works for your use case
 
@@ -43,71 +45,32 @@ This can be somewhat challenging. The easiest method is to check the supported c
 
 For example:
 
-- An AX210 does 6GHz, but AX200 does not. Both are 802.11ax, but only the AX210 is WiFi 6E (AX200 is WiFi 6)
-- A MTK7922 can do 160MHz channels, but MTK7921 can only do 80MHz
-- AX210 and BE200 radios must first detect that they are in a regulatory domain which supports 6GHz in order to use the 6GHz band. There's a bit of a dance to get that done (see [this section](#6ghz-packet-capture-with-intel-radios))
+- AX210 radios support 6 GHz, but AX200 radios do not
+
+  - Both radios are 802.11ax, but only the AX210 is WiFi 6E (AX200 is WiFi 6).
+
+  - Similarly, MTK7921k radios support 6 GHz, but MTK7921 radios don't.
+
+- MTK7922 radios can do 160MHz channels, but MTK7921 radios can only do 80MHz
+- AX210 and BE200 radios must perform firmware regulatory domain detection to permit 6 GHz band usage. More info [here](#6ghz-packet-capture-with-intel-radios)
+
+For more information on the quirks of different devices, check out the Linux USB WiFi GitHub repository [here](https://github.com/morrownr/USB-WiFi).
+This project is a community-driven knowledge base with information on a variety of WiFi radios, including recommendations.
 
 #### Ensure you have a backup internet connection method
 
-You can perform packet capture offline. However, creating a monitor mode interface as this guide instructs will effectively disable any use of parent radio for other usage. **I recommend connecting a backup network interface if possible (e.g. Ethernet).**
+You can perform packet capture offline. However, creating a monitor mode interface as this guide instructs will effectively disable WiFi for any other usage. **I recommend connecting a backup network interface if at all possible (e.g. Ethernet).**
 
 #### Ensure that you have admin access on machine
 
 The commands used here require `sudo` access.
 
-#### Ensure no other programs will interfere
-
-**NOTE:** **If you decide to delete the existing interface later on in this guide, this step is not necessary**. This step is only necessary if you intend to keep any managed network interface when doing WiFi packet capture. This is generally possible if you 'DOWN' the managed interface before using the monitor and avoid using it while performing captures.
-
-If you opt to keep the existing wireless interface around, other system programs may get in the way of your packet capture fun. **The likely culprit here is NetworkManager**, which is the de-facto network configuration tool on Linux these days. There's no need to disable NetworkManager entirely. Otherwise, you may lose all network access. Instead we'll configure NetworkManager to ignore the wireless interface (and by extension the wireless radio) we're going to use.
-
-To do so, first determine if NetworkManager is active. Next, determine if any wireless interfaces exist that use the radio you want to use for packet capture (see [these](#3-determine-radio-s-phy-name) [sections](#4-1-find-all-interfaces-using-radio)). Finally, instruct NetworkManager to ignore the interface. The following demonstrates this process for an interface `wlan0`:
-
-```Bash
-# Check if NetworkManager is running (it is with PID 1072)
-$ pgrep NetworkManager
-1072
-
-# Show devices visible to NetworkManager (note 'wlan0')
-# Shorthand is `nmcli d`
-$ nmcli device show
-DEVICE           TYPE      STATE        CONNECTION
-wlan0            wifi      connected    wlancancan
-enp2s0           ethernet  unavailable  --
-lo               loopback  unmanaged    --
-
-# Print the wireless device's properties to verify that it is desired device.
-#
-# Here, I know my SSID is 'wlancancan' and NetworkManager names WiFi
-# connections by their SSID by default. Thus, the 'GENERAL.CONNECTION' field
-# matching 'wlancancan' tells me this is the right device.
-$ nmcli device show wlan0
-GENERAL.DEVICE:                         wlan0
-GENERAL.TYPE:                           wifi
-GENERAL.HWADDR:                         xx:xx:xx:xx:xx:xx
-GENERAL.MTU:                            1500
-GENERAL.STATE:                          100 (connected)
-GENERAL.CONNECTION:                     wlancancan
-GENERAL.CON-PATH:                       /org/freedesktop/NetworkManager/ActiveConnection/1
-IP4.ADDRESS[1]:                         x.x.x.x/x
-IP4.GATEWAY:                            x.x.x.x
-ip4.roUTE[1]:                           dst = x.x.x.x/x, nh = 0.0.0.0, mt = 600
-IP4.ROUTE[2]:                           dst = 169.254.0.0/16, nh = 0.0.0.0, mt = 1000
-IP4.ROUTE[3]:                           dst = 0.0.0.0/0, nh = x.x.x.x, mt = 600
-IP4.DNS[1]:                             8.8.8.8
-IP6.ADDRESS[1]:                         fe80::8fad:12b9:d5a8:e60b/64
-IP6.GATEWAY:                            --
-IP6.ROUTE[1]:                           dst = fe80::/64, nh = ::, mt = 1024
-
-# Tell NetworkManager to stop managing the WiFi device we want to use
-$ nmcli device set wlan0 managed false
-```
-
-If you’d like NetworkManager to explicitly ignore specific network interfaces or ignore network interfaces whose name matches a specific pattern, see [this guide](https://stackoverflow.com/questions/5321380/disable-network-manager-for-a-particular-interface).
-
 ### 2\. Install Required Packages
 
-In this guide, we'll use `iw` to configure the wireless monitor interface and Wireshark to perform and analyze packet captures. These are generally not installed by default on most Linux distros, though, so install them as follows:
+**NOTE:** The `iwconfig` command, like the `ipconfig` command, is deprecated for usage on Linux. Use the `iw` command instead (or `ip` to replace `ipconfig`).
+
+We'll use `iw` to configure and query the WiFi monitor interface and Wireshark to perform and analyze packet captures.
+These are generally not installed by default on most Linux distros, though, so install them as follows.
 
 ```Bash
 # Debian/Ubuntu:
@@ -122,7 +85,7 @@ sudo yum install -y iw wireshark
 #### 3\.1 Determine PCI bus of radio
 
 ```Bash
-# Here the PCI bus is '03:00.0'
+# Here there is one radio with PCI bus '03:00.0'
 #
 # May need to remove the pipe to grep and manually read output.
 # Not all radios will appear w/ "Network controller" prefix.
@@ -130,9 +93,9 @@ $ lspci | grep Network
 03:00.0 Network controller: MEDIATEK Corp. MT7921 802.11ax PCI Express Wireless Network Adapter
 ```
 
-#### 3\.2 Determine PHY name of radio
+#### 3\.2 Determine name of radio
 
-**NOTE:** You can use the [`list_interfaces.py`](https://codeberg.org/a-gavin/talks/src/branch/main/lfnw_2023_wifi_pcap/list_interfaces.py) script to both determine the radio PHY name/number and all interfaces created using that radio. With this information in hand, you can then skip to the [Manage existing interfaces using radio](#4-2-manage-existing-interfaces-using-radio) section.
+**NOTE:** You can use the [`list_interfaces.py`](https://codeberg.org/a-gavin/talks/src/branch/main/lfnw_2023_wifi_pcap/list_interfaces.py) script to both determine the radio name, radio index, and all interfaces created using that radio. With this information in hand, you can then skip to the [Manage existing interfaces using radio](#4-2-manage-existing-interfaces-using-radio) section.
 
 Find the `phyX` which matches the PCI bus found in the previous step:
 
@@ -166,28 +129,15 @@ phy0 wlan0
 
 #### 4\.2 Manage existing interfaces using radio
 
-The step depends on whether you plan to delete any existing interfaces or not. You're likely to only have one interface which uses the radio on your system, but if you find more, repeat your chosen step for each interface using the radio.
+To simplify things, we'll remove any existing interfaces using the radio we want to use. We'll recreate this interface later
+on in [this section](#10-reset-your-wifi).
 
-**Choose one:**
-
-1. You want the monitor to be the only network interface using the radio.
-
-   You only need to delete the existing interface. You will need to recreate it later if you want to reconnect to the internet
-   using WiFi (see [this](#resetting-your-wifi) section).
+If we left another interface hanging around, your networking daemon would almost certainly interfere, and we'd have to remember
+adjust system configuration both before and after packet capture. That's tedious.
 
 ```Bash
 # Deletes the 'wlan0' interface from the radio
-$ sudo iw dev wlan0 del
-```
-
-2. You want to keep the existing network interface which uses the radio (coexist with the monitor interface).
-
-   You must first ensure that no other system programs will attempt to use the existing wireless interface (see [this section](#ensure-no-other-programs-will-interfere)).
-
-```Bash
-# Down the interface
-# Shorthand is `ip l s down dev wlan0`
-$ sudo ip link set down dev wlan0
+$ sudo iw wlan0 del
 ```
 
 ### 5\. Create Monitor Interface on Radio
@@ -212,26 +162,28 @@ $ sudo ip link set up dev moni0
 # 'UNKNOWN' state is expected.
 #
 # 'UP' indicates interface is running. 'LOWER_UP' indicates underlying phy is up.
-# For example, a non-configured but plugged in Ethernet device
-# may be 'DOWN' but 'LOWER_UP'. See netdevice(7).
+# For example, a non-configured but plugged in Ethernet device may be 'DOWN' but 'LOWER_UP'.
+# See netdevice(7).
 $ ip -br link show dev moni0
 moni0            UNKNOWN        34:c9:3d:0e:79:64 <BROADCAST,MULTICAST,UP,LOWER_UP>
 ```
 
 ### 7\. Configure Monitor Interface
 
-**NOTE:** Pay close attention here as this is where it can get tricky if you’re not paying attention. Things like bands and channel widths supported by your radio, regulatory domain, and even buggy behavior/radio firmware limitations can complicate this process.
+Pay close attention here as this is where it can get tricky if you’re not paying attention. Complexity like bands
+and channel widths supported by your radio, regulatory domain, and even buggy behavior or radio firmware
+limitations can complicate this process.
 
 #### 7\.1 Verify that the channel you want to sniff is supported
 
+The following command lists channels supported by the radio.
+
 ```Bash
-# This command lists channels supported by your radio
-#
 # Output below is snipped for sake of example. The radio used
-# in this example does not support 6GHz band.
+# in this example does not support 6 GHz band.
 #
 # Typically, the bands are as follows (although depends on your radio):
-#    1: 2.4GHz, 2: 5GHz, 3: 6GHz (if your radio supports 6GHz)
+#    1: 2.4 GHz, 2: 5 GHz, 3: 6 GHz (if your radio supports 6 GHz)
 $ iw phy0 channels
 Band 1:
         * 2412 MHz [1]
@@ -264,34 +216,28 @@ Band 2:
 
 #### 7\.2 Configure monitor to desired channel
 
-**NOTE:** This assumes your radio supports the channel you would like to sniff. The [previous step](#7-1-verify-that-the-channel-you-want-to-sniff-is-supported) details how to check. Also, if you do not configure the channel, the monitor will default to the 2.4GHz channel 1 with 20MHz channel width.
+**NOTE:** This assumes your radio supports the channel you would like to do WiFi packet capture. See The [previous step](#7-1-verify-that-the-channel-you-want-to-sniff-is-supported) for more info. If you do not configure the channel, the monitor
+will default to the 2.4 GHz channel 1 with 20 MHz channel width.
 
 The following methods demonstrate how to configure the monitor frequency (channel), each using a different command syntax:
 
-1. Using channel width (generally easier)
-
-   You can translate this syntax directly from the `iw phy X channels` output.
-   It's possible to specify 160MHz and 320MHz, but some versions of `iw` do not support those.
+There are two methods to configure the monitor channel, either by control frequency and channel width or by center frequency, channel width,
+and center frequency. Configuring with just control frequency and channel width is generally easier and less confusing.
 
 ```Bash
-$ sudo iw dev moni0 set freq 5180 80MHz
+# This syntax translates directly from 'iw phy0 channels' output.
+# Newer versions of 'iw' permit configuring 160 MHz and 320 MHz channel widths.
+sudo iw moni0 set freq 5180 80MHz
 ```
 
-2. Using center frequency
+If you encounter errors, even after verifying that your radio supports the desired channel, check kernel kernel logs (`sudo dmesg`).
+I find it useful to watch logs as I configure the monitor using two terminals, one for the configuration command, the other running
+kernel logs (`sudo dmesg -w`).
+
+The following is example error output for a radio which does not support 160 MHz channels:
 
 ```Bash
-# TODO: Center frequency calculation (different cases for 20,40,80,160,320 vs. 80+80 and possibly 6GHz)
-$ sudo iw dev moni0 set freq 5955 80 5985
-```
-
-If you encounter errors, even after verifying that your radio supports the desired channel, check the kernel message buffer (`sudo dmesg`).
-
-I find it useful to watch the error output as it happens. To do so, use two terminals. In one, run `sudo dmesg -w` (`-w` lets you follow the output, similar to `tail -f`). In the other, run the `iw` command you’re using to configure the channel.
-
-The following is an example error output for a radio which does not support 160MHz channels:
-
-```Bash
-$ sudo iw dev moni0 set freq 5180 160MHz
+$ sudo iw moni0 set freq 5180 160MHz
 kernel reports: (extension) channel is disabled
 command failed: Invalid argument (-22)
 ```
@@ -299,9 +245,9 @@ command failed: Invalid argument (-22)
 #### 7\.3 Verify monitor is on desired channel
 
 ```Bash
-# Assuming command to set channel succeeded ('iw dev moni0 set freq ...'),
+# Assuming command to set channel succeeded ('iw moni0 set freq ...'),
 # you should see desired channel and channel width output here
-$ iw dev moni0 info
+$ iw moni0 info
 Interface moni0
         ifindex 17
         wdev 0x2
@@ -312,13 +258,12 @@ Interface moni0
         txpower 24.00 dBm
 ```
 
-### 8\. Run Wireshark Using Monitor
+### 8\. Run and analyze packet capture
 
-**NOTE:** Don't forget about your packet capture if it's running. It will eat up your disk space if you let it!
-
-Open Wireshark with admin permissions (e.g. `sudo wireshark`) and select the created interface ('moni0' in the example below), then press ‘Enter’ to begin packet capture. If you know the interface you want to sniff on, then you can use the `-i` option, e.g. `sudo wireshark -i moni0`.
-
-For on-the-fly analysis, editing a live or recently-stopped capture in Wireshark is sufficient. However, for longer running packet captures (or if you really don't wanna redo your capture), save the capture before analyzing or use a non-GUI CLI tool like `tshark` (generally a separate package to install) instead.
+Open Wireshark and select the monitor interface, then press ‘Enter’ to begin packet capture. If you know the interface
+you want to sniff on, then you can run with the `-i` option and `-k` options to immediately start the capture on the
+selected interface, e.g. `wireshark -k -i moni0`. Alternatively, you can use a CLI tool like `tshark` or `dumpcap`
+to perform the capture and analyze it after.
 
 For a more quick-reference WiFi (802.11) Wireshark filter cheatsheet, see [this PDF](/blog/2023-10-wifi-packet-capture/80211_wireshark_cheatsheet.pdf).
 
@@ -326,37 +271,42 @@ For a more quick-reference WiFi (802.11) Wireshark filter cheatsheet, see [this 
 
 {{ image(src="/blog/2023-10-wifi-packet-capture/wireshark_pcap_in_progress.png", caption="Packet capture in progress using 'moni0'", alt="Image of packet capture in progress using interface 'moni0'") }}
 
-### 9\. Decrypting WPA-Personal & WPA2-Personal Wireless Traffic
+#### Words of Wisdom
 
-When attempting to capture network traffic to/from an access point (AP) that uses "open" authentication (i.e. no encryption), no extra configuration is necessary. Everything is plaintext and painfully insecure. Wireshark just decodes the data as you'd expect. However, for APs which use encryption, you need to perform some extra steps.
+Always save your capture once you're done. For on-the-fly analysis, editing a live or recently-stopped capture in Wireshark
+is sufficient. However, it is very annoying to lose your data because Wireshark crashed while you updated the display filter.
 
-If you know the password for the AP, it is straightforward to configure Wireshark to decrypt the data. To do so, configure the credential for the AP in Wireshark (e.g. password and SSID) and capture the initial connection between the STA and the AP, specifically the four-way handshake. In the WiFi world, the initial connection is known as 'association'. To verify you have captured the four-way handshake, filter for `eapol` or `eapol.type == 3`. You should see something similar to the following (source and destination MAC addresses removed):
+Also, don't forget to stop your packet capture once you're done. It will eat up your disk space if you let it!
 
-{{ image(src="/blog/2023-10-wifi-packet-capture/wireshark_4way_handshake.png", caption="EAPOL four-way handshake", alt="Image of Wireshark capture showing a four-way handshake") }}
+### 9\. Decrypting WPA-Personal & WPA2-Personal WiFi Traffic
 
-For WPA3-Personal, Wireshark can decrypt traffic. However, the process has limitations and is more involved to configure due to the nature of WPA3-Personal authentication (oh darn, it's more secure! /s). The main limitation when decrypting WPA3-Personal is the traffic you can decrypt with one Wireshark-configured key is limited to traffic transmitted between a single STA and AP, and that's assuming you can easily get the key. This limitation contrasts with WPA-Personal and WPA2-Personal where knowing the credentials is enough to decrypt any traffic transmitted to/received from that AP. It is unclear if Wireshark can decrypt OWE (so-called 'Enhanced Open') authentication.
+When attempting to capture network traffic to/from an access point (AP) that uses "open" authentication (i.e. no encryption), no extra configuration is necessary. Everything is plaintext and painfully insecure. Wireshark just decodes the data as you'd expect. However, for networks which use encryption,
+some extra work is required.
 
-See the [HowToDecrypt802.11 guide](https://wiki.wireshark.org/HowToDecrypt802.11) on Wireshark's Wiki for more information.
+For WPA-Personal and WPA2-Personal, configuration is pretty straightforward. However, WPA3-Personal is more complicated given increased
+security (which is good!). See the [Wireshark guide](https://wiki.wireshark.org/HowToDecrypt802.11) for more information.
 
-## Resetting Your WiFi
+To decrypt WPA-Personal and/or WPA2-Personal WiFi traffic, perform the following steps:
 
-Okay you had your fun, now time to use your WiFi again. You can either reboot (most systems simply recreate a default managed interface on reboot) or run the following commands:
+1. Configure the SSID and password in Wireshark
+
+2. Capture the client connection to the AP (commonly referred to as the four-way handshake, filter for `eapol`)
+
+  {{ image(src="/blog/2023-10-wifi-packet-capture/wireshark_4way_handshake.png", caption="EAPOL four-way handshake", alt="Image of Wireshark capture showing a four-way handshake") }}
+
+With WPA2-Personal, you may still see some management and control frames encrypted. This stems from the client and AP enabling 802.11 protected
+managment frames (PMF), which is possible to disable from either end depending on your device. However, this is outside the scope of this guide.
+
+### 10\. Reset Your WiFi
+
+Okay you had your fun, now time to use your WiFi again. Either reboot or run the following commands.
 
 ```Bash
 # Delete monitor interface
-#
-# NetworkManager will deal w/ configuring connection to your WiFi
-$ sudo iw dev moni0 del
+$ sudo iw moni0 del
 
-# Recreate virtual interface we previously deleted
-#
-# 'managed' is type STA
+# Recreate virtual interface we previously deleted, 'managed' is type STA/client
 $ sudo iw phy0 interface add wlan0 type managed
-
-# Tell NetworkManager to configure your radio (might do this by default, but just in case)
-#
-# This may happen automatically, but good to run just in case
-$ nmcli device set wlan0 managed true
 ```
 
 ## 6GHz Packet Capture with Intel Radios
@@ -371,7 +321,7 @@ To configure a 6GHz Intel radio monitor, the radio firmware must first detect th
 
 ### 1\. Delete All Other Interfaces Using Radio
 
-Delete all network interfaces using the radio by following the instructions which run `iw dev ... del` in [this](#4-2-manage-existing-interfaces-using-radio) section.
+Delete all network interfaces using the radio by following the instructions which run `iw ... del` in [this](#4-2-manage-existing-interfaces-using-radio) section.
 
 ### 2\. Create and Up a Station on Radio
 
@@ -392,7 +342,7 @@ $ iw phy0 channels
 
 ```Bash
 # Admin 'UP' the station, so you can use it
-$ sudo iw dev wlan0 scan
+$ sudo iw wlan0 scan
 ```
 
 ### 4\. Create Monitor Interface on Radio
