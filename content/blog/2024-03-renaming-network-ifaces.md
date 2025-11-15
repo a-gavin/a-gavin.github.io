@@ -1,10 +1,12 @@
 +++
 title = "Renaming Linux Network Interfaces"
 date = "2024-03-18"
-path = "blog/renaming-network-interfaces"
+path = "blog/linux-renaming-network-interfaces"
+
+aliases = ["blog/renaming-network-interfaces"]
 
 #[taxonomies]
-#tags = ["linux", "udev"]
+#tags = ["linux", "udev", "systemd"]
 +++
 
 ## Motivation
