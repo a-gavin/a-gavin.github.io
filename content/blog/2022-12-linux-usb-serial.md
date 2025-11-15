@@ -10,19 +10,16 @@ path = "blog/linux-usb-serial"
 
 ## Motivation
 
-**NOTE:** This guide assumes you have root privileges on the machine you will use and are fine
-giving _all users_ access to a specific serial devices on the system. Some distributions create
-a `plugdev` group to allow similar. However, this group permits usage of _all serial devices_.
-
 If you're using a USB serial device like an FTDI USB UART serial converter on Linux,
-you'll need to either login as `root` or run your program with `sudo` permissions.
-For many reasons, this can be undesirable. However, for users without root permissions, this
-is a deal-breaker. A dedicated udev rule is one way to permit non-root usage.
+you'll need root permission to use the device by default, which can be annoying to
+remember every time you need to use the device.
 
-If you aren't familiar with udev, [this article](https://wiki.archlinux.org/title/udev)
-explains the basics and a bit of history. The main takeaway is udev controls USB serial device
-system configuration, among other things, on many modern Linux distributions. Given this,
-creating a udev rule is the right way to go!
+Some distributions support a `plugdev` group which permits users in the group to access
+such devices without root permissions. However, the permissions here are broad, and
+it may be more desirable to limit users to specific devices.
+
+A udev rule is one method to permit access on a more granular level. This guide details
+how to configure such a rule. For more information, see [this article](https://wiki.archlinux.org/title/udev).
 
 ## Instructions
 
@@ -31,12 +28,16 @@ creating a udev rule is the right way to go!
 Run `ls /dev/`. The device will show up as a `/dev/ttyACMx` or
 `/dev/ttyUSBx`, where `x` is some positive number.
 
-If there are multiple ACM and/or USB devices visible, unplug and re-plug in the USB device.
-Then, search for the USB event in the kernel message buffer using command
-`sudo dmesg | grep "usb"`. This should print out enough information
-to identify the desired USB device's tty.
+If there are multiple `ttyACM` and/or `ttyUSB` devices visible, run the following command
+then unplug and re-plug in the USB device. This will output information on USB
+device initialization, generally including the USB serial device TTY file.
 
-For example, see the last line of the output where it lists ttyUSB1:
+```Bash
+sudo dmesg -w | grep "usb"
+```
+
+For example, here is the output from my system. Note the last line of the output
+where it lists the USB serial device TTY file as `ttyUSB1`:
 
 ```Bash
 $ sudo dmesg | grep "usb"
@@ -50,45 +51,44 @@ $ sudo dmesg | grep "usb"
 
 ### 2. Get the device model ID and vendor ID
 
-Search for the model and vendor ID using the `udevadm info` command.
-For example, the following searches for the model and vendor ID of the `/dev/ttyUSB1` device.
+Run the `udevadm info` command to get the USB device model and vendor ID (also visible in
+the `dmesg` command in the previous instruction).
+
+For example, the following outputs the model and vendor ID of the `/dev/ttyUSB1` device.
 
 ```Bash
-$ udevadm info /dev/ttyUSB1 | grep "ID_VENDOR_ID\|ID_MODEL_ID"
+$ udevadm info /dev/ttyUSB1 | grep -e ID_VENDOR_ID -e ID_MODEL_ID
 E: ID_VENDOR_ID=0403
 E: ID_MODEL_ID=6015
 ```
 
 ### 3. Create the udev rule
 
-As super user, create a new udev rule file in `/etc/udev/rules.d/`, for example
-`80-usb-serial.rules`. Then add the below line, substituting in the model and vendor ID
-you found in the previous step. Note that the number prefix of the file name matters.
-It indicates priority when checking udev rules, the lower the higher.
+With root permissions (e.g. `sudo`), create a new udev rule file in `/etc/udev/rules.d/`,
+for example `80-usb-serial.rules`. The number prefix is important here for order of udev
+rule execution, the lower the prefix the higher the priority.
+
+Then in your preferred editor, add the below line, substituting in the model and vendor ID
+you found in the previous step.
 
 ```Bash
 # Contents of udev rule
 SUBSYSTEM=="tty", ENV{ID_VENDOR_ID}=="0403", ENV{ID_MODEL_ID}="6015", MODE="0666"
 ```
 
-If you'd like to give your device a more meaningful name or you find the device file
-changing (e.g. `/dev/ttyUSB1`) because you have multiple USB serial devices,
-you can add a symlink for the device's tty file. The following extends the above rule file,
-note the `SYMLINK` in the rule:
-
-#### Contents of udev rule with symlink
+If you'd like to give your device a more meaningful name or you have multiple devices
+which cause the name to change on subsequent, configure the rule with a symlink as follows.
 
 ```Bash
+# Creates a udev rule for the device which symlinks the tty file to '/dev/ttyUART'
 SUBSYSTEM=="tty", ENV{ID_VENDOR_ID}=="0403", ENV{ID_MODEL_ID}="6015", SYMLINK+="ttyUART", MODE="0666"
 ```
 
 **NOTE:** When multiple USB serial devices with the same model and vendor ID are added, udev will
 match on all of them and overwrite the symlink each time. The end result is only the last device matched
-will be symlinked. As far as I am aware, the order is indeterminate, so there's no guarantees that the
-symlink will map to the same device each time.
-
-If this is the case, there may be other device information you can match on to ensure _only_ your
-desired device is symlinked. The command `udevadm info` will prove useful for this. See `man 7 udevadm` for more info.
+will be symlinked, and this is not determinat. To alleviate this, add additional matching
+information to the udev rule. The command `udevadm info` will prove useful for this. See `man 7 udevadm`
+for more info.
 
 ### 4. Verify the udev rule
 
@@ -109,18 +109,15 @@ ttyUSB0: /etc/udev/rules.d/80-usb-serial.rules:7 LINK 'ttyUART'
 
 ### 5. Reload udev rules
 
-After this step, non-root users will have access to the device.
-
-To do so, run the following command:
+run the following command to now permit non-root users to access the device.
 
 ```Bash
-$ sudo udevadm control --reload && sudo udevadm trigger
+sudo udevadm control --reload && sudo udevadm trigger
 ```
 
-The `udevadm control --reload` command only reloads the rules for new events.
-The `udevadm trigger` command replays kernel events so that your newly-loaded rule
-applies to events which have already occured. This means you won't need to unplug and
-replug your device in order for the new udev rule to take effect!
+To provide more context, the `udevadm control --reload` command reloads the rules
+for new events while `udevadm trigger` replays kernel events so that your newly-loaded rule
+applies to events which have already occured. No need to unplug and replug your device!
 
 ## References
 
