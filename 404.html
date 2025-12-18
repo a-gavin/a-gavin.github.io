@@ -1,0 +1,158 @@
+<!doctype html>
+<html class="not-ready lg:text-base" lang="en">
+  <head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <!-- 'shrint-to-fit=no' is a post-Safari 9.0 workaround
+        https://stackoverflow.com/questions/33767533/what-does-the-shrink-to-fit-viewport-meta-attribute-do
+    -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
+
+  <title>Alex Gavin</title>
+  <link rel="icon" type="image/x-icon" href="https://a-gavin.github.io/favicon.ico" />
+
+  <!-- Author/description -->
+  <meta name="author" content="Alex Gavin" />
+  <meta name="description" content="Portfolio website" />
+
+  <!-- CSS & JS -->
+  <link rel="preload stylesheet" href="https://a-gavin.github.io/main.css" />
+  <link
+    href="https://pvinis.github.io/iosevka-webfont/3.4.1/iosevka.css"
+    rel="stylesheet preload"
+    as="font"
+  />
+</head>
+
+
+  <body>
+    <!-- Header -->
+<header class="sticky top-0 z-40 min-h-[3.5rem] w-full">
+  <div class="top-4 mx-auto flex w-full max-w-4xl justify-between bg-white p-4">
+    <!-- Left top menu -->
+    <div class="flex justify-between">
+      <a class="text-xl" href="https:&#x2F;&#x2F;a-gavin.github.io">Alex Gavin</a>
+    </div>
+
+    <!-- Right desktop menu -->
+    <div class="hidden w-auto items-center sm:flex">
+      <div class="flex space-x-6">
+        <a
+          class="primary-link block text-center text-xl"
+          href="https:&#x2F;&#x2F;a-gavin.github.io"
+          aria-current="page"
+          >About</a
+        >
+        <a
+          class="primary-link block text-center text-xl"
+          href="https://alw32c9tw.s3.us-west-2.amazonaws.com/AlexGavinResume.pdf"
+          >CV</a
+        >
+        <a class="primary-link block text-center text-xl" href="https:&#x2F;&#x2F;a-gavin.github.io/blog">Blog</a>
+      </div>
+    </div>
+    <!-- Right mobile menu button -->
+    <div class="fixed right-0 top-0 flex items-center p-5 sm:hidden">
+      <button
+        type="button"
+        class="group peer relative z-10 inline-flex items-center justify-center rounded-md text-gray-600 active:text-gray-300 peer-focus:block"
+      >
+        <!-- Icon when menu is closed.
+             Menu open: "hidden", Menu closed: "block" -->
+        <svg
+          class="block size-6 group-focus:hidden"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          aria-hidden="true"
+          data-slot="icon"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+          />
+        </svg>
+        <!-- Icon when menu is open.
+             Menu open: "block", Menu closed: "hidden" -->
+        <svg
+          class="hidden size-6 group-focus:block"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          aria-hidden="true"
+          data-slot="icon"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+        </svg>
+      </button>
+
+      <!-- Right mobile menu -->
+      <div
+        class="active-within:block peer hidden focus-within:block focus:block active:block peer-focus:block"
+      >
+        <div
+          class="fixed right-0 top-0 flex flex-row space-x-4 bg-white p-4 text-left ring-1 ring-gray-500"
+        >
+          <div class="menu flex flex-col space-y-1">
+            <ul>
+              <li>
+                <a class="primary-link inline-flex text-xl" href="https:&#x2F;&#x2F;a-gavin.github.io">About</a>
+              </li>
+              <li>
+                <a
+                  class="primary-link inline-flex text-xl"
+                  href="https://alw32c9tw.s3.us-west-2.amazonaws.com/AlexGavinResume.pdf"
+                  >CV</a
+                >
+              </li>
+              <li>
+                <a class="primary-link inline-flex text-xl" href="https:&#x2F;&#x2F;a-gavin.github.io/blog"
+                  >Blog</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div class="width-6 block p-4"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+
+    <!-- Maximum width and padding should match that in header -->
+    <main class="prose prose-neutral relative mx-auto max-w-3xl p-4">
+      
+<h1 class="relative flex items-center justify-center text-2xl font-semibold">
+  404: Page not found
+</h1>
+
+    </main>
+
+    <footer class="w-full pt-6">
+  <div class="bottom-4 mx-auto max-w-3xl p-4">
+    <ul class="flex items-center justify-center text-lg">
+      <li>
+        <a class="primary-link block px-3 py-0 text-center" href="./index.html">Email</a>
+      </li>
+      <li>
+        <a class="primary-link l block px-3 py-0 text-center" href="https://codeberg.org/a-gavin"
+          >Git</a
+        >
+      </li>
+      <li>
+        <a
+          class="primary-link block px-3 py-0 text-center"
+          href="https://www.linkedin.com/in/alex-gavin/"
+          >LinkedIn</a
+        >
+      </li>
+    </ul>
+  </div>
+</footer>
+
+  </body>
+</html>
