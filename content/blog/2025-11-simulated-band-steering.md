@@ -64,7 +64,10 @@ To make your life easier, I recommend the following:
 
 ### Setup Instructions
 
-**NOTE:** Many commands in this post will require root permissions (e.g. run with `sudo`), including `hostapd`, `wpa_supplicant`, `modprobe`.
+**NOTE:** Most of these commands will require root permissions. I suggest either running all with `sudo` or login as root with `sudo -i`.
+
+Steps 1-7 are implemented in [this script](https://codeberg.org/a-gavin/hostap-confs/src/branch/main/wpa2/fast-transition/setup.bash)
+which lives alongside the configuration we'll use for the testing.
 
 1. **Load the `mac80211_hwsim` kernel module (driver)**
 
