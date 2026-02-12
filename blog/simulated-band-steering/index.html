@@ -1,0 +1,442 @@
+<!doctype html>
+<html class="not-ready lg:text-base" lang="en">
+  <head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <!-- 'shrint-to-fit=no' is a post-Safari 9.0 workaround
+        https://stackoverflow.com/questions/33767533/what-does-the-shrink-to-fit-viewport-meta-attribute-do
+    -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
+
+  <title>Alex Gavin</title>
+  <link rel="icon" type="image/x-icon" href="https://a-gavin.github.io/favicon.ico" />
+
+  <!-- Author/description -->
+  <meta name="author" content="Alex Gavin" />
+  <meta name="description" content="Portfolio website" />
+
+  <!-- CSS & JS -->
+  <link rel="preload stylesheet" href="https://a-gavin.github.io/main.css" />
+  <link
+    href="https://pvinis.github.io/iosevka-webfont/3.4.1/iosevka.css"
+    rel="stylesheet preload"
+    as="font"
+  />
+</head>
+
+
+  <body>
+    <!-- Header -->
+<header class="sticky top-0 z-40 min-h-[3.5rem] w-full">
+  <div class="top-4 mx-auto flex w-full max-w-4xl justify-between bg-white p-4">
+    <!-- Left top menu -->
+    <div class="flex justify-between">
+      <a class="text-xl" href="https:&#x2F;&#x2F;a-gavin.github.io">Alex Gavin</a>
+    </div>
+
+    <!-- Right desktop menu -->
+    <div class="hidden w-auto items-center sm:flex">
+      <div class="flex space-x-6">
+        <a
+          class="primary-link block text-center text-xl"
+          href="https:&#x2F;&#x2F;a-gavin.github.io"
+          aria-current="page"
+          >About</a
+        >
+        <a
+          class="primary-link block text-center text-xl"
+          href="https://alw32c9tw.s3.us-west-2.amazonaws.com/AlexGavinResume.pdf"
+          >CV</a
+        >
+        <a class="primary-link block text-center text-xl" href="https:&#x2F;&#x2F;a-gavin.github.io/blog">Blog</a>
+      </div>
+    </div>
+    <!-- Right mobile menu button -->
+    <div class="fixed right-0 top-0 flex items-center p-5 sm:hidden">
+      <button
+        type="button"
+        class="group peer relative z-10 inline-flex items-center justify-center rounded-md text-gray-600 active:text-gray-300 peer-focus:block"
+      >
+        <!-- Icon when menu is closed.
+             Menu open: "hidden", Menu closed: "block" -->
+        <svg
+          class="block size-6 group-focus:hidden"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          aria-hidden="true"
+          data-slot="icon"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+          />
+        </svg>
+        <!-- Icon when menu is open.
+             Menu open: "block", Menu closed: "hidden" -->
+        <svg
+          class="hidden size-6 group-focus:block"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          aria-hidden="true"
+          data-slot="icon"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+        </svg>
+      </button>
+
+      <!-- Right mobile menu -->
+      <div
+        class="active-within:block peer hidden focus-within:block focus:block active:block peer-focus:block"
+      >
+        <div
+          class="fixed right-0 top-0 flex flex-row space-x-4 bg-white p-4 text-left ring-1 ring-gray-500"
+        >
+          <div class="menu flex flex-col space-y-1">
+            <ul>
+              <li>
+                <a class="primary-link inline-flex text-xl" href="https:&#x2F;&#x2F;a-gavin.github.io">About</a>
+              </li>
+              <li>
+                <a
+                  class="primary-link inline-flex text-xl"
+                  href="https://alw32c9tw.s3.us-west-2.amazonaws.com/AlexGavinResume.pdf"
+                  >CV</a
+                >
+              </li>
+              <li>
+                <a class="primary-link inline-flex text-xl" href="https:&#x2F;&#x2F;a-gavin.github.io/blog"
+                  >Blog</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div class="width-6 block p-4"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+
+    <!-- Maximum width and padding should match that in header -->
+    <main class="prose prose-neutral relative mx-auto max-w-3xl p-4">
+      <!---->
+
+<div class="mb-8">
+  <div class="flex items-center justify-center text-2xl">
+    <p class="text-center">Simulated WiFi Band Steering</p>
+  </div>
+  <time class="my-0 flex items-center justify-center opacity-80"
+    >11-16-25</time
+  >
+</div>
+
+<section class="opacity-90"><h2 id="overview">Overview</h2>
+<p>In this post, I'll demonstrate how to simulate WiFi band steering without any physical WiFi radios. We'll use
+open source Linux tools that are used in commercial WiFi products and hopefully learn a thing or two on the way!</p>
+<p>If you'd like to replicate this yourself, you'll need a Linux system with <code>sudo</code> access, kernel support for the <code>mac80211_hwsim</code> driver
+(which is generally the case for most Linux distributions), and <code>hostapd</code> and <code>wpa_supplicant</code> installed. These tools will permit
+complete WiFi simulation in software. However, the same setup will also work with real WiFi radios. This can also be run within
+a container or virtual machine.</p>
+<p>This setup assumes some experience using Linux, Wireshark, and WiFi. There are plenty of great resources out there.
+I maintain a reference of common Linux commands <a href="https://a-gavin.github.io/blog/linux-cmds/">here</a>. Additionally, if you'd like to
+(responsibly) do real WiFi packet capture with Wireshark, I wrote a guide which is available <a href="https://a-gavin.github.io/blog/wifi-packet-capture/">here</a>.</p>
+<h2 id="background">Background</h2>
+<p>Before we dive in, I'd like to first cover some background WiFi information, especially as it relates to band steering. If you're familiar already, skip to the next section.</p>
+<p>In WiFi, clients select and connect to the WiFi access point (AP) BSSID they want. Each client operates slightly differently, but metrics like channel utilization and estimated throughput strongly influence this decision. As a client operates and possibly moves around in its environment, conditions will change. The client may decide to shift to another channel on the same AP (different BSSID), it may roam to another AP, or it may do something else entirely! These decisions are ultimately left up to the client, not the AP.</p>
+<p>Given this, an AP is left with limited options to influence the client decisions. An AP can reject the client's authentication/association request or send a deauthentication frame or disassociation frame. However, these methods are heavy handed and may result in poor user experience.</p>
+<p>Several amendments to the WiFi 802.11 standard serve to address this and to improve user experience generally. Amendments 802.11k (neighbor reports), 802.11r (fast transition), and 802.11v (BSS transition management) are a couple widely known examples. For the purposes of this post, we'll focus on 802.11k and 802.11v, which introduce neighbor reports and BSS transition management (BTM), respectively. Both are essential for band steering, whether it be simulated or real-world. Note that enabling band steering is somewhat controversial in the WiFi world, I take no side here!</p>
+<p>If you'd like to brush up on band steering or the amendments I mentioned, check out my colleague Isaac Konikoff's talk on band steering fails <a href="https://www.youtube.com/watch?v=X5ffNbd5Duw">here</a> and this Cisco 802.11v explainer available <a href="https://web.archive.org/web/20230815035221/https://www.cisco.com/c/en/us/td/docs/wireless/controller/9800/config-guide/b_wl_16_10_cg/802-11v.pdf">here</a>. For more in-depth coverage, check out my colleague Sitarama Penumetsa's lecture <a href="https://youtu.be/BiktVCtMGnk?si=c6LDYNyg1qJ_DqQ8&amp;t=2002">here</a> from his WiFi fundamentals course.</p>
+<p>With this all in mind, we're ready to setup for testing!</p>
+<h2 id="test-setup">Test Setup</h2>
+<p>In order to simulate band steering, we must first configure our test environment. While this same configuration is possible with
+real radios, we'll instead use the <code>mac80211_hwsim</code> Linux driver to simulate this testing entirely in software, hopefully making
+it more accessible.</p>
+<h3 id="recommendations">Recommendations</h3>
+<p>To make your life easier, I recommend the following:</p>
+<ul>
+<li>
+<p><strong>Use three terminals</strong></p>
+<ul>
+<li>
+<p>One terminal each for AP, client, and configuration CLI</p>
+</li>
+<li>
+<p>This will permit reading logs while we setup and run the test</p>
+</li>
+<li>
+<p>Now may be a good time to learn how to use <code>tmux</code> or <code>screen</code></p>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Disconnect from your WiFi (if present) while running this</strong></p>
+<ul>
+<li>
+<p>When running with verbose logging, <code>wpa_supplicant</code> and <code>hostapd</code> will output information on any changes to any interface
+on the system. Verbose logs can become especially busy on a normal system with other WiFi active.</p>
+</li>
+<li>
+<p><strong>Do not disable WiFi in your networking daemon.</strong> This will enable rfkill which soft blocks WiFi on all interfaces
+(including the <code>mac80211_hwsim</code> ones)</p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="setup-instructions">Setup Instructions</h3>
+<p><strong>NOTE:</strong> Most of these commands will require root permissions. I suggest either running all with <code>sudo</code> or login as root with <code>sudo -i</code>.</p>
+<p>Steps 1-7 are implemented in <a href="https://codeberg.org/a-gavin/hostap-confs/src/branch/main/wpa2/fast-transition/setup.bash">this script</a>
+which lives alongside the configuration we'll use for the testing.</p>
+<ol>
+<li>
+<p><strong>Load the <code>mac80211_hwsim</code> kernel module (driver)</strong></p>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#65737e;"># Three simulated radios are needed
+</span><span style="color:#65737e;">#  1. Client (STA)
+</span><span style="color:#65737e;">#  2. AP 2.4 GHz BSSID
+</span><span style="color:#65737e;">#  3. AP 5 GHz BSSID
+</span><span style="color:#bf616a;">modprobe</span><span> mac80211_hwsim radios=3 support_p2p_device=0
+</span></code></pre>
+</li>
+<li>
+<p><strong>Identify simulated WiFi interfaces and their MAC addresses</strong></p>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#65737e;"># Show interface link-layer information and names (&#39;-br&#39; forces terse output)
+</span><span style="color:#bf616a;">ip -br</span><span> link show
+</span></code></pre>
+<p><strong>Most likely the <code>mac80211_hwsim</code> interfaces will be named <code>wlan0</code>, <code>wlan1</code>, and <code>wlan2</code></strong>. The driver will additionally
+create another interface named <code>hwsim0</code>, which permits packet capture of simulated WiFi traffic.</p>
+<p>To know for sure, first check the MAC address. The driver creates the interfaces using the format <code>02:00:00:00:XX:00</code>,
+where the <code>XX</code> matches the simulated radio number.</p>
+<p>If you're encountering issues or want to know more, check out <a href="https://a-gavin.github.io/blog/simulated-band-steering/#identifying-interfaces-and-macs-cont">this section</a>.</p>
+</li>
+<li>
+<p><strong>Configure your network daemon to ignore the interfaces</strong></p>
+<p>Practically all modern workstation Linux distributions ship with NetworkManager. If you're using something else, I assume you know
+what you're doing or can figure it out...</p>
+<p>When using NetworkManager, we must configure it to ignore the new <code>mac80211_hwsim</code> interfaces, which you can do with the
+following command.</p>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#65737e;"># Run this for each simulated WiFi interface, substituting in
+</span><span style="color:#65737e;"># your system&#39;s interface names for this and subsequent commands
+</span><span style="color:#bf616a;">nmcli</span><span> device set wlan0 managed false
+</span></code></pre>
+<p>When complete, the interfaces should show as <code>unmanaged</code> in the output of <code>nmcli device status</code> (or <code>nmcli device</code> for short),
+as shown below. You may still see some unexpected traffic (e.g. ARP, ICMPv6, DHCP) and the interfaces may even autoconfigure
+with a link-local IPv4 address. However, we configured NetworkManager to not control the WiFi interfaces, which will allow us
+to run our test.</p>
+</li>
+<li>
+<p><strong>Download example <code>hostapd</code> and <code>wpa_supplicant</code> configs from <a href="https://codeberg.org/a-gavin/hostap-confs">here</a></strong></p>
+<p>I recommend using the open (no security) configuration, as this will make packet capture much more simple.
+With configurations supporting encryption, packet decryption is possible, but security improvements like 802.11w
+and WPA3 make this increasingly difficult (which is good for security!).</p>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#bf616a;">git</span><span> clone https://codeberg.org/a-gavin/hostap-confs.git
+</span></code></pre>
+</li>
+<li>
+<p><strong>Start the AP interfaces</strong></p>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#65737e;"># Options used are:
+</span><span style="color:#65737e;">#  -t:  Print timestamps
+</span><span style="color:#65737e;">#  -i:  Specify interface to run AP with. Can be specified multiple times.
+</span><span style="color:#65737e;">#
+</span><span style="color:#65737e;"># For verbose or very verbose logging, add the &#39;-d&#39; or &#39;-dd&#39; options
+</span><span style="color:#bf616a;">hostapd -t -i</span><span> wlan0</span><span style="color:#bf616a;"> -i</span><span> wlan1 hostapd_2.4GHz-open.conf hostapd_5GHz-open.conf
+</span></code></pre>
+<p>Assuming no errors appear in the logs, you can verify the AP interface channel/frequency, SSID, and MAC
+with the <code>iw wlan0 info</code> command.</p>
+</li>
+<li>
+<p><strong>Enable <code>mac80211_hwsim</code> packet capture interface</strong></p>
+<p>This interface is likely named <code>hwsim0</code>.</p>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#bf616a;">ip</span><span> link set up dev hwsim0
+</span></code></pre>
+</li>
+<li>
+<p><strong>Run Wireshark using the <code>mac80211_hwsim</code> packet capture interface</strong></p>
+<p>Packet capture requires root permissions. See the Wireshark documentation <a href="https://wiki.wireshark.org/capturesetup/captureprivileges#gnulinux-distributions-wireshark-is-installed-using-a-package-manager">here</a> for more information on how to enable
+this.</p>
+</li>
+<li>
+<p><strong>Start the client interface</strong></p>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#65737e;"># Similar options and requirements as &#39;hostapd&#39;
+</span><span style="color:#65737e;"># The &#39;-c&#39; option required to specify the config file
+</span><span style="color:#bf616a;">wpa_supplicant -t -i</span><span> wlan2</span><span style="color:#bf616a;"> -c</span><span> supplicant_open.conf
+</span></code></pre>
+</li>
+<li>
+<p><strong>Wait for client to connect</strong></p>
+<p>As the client connects, you should start to see the simulated WiFi traffic in Wireshark. The simulated client will
+connect through the normal WiFi client connection process. Connection is complete once the AP responds with a
+successful association response frame. I recommend using the <code>wlan.fc.type_subtype != 8</code> filter to not display beacons.</p>
+<p>Once the client connects, you should also see the message <code>CTRL-EVENT-CONNECTED</code> in the station logs and <code>AP-STA-CONNECTED</code> in
+the AP logs. Take note of the AP interface that the client connected to. As with the AP interfaces, you can run the
+<code>iw wlan2 info</code> command to verify connection, channel, SSID, BSSID, etc.</p>
+</li>
+<li>
+<p><strong>Connect to the <code>hostapd</code> CLI interface</strong></p>
+<p>In another terminal, run the following command. This will enter a the <code>hostapd</code> CLI interface which may
+or may not permit line editing and/or command history, depending on your system.</p>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#65737e;"># Example configs here use default control interface directory.
+</span><span style="color:#65737e;"># If you use something else specify it using the &#39;-p&#39; option
+</span><span style="color:#bf616a;">hostapd_cli
+</span></code></pre>
+</li>
+<li>
+<p><strong>Select the AP interface to which the client connected</strong></p>
+<p>Using the <code>interface</code> command, select the desired interface. Then, check the list of connected clients
+with the <code>list_sta</code> command, as shown below.</p>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#bf616a;">$</span><span> hostapd_cli</span><span style="color:#bf616a;"> -p</span><span> /var/run/hostapd/
+</span><span style="color:#bf616a;">...
+</span><span>&gt; interface </span><span style="color:#bf616a;">wlan0
+</span><span>&gt; list_sta           &lt;-</span><span style="color:#bf616a;">---</span><span> No clients associated, check the other AP interface
+</span><span>&gt; interface </span><span style="color:#bf616a;">wlan1
+</span><span>&gt; list_sta
+</span><span style="color:#bf616a;">02:00:00:00:02:00
+</span></code></pre>
+</li>
+</ol>
+<p>With the simulated client connected, Wireshark running, and the <code>hostapd</code> CLI up, we're ready to run some tests!</p>
+<h2 id="simulated-band-steering-test">Simulated Band Steering Test</h2>
+<h3 id="test-overview-and-goals">Test Overview and Goals</h3>
+<p>For this test, we'll attempt to band steer the client from its currently associated BSSID to the AP's other BSSID.
+This test aims to simulate a client receiving a transition request from an AP, which is often seen in real world scenarios,
+for example a client as it walks away from the AP.</p>
+<p>A successful test here should result in the client disconnecting from the initial BSSID and then reconnecting to the
+other BSSID. This should occur after the client receives a BTM request from the initial AP. The request should
+include the other BSSID as a preferred neighbor candidate, which should trigger client reconnection to the other BSSID.
+All of this should be visible in the Wireshark capture we started earlier.</p>
+<h3 id="test-instructions">Test Instructions</h3>
+<p>Using the <code>hostapd</code> CLI interface we configured earlier, we'll use the <code>bss_tm_req</code> command to trigger the client steer.
+This command instructs the specified AP to transmit a BTM request frame to the client, hopefully resulting in a successful
+band steer.</p>
+<p>With the suggested example configs, the client should respond and steer successfully, assuming the command used is correct.
+It's possible to simulate a client which doesn't support BTM requests by setting the <code>disable_btm=1</code> config option
+(outside the network block) and reconnecting, but that's left as an exercise to the reader.</p>
+<p>The following commands will generate BTM requests to steer the client from one BSSID to the other and vice versa.
+Adjust as needed. More information on this command can be found in <a href="https://a-gavin.github.io/blog/simulated-band-steering/#bss-tm-req-command-format">this section</a>.</p>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#65737e;"># From 5 GHz to 2.4 GHz
+</span><span style="color:#65737e;"># First MAC is client MAC. Second MAC (neighbor) is 2.4 GHz BSSID.
+</span><span style="color:#bf616a;">bss_tm_req</span><span> 02:00:00:00:02:00 pref=1 neighbor=02:00:00:00:00:00,0x0000008f,81,1,14
+</span><span>
+</span><span style="color:#65737e;"># From 2.4 GHz to 5 GHz
+</span><span style="color:#65737e;"># First MAC is client MAC. Second MAC (neighbor) is 5 GHz BSSID.
+</span><span style="color:#65737e;"># Unlike the 5 GHz to 2.4 GHz config above, the client may take a bit to scan.
+</span><span style="color:#bf616a;">bss_tm_req</span><span> 02:00:00:00:02:00 pref=1 neighbor=02:00:00:00:01:00,0x0000008f,81,36,14
+</span></code></pre>
+<p>Assuming the command ran successfully, you should see 'OK' in the CLI and a successful BTM request and response exchange in Wireshark as shown below.</p>
+
+
+<div align="center">
+  <a href="https:&#x2F;&#x2F;a-gavin.github.io&#x2F;processed_images&#x2F;btm_request_success_5ghz_to_2.4ghz.55c31b40bc30f964.png">
+    <img src="https:&#x2F;&#x2F;a-gavin.github.io&#x2F;processed_images&#x2F;btm_request_success_5ghz_to_2.4ghz.33c87bf183dad501.png" alt="BTM Request to downsteer from 5 GHz to 2.4 GHz BSSID"  />
+  </a>
+  <figcaption>BTM Request to downsteer from 5 GHz to 2.4 GHz BSSID</figcaption>
+</div>
+<p>In the case that the command failed to parse, you'll see a 'FAIL' in the CLI. However, if the command succeeded
+but the client did not steer, there are other issues present.</p>
+<p>The following image shows another BTM request exchange. Here the client rejects the AP's request with
+status code 7, no suitable candidates. If you see similar, possibly you misconfigured the neighbor BSSID, or
+the client was unable to scan the neighbor.</p>
+
+
+<div align="center">
+  <a href="https:&#x2F;&#x2F;a-gavin.github.io&#x2F;processed_images&#x2F;btm_request_reject_no_suitable_candidates.c22fc62f8df867aa.png">
+    <img src="https:&#x2F;&#x2F;a-gavin.github.io&#x2F;processed_images&#x2F;btm_request_reject_no_suitable_candidates.335652a87fd20ef1.png" alt="BTM Request rejected, no suitable candidates"  />
+  </a>
+  <figcaption>BTM Request rejected, no suitable candidates</figcaption>
+</div>
+<h2 id="closing-thoughts">Closing Thoughts</h2>
+<p>In this post, we detailed how to run a simple band steering test using a single client and two AP BSSIDs triggered by the AP.
+This test was simulated entirely in software using the <code>mac80211_hwsim</code> virtual WiFi driver along with standard Linux WiFi tooling.</p>
+<p>Similar testing using the client as the trigger is also possible (using the <code>wpa_cli</code> <code>wnm_bss_query</code> command).
+However, upstream <code>hostapd</code> does not support BTM query responses that will trigger band steering (does not
+include preferred neighbor report). For that, your best bet will be to test with real APs. Have fun!</p>
+<h2 id="addendum">Addendum</h2>
+<h3 id="identifying-interfaces-and-macs-cont">Identifying Interfaces and MACs Cont</h3>
+<p>In the case that interface names and MAC addresses are non-default or difficult to identify, there may be several
+things getting in the way. This section covers a couple reasons why this may be.</p>
+<p>The most likely culprit is your networking daemon. If you're using Network Manager, it's possible your system
+configuration may randomize MAC addresses, which will happen before you can instruct Network Manager to ignore them.
+I run NixOS nowadays and that's exactly what it did for me.</p>
+<p>As mentioned in the <a href="https://a-gavin.github.io/blog/simulated-band-steering/#setup-instructions">setup instructions</a> above, the <code>mac80211_hwsim</code> driver will create the simulated
+radios and WiFi interfaces with MAC addresses matching the pattern <code>02:00:00:00:XX:00</code>. Assuming the driver loaded properly,
+if you don't see this in the output of <code>ip -br link show</code>, then networking daemon MAC randomization is almost certainly the cause.</p>
+<!-- TODO: How to disable MAC changing on NetworkManager -->
+<p>Another possible source of issues could be <code>systemd-udev</code>. On modern Linux distributions which use <code>systemd</code>,
+predictable network interface naming is enabled by default (see <a href="https://systemd.io/PREDICTABLE_INTERFACE_NAMES/">here</a> for more info).
+However, either <code>udev</code> '.rules' files in <code>/etc/udev/rules.d/</code> or <code>systemd</code> '.link' files in <code>/etc/systemd/network/</code>
+(which are used even when running Network Manager) could rename the network interfaces. Unless you've been adjusting
+this in your system already, your issue is almost certainly the networking daemon.</p>
+<h3 id="bss-tm-req-command-format"><code>bss_tm_req</code> Command Format</h3>
+<p>In general, <code>hostapd</code> and <code>wpa_supplicant</code> CLI commands are straightforward but not well documented. In the <code>hostapd</code> CLI,
+you can run the <code>help</code> to display more information on the desired command (e.g. <code>help status</code>). However, often times the output
+is terse, and I find myself referencing the source instead. If you also need to do that, start <a href="https://git.w1.fi/cgit/hostap/tree/wpa_supplicant/ctrl_iface.c">here</a>
+for <code>wpa_supplicant</code> CLI and <a href="https://git.w1.fi/cgit/hostap/tree/src/ap/ctrl_iface_ap.c">here</a> for <code>hostapd</code> CLI.</p>
+<p>Unfortunately, the <code>bss_tm_req</code> command is one of such not well documented commands. If you used the provided example configs
+and your simulated WiFi interface MAC addresses match, the provided <code>bss_tm_req</code> command should just work. If that's not the
+case, though, the following details some information on the format of the command.</p>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#bf616a;">bss_tm_req</span><span> CLIENT_MAC pref=1 neighbor=BSSID,BSSID_INFO,OP_CLASS,CHANNEL,PHY_TYPE
+</span></code></pre>
+<ul>
+<li>
+<p>Client MAC address always required. However, just this won't get you far.</p>
+</li>
+<li>
+<p>Setting <code>pref=1</code> includes the <code>neighbor=...</code> section in the BTM request.</p>
+<ul>
+<li>A client almost certainly won't steer without this.</li>
+</ul>
+</li>
+<li>
+<p>In the <code>neighbor=...</code> section, all information is for the target AP (AP to steer the client to)</p>
+<ul>
+<li>
+<p>Neighbor information is verbatim set in the BTM request neighbor report with basically no error checking</p>
+</li>
+<li>
+<p><code>OP_CLASS</code> defines the operating class of the neighbor AP's channel</p>
+</li>
+<li>
+<p><code>PHY_TYPE</code> defines the neighbor AP's PHY capabilities, as defined <code>dot11PHYType</code> in IEEE Std 802.11-2020, Annex C</p>
+<ul>
+<li>HT: 7</li>
+<li>VHT: 9</li>
+<li>HE: 14</li>
+<li>EHT: Not in 802.11-2024, so unsure</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</section>
+
+
+    </main>
+
+    <footer class="w-full pt-6">
+  <div class="bottom-4 mx-auto max-w-3xl p-4">
+    <ul class="flex items-center justify-center text-lg">
+      <li>
+        <a class="primary-link block px-3 py-0 text-center" href="./index.html">Email</a>
+      </li>
+      <li>
+        <a class="primary-link l block px-3 py-0 text-center" href="https://codeberg.org/a-gavin"
+          >Git</a
+        >
+      </li>
+      <li>
+        <a
+          class="primary-link block px-3 py-0 text-center"
+          href="https://www.linkedin.com/in/alex-gavin/"
+          >LinkedIn</a
+        >
+      </li>
+    </ul>
+  </div>
+</footer>
+
+  </body>
+</html>

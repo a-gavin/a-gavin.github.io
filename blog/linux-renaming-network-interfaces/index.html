@@ -1,0 +1,283 @@
+<!doctype html>
+<html class="not-ready lg:text-base" lang="en">
+  <head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <!-- 'shrint-to-fit=no' is a post-Safari 9.0 workaround
+        https://stackoverflow.com/questions/33767533/what-does-the-shrink-to-fit-viewport-meta-attribute-do
+    -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
+
+  <title>Alex Gavin</title>
+  <link rel="icon" type="image/x-icon" href="https://a-gavin.github.io/favicon.ico" />
+
+  <!-- Author/description -->
+  <meta name="author" content="Alex Gavin" />
+  <meta name="description" content="Portfolio website" />
+
+  <!-- CSS & JS -->
+  <link rel="preload stylesheet" href="https://a-gavin.github.io/main.css" />
+  <link
+    href="https://pvinis.github.io/iosevka-webfont/3.4.1/iosevka.css"
+    rel="stylesheet preload"
+    as="font"
+  />
+</head>
+
+
+  <body>
+    <!-- Header -->
+<header class="sticky top-0 z-40 min-h-[3.5rem] w-full">
+  <div class="top-4 mx-auto flex w-full max-w-4xl justify-between bg-white p-4">
+    <!-- Left top menu -->
+    <div class="flex justify-between">
+      <a class="text-xl" href="https:&#x2F;&#x2F;a-gavin.github.io">Alex Gavin</a>
+    </div>
+
+    <!-- Right desktop menu -->
+    <div class="hidden w-auto items-center sm:flex">
+      <div class="flex space-x-6">
+        <a
+          class="primary-link block text-center text-xl"
+          href="https:&#x2F;&#x2F;a-gavin.github.io"
+          aria-current="page"
+          >About</a
+        >
+        <a
+          class="primary-link block text-center text-xl"
+          href="https://alw32c9tw.s3.us-west-2.amazonaws.com/AlexGavinResume.pdf"
+          >CV</a
+        >
+        <a class="primary-link block text-center text-xl" href="https:&#x2F;&#x2F;a-gavin.github.io/blog">Blog</a>
+      </div>
+    </div>
+    <!-- Right mobile menu button -->
+    <div class="fixed right-0 top-0 flex items-center p-5 sm:hidden">
+      <button
+        type="button"
+        class="group peer relative z-10 inline-flex items-center justify-center rounded-md text-gray-600 active:text-gray-300 peer-focus:block"
+      >
+        <!-- Icon when menu is closed.
+             Menu open: "hidden", Menu closed: "block" -->
+        <svg
+          class="block size-6 group-focus:hidden"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          aria-hidden="true"
+          data-slot="icon"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+          />
+        </svg>
+        <!-- Icon when menu is open.
+             Menu open: "block", Menu closed: "hidden" -->
+        <svg
+          class="hidden size-6 group-focus:block"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          aria-hidden="true"
+          data-slot="icon"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+        </svg>
+      </button>
+
+      <!-- Right mobile menu -->
+      <div
+        class="active-within:block peer hidden focus-within:block focus:block active:block peer-focus:block"
+      >
+        <div
+          class="fixed right-0 top-0 flex flex-row space-x-4 bg-white p-4 text-left ring-1 ring-gray-500"
+        >
+          <div class="menu flex flex-col space-y-1">
+            <ul>
+              <li>
+                <a class="primary-link inline-flex text-xl" href="https:&#x2F;&#x2F;a-gavin.github.io">About</a>
+              </li>
+              <li>
+                <a
+                  class="primary-link inline-flex text-xl"
+                  href="https://alw32c9tw.s3.us-west-2.amazonaws.com/AlexGavinResume.pdf"
+                  >CV</a
+                >
+              </li>
+              <li>
+                <a class="primary-link inline-flex text-xl" href="https:&#x2F;&#x2F;a-gavin.github.io/blog"
+                  >Blog</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div class="width-6 block p-4"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+
+    <!-- Maximum width and padding should match that in header -->
+    <main class="prose prose-neutral relative mx-auto max-w-3xl p-4">
+      <!---->
+
+<div class="mb-8">
+  <div class="flex items-center justify-center text-2xl">
+    <p class="text-center">Renaming Linux Network Interfaces</p>
+  </div>
+  <time class="my-0 flex items-center justify-center opacity-80"
+    >03-18-24</time
+  >
+</div>
+
+<section class="opacity-90"><h2 id="motivation">Motivation</h2>
+<p><strong>Update:</strong> While udev works great for this, for many users systemd '.link' files may be a more straightforward solution.
+This guide details both the previous udev method as well as the systemd '.link' method.</p>
+<p>Depending on the machine and Linux distribution, different network interfaces may appear with different names. For example,
+the following are all <a href="https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/networking_guide/ch-consistent_network_device_naming">valid Ethernet interface names</a>:</p>
+<ul>
+<li><code>eth0</code></li>
+<li><code>eno1</code></li>
+<li><code>ens1</code></li>
+<li><code>enp1s0</code></li>
+<li><code>enx0c9863d1a379</code></li>
+</ul>
+<p>Whether you like consistency or just want to give your interfaces more meaningful names, systemd and <code>udev</code> makes renaming network
+interfaces straightforward.</p>
+<p>This guide generally targets WiFi and Ethernet interfaces, although concepts will apply to other interface types as well
+(except Bluetooth). It also assumes no pre-requisite software beyond a text editor and systemd, although, <code>ethtool</code>
+may be useful.</p>
+<h2 id="before-getting-started">Before Getting Started</h2>
+<ul>
+<li>
+<p><strong>This guide assumes you have root privileges on the machine you will configure.</strong></p>
+</li>
+<li>
+<p><strong>Only do this if you have non-networked access to the system or it's not a critical system.</strong></p>
+<ul>
+<li>It is very possible that these instructions may disable networking entirely, if you're not careful.
+It's best to do this when you have direct, non-networked access to the system (e.g. serial or keyboard and mouse)</li>
+</ul>
+</li>
+<li>
+<p><strong>Both udev rules files and systemd '.link' order their execution of rules/config files based on file name.</strong></p>
+<ul>
+<li>
+<p>Generally, these files are named with formats like <code>70-xxxx.rules</code> or <code>10-xxx.link</code>, where the leading
+number explicitly establishes the order of execution. <em>The lower the number, the higher the priority.</em></p>
+</li>
+<li>
+<p>For udev, I recommend naming with <code>70-xxxx.rules</code> as the format, as this precedes many default udev rules
+installed on most distributions.</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>If you're unfamiliar with using or configuring networking on Linux, I encourage you to review the commands listed
+<a href="https://a-gavin.github.io/blog/linux-cmds/#querying-network-information">here</a> and <a href="https://a-gavin.github.io/blog/linux-cmds/#managing-networking-networkmanager">here</a>
+in of my Linux command reference.</p>
+<h2 id="instructions">Instructions</h2>
+<h3 id="1-identify-network-interface-mac-addresses">1. Identify Network Interface MAC Addresses</h3>
+<p>Before renaming network interfaces, we'll need the MAC address for each network interface to rename. MAC addresses for
+non-Bluetooth devices will appear in the output of <code>ip link show</code> (or <code>ip -br link show</code> for less verbose output).</p>
+<p>If your system has easily identifiable interfaces, you can move to the next step. However, should your system contain
+multiple, harder to identify interfaces of the same type, read on.</p>
+<h4 id="uh-oh-you-have-ten-of-the-same-nic">Uh-Oh You have Ten of the Same NIC</h4>
+<p>There are a couple different ways to identify specific interfaces. For wired interfaces, most drivers support the <code>ethtool</code>
+command's <code>-p</code> option which blinks the port's LED. Wireless interfaces often times list their MAC address on a sticker on
+NIC. Be careful, though, as this may often list both WiFi and Bluetooth if both are supported.</p>
+<p>Should neither of these be an option, <code>ip -d link show</code> lists the interface's PCI(e) parent device which you can
+cross-referenced with the output of <code>lspci</code>, should you know the specific interface brand and model you're looking for.</p>
+<h3 id="2-configure-udev-rule-or-systemd-link-file">2. Configure udev Rule or systemd '.link' File</h3>
+<p>Depending on preference and level of comfort, either the systemd '.link' or udev rule approach may be more suitable.
+For simplicity, I recommend the systemd '.link' method.</p>
+<p>Both methods in this step assume you have MAC addresses and desired network interface names ready to go.</p>
+<h4 id="method-1-configure-systemd-link-file">Method 1: Configure systemd '.link' File</h4>
+<p>To rename network interfaces with systemd '.link' files, we will create one file per interface in the <code>/etc/systemd/network/</code>
+directory. Like udev, the '.link' config files permit fine-grained matching of interfaces. However, they use a simpler and
+more common TOML format.</p>
+<p>While you may also configure <code>systemd-network</code> settings in this directory, '.link' files here are parsed regardless
+of whether <code>systemd-network</code> is installed or not, meaning this method will work with NetworkManager.</p>
+<p>Similar to udev, '.link' file names are parsed in alphanumeric order. For simplicity, I recommend sticking to a format like
+<code>10-XX.link</code> which lists clearly denotes the order in the first few characters. More details <a href="https://a-gavin.github.io/blog/linux-renaming-network-interfaces/#before-getting-started">above</a>.</p>
+<p>For each network interface, create a '.link' file in the <code>/etc/systemd/network/</code> directory, substituting in your desired
+network interface name and corresponding MAC address. More details and matching options are listed <a href="https://www.freedesktop.org/software/systemd/man/latest/systemd.link.html">here</a>
+in the systemd documentation.</p>
+<pre data-lang="TOML" style="background-color:#2b303b;color:#c0c5ce;" class="language-TOML "><code class="language-TOML" data-lang="TOML"><span style="color:#65737e;"># For example, /etc/systemd/network/10-eth0.link
+</span><span style="color:#65737e;"># If active, systemd-networkd will warn that this legacy-style interface name is unpredictable
+</span><span>[Match]
+</span><span style="color:#bf616a;">MACAddress</span><span>=</span><span style="background-color:#bf616a;color:#2b303b;">xx:xx:xx:xx:xx:xx</span><span>
+</span><span>
+</span><span>[Link]
+</span><span style="color:#bf616a;">Name</span><span>=</span><span style="background-color:#bf616a;color:#2b303b;">eth0</span><span>
+</span></code></pre>
+<h4 id="method-2-configure-udev-rule">Method 2: Configure udev Rule</h4>
+<p>Similar to my post on <a href="https://a-gavin.github.io/blog/linux-usb-serial/#3-create-the-udev-rule">configuring USB serial ports details</a> details, we'll create a udev rule to rename the device.</p>
+<h4 id="udev-background">udev Background</h4>
+<p>To be brief, <code>udev</code> is a daemon program that runs on many Linux distributions to manage and configure devices.</p>
+<p>When configuring a device, be it a network interface or otherwise, <code>udev</code> iterates through the rules available on the system
+pattern matching as it goes. Should the rule match, <code>udev</code> will perform the action defined in the matched rule. Distributions
+generally come with a number of pre-configured rules ready to use on first boot. It's generally a good idea to not touch
+these, though.</p>
+<p>With that said, <strong>the name of the udev rule file matters</strong>. Udev processes rules in lexically sorted order. As all installed
+rules on the system (including the ones provided by your distribution) are sorted and processed together, it's essential to
+name the udev rule file with this in mind. Doing so ensures that the new rule does not conflict with other system rules.
+See <a href="https://a-gavin.github.io/blog/linux-renaming-network-interfaces/#before-getting-started">above</a> for more details.</p>
+<h4 id="configuring-the-udev-rule">Configuring the udev Rule</h4>
+<p>With your MAC addresses and desired network interface names handy, create a rule in <code>/etc/udev/rules.d</code> of the format
+<code>XX-name.rules</code>, where <code>XX</code> is some positive number. On my systems, I use <code>70</code>, as this comes before most of the
+pre-configured <code>udev</code> network interface configuration rules.</p>
+<p>For example, here is a rule I have on a multi-Ethernet port system. It relabels the Ethernet ports from the strange,
+hardware-based naming scheme (e.g. formats <code>enpXs0</code> and <code>enoX</code> in a non-intuitive ordering) to names that
+reflect how they're used. Note that each line is a separate rule.</p>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#65737e;"># For example, /etc/udev/rules.d/70-rename-ethernet-ports.rules
+</span><span>
+</span><span style="color:#65737e;"># Single WAN port (leftmost port, labeled WAN1)
+</span><span style="color:#bf616a;">SUBSYSTEM</span><span>=</span><span style="color:#a3be8c;">=</span><span>&quot;</span><span style="color:#a3be8c;">net</span><span>&quot;</span><span style="color:#a3be8c;">, </span><span style="color:#bf616a;">ACTION</span><span>=</span><span style="color:#a3be8c;">=</span><span>&quot;</span><span style="color:#a3be8c;">add</span><span>&quot;</span><span style="color:#a3be8c;">, </span><span style="color:#bf616a;">ATTR{address}</span><span>=</span><span style="color:#a3be8c;">=</span><span>&quot;</span><span style="color:#a3be8c;">xx:xx:xx:xx:xx:xx</span><span>&quot;</span><span style="color:#a3be8c;">, </span><span style="color:#bf616a;">NAME</span><span>=&quot;</span><span style="color:#a3be8c;">wan1</span><span>&quot;
+</span><span>
+</span><span style="color:#65737e;"># Three LAN port (right three ports, labeled LAN1, LAN2, LAN3)
+</span><span style="color:#bf616a;">SUBSYSTEM</span><span>=</span><span style="color:#a3be8c;">=</span><span>&quot;</span><span style="color:#a3be8c;">net</span><span>&quot;</span><span style="color:#a3be8c;">, </span><span style="color:#bf616a;">ACTION</span><span>=</span><span style="color:#a3be8c;">=</span><span>&quot;</span><span style="color:#a3be8c;">add</span><span>&quot;</span><span style="color:#a3be8c;">, </span><span style="color:#bf616a;">ATTR{address}</span><span>=</span><span style="color:#a3be8c;">=</span><span>&quot;</span><span style="color:#a3be8c;">xx:xx:xx:xx:xx:xx</span><span>&quot;</span><span style="color:#a3be8c;">, </span><span style="color:#bf616a;">NAME</span><span>=&quot;</span><span style="color:#a3be8c;">lan1</span><span>&quot;
+</span><span style="color:#bf616a;">SUBSYSTEM</span><span>=</span><span style="color:#a3be8c;">=</span><span>&quot;</span><span style="color:#a3be8c;">net</span><span>&quot;</span><span style="color:#a3be8c;">, </span><span style="color:#bf616a;">ACTION</span><span>=</span><span style="color:#a3be8c;">=</span><span>&quot;</span><span style="color:#a3be8c;">add</span><span>&quot;</span><span style="color:#a3be8c;">, </span><span style="color:#bf616a;">ATTR{address}</span><span>=</span><span style="color:#a3be8c;">=</span><span>&quot;</span><span style="color:#a3be8c;">xx:xx:xx:xx:xx:xx</span><span>&quot;</span><span style="color:#a3be8c;">, </span><span style="color:#bf616a;">NAME</span><span>=&quot;</span><span style="color:#a3be8c;">lan2</span><span>&quot;
+</span><span style="color:#bf616a;">SUBSYSTEM</span><span>=</span><span style="color:#a3be8c;">=</span><span>&quot;</span><span style="color:#a3be8c;">net</span><span>&quot;</span><span style="color:#a3be8c;">, </span><span style="color:#bf616a;">ACTION</span><span>=</span><span style="color:#a3be8c;">=</span><span>&quot;</span><span style="color:#a3be8c;">add</span><span>&quot;</span><span style="color:#a3be8c;">, </span><span style="color:#bf616a;">ATTR{address}</span><span>=</span><span style="color:#a3be8c;">=</span><span>&quot;</span><span style="color:#a3be8c;">xx:xx:xx:xx:xx:xx</span><span>&quot;</span><span style="color:#a3be8c;">, </span><span style="color:#bf616a;">NAME</span><span>=&quot;</span><span style="color:#a3be8c;">lan3</span><span>&quot;
+</span></code></pre>
+<p>To use a similar rule on your system, substitute in the MAC address for the quoted address listed after the <code>ATTR{address}==</code> section and your desired interface name for the quoted name that comes after <code>NAME=</code>, adding more or removing rules as necessary.</p>
+<h3 id="3-reboot-and-validate-names-changed">3. Reboot and Validate Names Changed</h3>
+<p>Unlike USB serial devices, reloading udev rules won't generally rename the interfaces. For the changed names to take effect,
+you must reboot the system.</p>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#bf616a;">sudo</span><span> reboot now
+</span></code></pre>
+</section>
+
+
+    </main>
+
+    <footer class="w-full pt-6">
+  <div class="bottom-4 mx-auto max-w-3xl p-4">
+    <ul class="flex items-center justify-center text-lg">
+      <li>
+        <a class="primary-link block px-3 py-0 text-center" href="./index.html">Email</a>
+      </li>
+      <li>
+        <a class="primary-link l block px-3 py-0 text-center" href="https://codeberg.org/a-gavin"
+          >Git</a
+        >
+      </li>
+      <li>
+        <a
+          class="primary-link block px-3 py-0 text-center"
+          href="https://www.linkedin.com/in/alex-gavin/"
+          >LinkedIn</a
+        >
+      </li>
+    </ul>
+  </div>
+</footer>
+
+  </body>
+</html>

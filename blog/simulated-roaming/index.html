@@ -1,0 +1,525 @@
+<!doctype html>
+<html class="not-ready lg:text-base" lang="en">
+  <head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <!-- 'shrint-to-fit=no' is a post-Safari 9.0 workaround
+        https://stackoverflow.com/questions/33767533/what-does-the-shrink-to-fit-viewport-meta-attribute-do
+    -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
+
+  <title>Alex Gavin</title>
+  <link rel="icon" type="image/x-icon" href="https://a-gavin.github.io/favicon.ico" />
+
+  <!-- Author/description -->
+  <meta name="author" content="Alex Gavin" />
+  <meta name="description" content="Portfolio website" />
+
+  <!-- CSS & JS -->
+  <link rel="preload stylesheet" href="https://a-gavin.github.io/main.css" />
+  <link
+    href="https://pvinis.github.io/iosevka-webfont/3.4.1/iosevka.css"
+    rel="stylesheet preload"
+    as="font"
+  />
+</head>
+
+
+  <body>
+    <!-- Header -->
+<header class="sticky top-0 z-40 min-h-[3.5rem] w-full">
+  <div class="top-4 mx-auto flex w-full max-w-4xl justify-between bg-white p-4">
+    <!-- Left top menu -->
+    <div class="flex justify-between">
+      <a class="text-xl" href="https:&#x2F;&#x2F;a-gavin.github.io">Alex Gavin</a>
+    </div>
+
+    <!-- Right desktop menu -->
+    <div class="hidden w-auto items-center sm:flex">
+      <div class="flex space-x-6">
+        <a
+          class="primary-link block text-center text-xl"
+          href="https:&#x2F;&#x2F;a-gavin.github.io"
+          aria-current="page"
+          >About</a
+        >
+        <a
+          class="primary-link block text-center text-xl"
+          href="https://alw32c9tw.s3.us-west-2.amazonaws.com/AlexGavinResume.pdf"
+          >CV</a
+        >
+        <a class="primary-link block text-center text-xl" href="https:&#x2F;&#x2F;a-gavin.github.io/blog">Blog</a>
+      </div>
+    </div>
+    <!-- Right mobile menu button -->
+    <div class="fixed right-0 top-0 flex items-center p-5 sm:hidden">
+      <button
+        type="button"
+        class="group peer relative z-10 inline-flex items-center justify-center rounded-md text-gray-600 active:text-gray-300 peer-focus:block"
+      >
+        <!-- Icon when menu is closed.
+             Menu open: "hidden", Menu closed: "block" -->
+        <svg
+          class="block size-6 group-focus:hidden"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          aria-hidden="true"
+          data-slot="icon"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+          />
+        </svg>
+        <!-- Icon when menu is open.
+             Menu open: "block", Menu closed: "hidden" -->
+        <svg
+          class="hidden size-6 group-focus:block"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          aria-hidden="true"
+          data-slot="icon"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+        </svg>
+      </button>
+
+      <!-- Right mobile menu -->
+      <div
+        class="active-within:block peer hidden focus-within:block focus:block active:block peer-focus:block"
+      >
+        <div
+          class="fixed right-0 top-0 flex flex-row space-x-4 bg-white p-4 text-left ring-1 ring-gray-500"
+        >
+          <div class="menu flex flex-col space-y-1">
+            <ul>
+              <li>
+                <a class="primary-link inline-flex text-xl" href="https:&#x2F;&#x2F;a-gavin.github.io">About</a>
+              </li>
+              <li>
+                <a
+                  class="primary-link inline-flex text-xl"
+                  href="https://alw32c9tw.s3.us-west-2.amazonaws.com/AlexGavinResume.pdf"
+                  >CV</a
+                >
+              </li>
+              <li>
+                <a class="primary-link inline-flex text-xl" href="https:&#x2F;&#x2F;a-gavin.github.io/blog"
+                  >Blog</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div class="width-6 block p-4"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+
+    <!-- Maximum width and padding should match that in header -->
+    <main class="prose prose-neutral relative mx-auto max-w-3xl p-4">
+      <!---->
+
+<div class="mb-8">
+  <div class="flex items-center justify-center text-2xl">
+    <p class="text-center">Simulated WiFi Roaming</p>
+  </div>
+  <time class="my-0 flex items-center justify-center opacity-80"
+    >02-10-26</time
+  >
+</div>
+
+<section class="opacity-90"><h2 id="overview">Overview</h2>
+<p>In this post, I'll demonstrate how to simulate WiFi client roaming without any physical WiFi radios. We'll configure tests
+that showcase both basic client roaming as well as IEEE 802.11r BSS Fast Transition (FT) client roaming. For the 802.11r FT roaming
+tests, this guide will showcase FT over the distribution system (DS) 802.11r roaming specifically. With a quick change, though,
+you can also run FT over the air (FT-OTA) client roaming.</p>
+<p>We will build on information discussed in my previous post <a href="https://a-gavin.github.io/blog/simulated-band-steering/">Simulated WiFi Band Steering</a>,
+which walks through a somewhat similar test with a bit more details for the setup instructions.</p>
+<p>As before, you'll need a Linux system with <code>sudo</code> access, kernel support for the <code>mac80211_hwsim</code> driver, and <code>hostapd</code> and <code>wpa_supplicant</code>
+installed. While <code>mac80211_hwsim</code> is only used in software testing, the same concepts apply generally to real WiFi on Linux, and these tools
+are also used in widely production WiFi systems across the globe!</p>
+<p>This setup assumes some experience using Linux, Wireshark, and WiFi. There are plenty of great resources out there. I maintain a reference of
+common Linux commands <a href="https://a-gavin.github.io/blog/linux-cmds/">here</a>. Additionally, if you'd like to (responsibly) do real WiFi packet capture with Wireshark,
+I wrote a guide which is available <a href="https://a-gavin.github.io/blog/wifi-packet-capture/">here</a>.</p>
+<h2 id="background">Background</h2>
+<h3 id="note-on-simulated-testing">Note on Simulated Testing</h3>
+<p>Using <code>mac80211_hwsim</code> to simulate tests permits demonstration of the functional elements for different types of WiFi roaming.
+While the driver is capable of more interesting simulated tests, including variable simulated distance and many more clients,
+we will not utilize these features.</p>
+<p>Given this, the frame times observed will not be particularly meaningful. In a real environment, background traffic
+and other real world variables affect roam latency. In our simulated tests, there will only be a single client and
+the two APs.</p>
+<p>To get a better sense of how different roaming types function, I encourage you to replicate this testing
+with real WiFi radios. The same concepts and tools apply, and the results will be much more interesting!</p>
+<h3 id="basic-idea-goal-of-roaming">Basic Idea/Goal of Roaming</h3>
+<p>In WiFi networks, a client will attempt to maintain the best possible connection as it navigates its environment.
+Based on internal, often proprietary logic, the client may adjust its connection as network conditions change
+in an effort to meet this goal.</p>
+<p>This process is generally referred to as roaming and occurs in one of a few ways. For example, a client may roam from one AP
+to another on the same network, between different BSSes on the same AP (also on the same network), or to a
+different network entirely. In the case of roaming between different BSSes on the same AP (e.g. between bands),
+you may hear the term band steering. The key goal in whichever type of roaming remains maintaining good user
+experience through the best possible connection. For the purposes of this guide, I will ignore roaming between separate
+networks.</p>
+<p>As the client roams, it must temporarily disconnect before reconnecting. During disconnection, applications must wait
+to send and receive more data until the client reconnects and the roam completes. The longer the disconnect,
+the longer the application must wait, and the poorer the user experience becomes.</p>
+<p>Many applications can &quot;paper over&quot; such disconnects by caching data, for example buffering a video. However,
+real-time applications like live video streaming and voice chatting cannot. Given this, <strong>minimizing the roam
+time or latency is paramount to ensure good user experience</strong>.</p>
+<h3 id="how-roaming-works">How Roaming Works</h3>
+<p>There are several methods/types of roaming, and WiFi 8 will most certainly add more complexity. For simplicity,
+focus on two types of roaming and will not consider roaming between different networks. These methods are:</p>
+<ul>
+<li>
+<p>Basic roaming (full reconnect)</p>
+</li>
+<li>
+<p>IEEE 802.11r BSS Fast Transition (FT) roaming</p>
+</li>
+</ul>
+<p>In basic type roaming (non-802.11r), a client must complete the full connection process when switching from the initial BSS
+to the target BSS (e.g. between APs on the same network). This occurs when either the client, the network, or both do not
+support 802.11r. It requires authentication, association, and the 4-way handshake, among other things. During this process,
+the client is disconnected and cannot send or receive any application data.</p>
+<p>While non-802.11r clients perform the full connection process with <em>any</em> network, 802.11r-capable clients also do so
+when network does not support the 802.11r (otherwise, this would break backwards compatible). <strong>To utilize 802.11r,
+both the client and the network must enable it</strong>. Generally, enterprise WiFi deployments turn 802.11r on, especially if
+using 802.1X. For home and small business networks, though, this is less common, meaning non-802.11r roams are a regular
+occurrence in everyday WiFi.</p>
+<p>For clients and networks which both enable 802.11r, client roam should utilize the 802.11r-defined process for the switch.
+This process relies on network coordination, often through the use of a controller, and the assumption that the network
+has already authorized the client to use the network. These prerequisites enable 802.11r roaming to skip some of the
+connection process, reducing roam latency and improving user experience.</p>
+<p>To keep things simple, this guide details simulated roaming with a personal security configuration network with two
+separate APs coordinating with each other (no controller). The configuration will also disable 802.11w to ensure
+Action frames are unencrypted and visible in the packet capture.</p>
+<p>In the real world, 802.11r is much more common in networks with enterprise security configuration (802.1X).
+While still following the standard WiFi connection process, enterprise security networks require an additional
+EAP handshake process. This process requires several frames and introduces additional connection latency,
+stemming from both the additional frames as well as any latency introduced as frames make their way to/from the
+authentication server. Given this, reducing roam latency for enterprise networks takes on heightened importance.</p>
+<p>For more on IEEE 802.11r BSS Fast Transition roaming and roaming generally, you can checkout the following presentations:</p>
+<ul>
+<li>
+<p><a href="https://youtu.be/_4u_KdfN6mk?si=QWw1NNabPF3q1xQg">WLPC Prague 2025: Analysis of a Fast Roam</a></p>
+</li>
+<li>
+<p><a href="https://youtu.be/4Ua2lI6HBhE?si=ICRM5bFxHWhGNVO9">WLPC Prague 2019: Effects of 802.11k/r/v</a></p>
+</li>
+</ul>
+<h2 id="test-setup">Test Setup</h2>
+<p>To run simulated roaming tests, we first need a working test environment. To focus more on test network configuration,
+initial setup instructions will be a bit terse. Please reference my previous simulated WiFi post for more detailed explanation.</p>
+<p>For simplicity, I recommend disconnecting from WiFi while running these tests, using Ethernet for network access, if at all possible.
+I also recommend preparing multiple terminals (e.g. via <code>tmux</code>), as we'll use about four here. More details on these suggestions
+available <a href="/content/blog/2025-11-simulated-band-steering.md#recommendations">here</a>.</p>
+<p>Since IEEE 802.11r requires a backhaul, this setup will involve additional bridge and veth interfaces.
+The basic roaming test does not need or use this, but we'll use it anyway. Real world WiFi deployments use a
+mesh or wired backhaul to permit inter-AP communication when needed, or for larger networks a dedicated controller.
+Here, we'll use software interfaces to simulate the backhaul on the same system. See the diagram below for reference.</p>
+
+
+<div align="center">
+  <a href="https:&#x2F;&#x2F;a-gavin.github.io&#x2F;processed_images&#x2F;network_interface_configuration.7dd7c3b074676ae6.png">
+    <img src="https:&#x2F;&#x2F;a-gavin.github.io&#x2F;processed_images&#x2F;network_interface_configuration.187ee7f37b5460a7.png" alt="Simulated roaming network interface configuration with shared veth backhaul"  />
+  </a>
+  <figcaption>Simulated roaming network interface configuration with shared veth backhaul</figcaption>
+</div>
+<h3 id="setup-instructions">Setup Instructions</h3>
+<p><strong>NOTE:</strong> Many commands in this post will require root permissions (e.g. run with <code>sudo</code>), including <code>hostapd</code>, <code>wpa_supplicant</code>, <code>ip</code>, <code>modprobe</code>.</p>
+<ol>
+<li>
+<p><strong>Load the <code>mac80211_hwsim</code> kernel module (driver)</strong></p>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#65737e;"># Three simulated radios are needed
+</span><span style="color:#65737e;">#  1. Client (STA)
+</span><span style="color:#65737e;">#  2. AP1
+</span><span style="color:#65737e;">#  3. AP2
+</span><span style="color:#bf616a;">modprobe</span><span> mac80211_hwsim radios=3 support_p2p_device=0
+</span></code></pre>
+</li>
+<li>
+<p><strong>Identify simulated WiFi interfaces and their MAC addresses</strong></p>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#bf616a;">ip -br</span><span> link show
+</span></code></pre>
+<p>Most likely the <code>mac80211_hwsim</code> interfaces will be named <code>wlan0</code>, <code>wlan1</code>, and <code>wlan2</code>.</p>
+<p>The driver will create an additional interface named <code>hwsim0</code>, which permits packet capture
+of simulated WiFi traffic. The packet capture interface should have the MAC address <code>12:00:00:00:00:00</code>.</p>
+</li>
+<li>
+<p><strong>Enable <code>mac80211_hwsim</code> packet capture interface</strong></p>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#bf616a;">ip</span><span> link set up dev hwsim0
+</span></code></pre>
+</li>
+<li>
+<p><strong>Add and enable the required veth interfaces</strong></p>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#65737e;"># Create veth pair
+</span><span style="color:#bf616a;">ip</span><span> link add veth-ap1 type veth peer name veth-ap2
+</span><span>
+</span><span style="color:#65737e;"># Both ends must be up for pair to be active
+</span><span style="color:#bf616a;">ip</span><span> link set up dev veth-ap1
+</span><span style="color:#bf616a;">ip</span><span> link set up dev veth-ap2
+</span></code></pre>
+</li>
+<li>
+<p><strong>Add and enable the required bridge interfaces</strong></p>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#65737e;"># AP1 Bridge
+</span><span style="color:#bf616a;">ip</span><span> link add br1 type bridge
+</span><span style="color:#bf616a;">ip</span><span> link set up dev br1
+</span><span>
+</span><span style="color:#65737e;"># AP2 Bridge
+</span><span style="color:#bf616a;">ip</span><span> link add br2 type bridge
+</span><span style="color:#bf616a;">ip</span><span> link set up dev br2
+</span></code></pre>
+</li>
+<li>
+<p><strong>Add child interfaces to respective bridges</strong></p>
+<p>When started with the provided config files, <code>hostapd</code> will automatically add the AP interfaces to their
+respective bridges.</p>
+<p>As Linux does not permit adding station type interfaces to bridges (the default interface type created during
+WiFi driver initialization), we will rely on <code>hostapd</code>'s ability to both reconfigure the interface type and
+add it to the bridge after.</p>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#65737e;"># AP1 Bridge (WiFi interface added by &#39;hostapd&#39;)
+</span><span style="color:#bf616a;">ip</span><span> link set veth-ap1 master br1
+</span><span>
+</span><span style="color:#65737e;"># AP2 Bridge (WiFi interface added by &#39;hostapd&#39;)
+</span><span style="color:#bf616a;">ip</span><span> link set veth-ap2 master br2
+</span></code></pre>
+</li>
+<li>
+<p><strong>Configure your network daemon to ignore the interfaces</strong></p>
+<p>These instructions assume your system runs NetworkManager, which is generally the default unless you're doing
+something special (in which case I'll assume you can figure this out).</p>
+<p>After running these commands, the interfaces should show as <code>unmanaged</code> in the output of <code>nmcli device status</code>.
+NetworkManager ignores veth interfaces by default.</p>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#65737e;"># Client
+</span><span style="color:#bf616a;">nmcli</span><span> device set wlan0 managed false
+</span><span>
+</span><span style="color:#65737e;"># AP1
+</span><span style="color:#bf616a;">nmcli</span><span> device set wlan1 managed false
+</span><span style="color:#bf616a;">nmcli</span><span> device set br1 managed false
+</span><span>
+</span><span style="color:#65737e;"># AP2
+</span><span style="color:#bf616a;">nmcli</span><span> device set wlan2 managed false
+</span><span style="color:#bf616a;">nmcli</span><span> device set br2 managed false
+</span></code></pre>
+</li>
+<li>
+<p><strong>Download example <code>hostapd</code> and <code>wpa_supplicant</code> configs from <a href="https://codeberg.org/a-gavin/hostap-confs">here</a></strong></p>
+<p>We'll use the configs in <a href="https://codeberg.org/a-gavin/hostap-confs/src/branch/main/wpa2/fast-transition"><code>wpa2/fast-transition/</code></a>.</p>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#bf616a;">git</span><span> clone https://codeberg.org/a-gavin/hostap-confs.git
+</span></code></pre>
+</li>
+<li>
+<p><strong>Start the AP interfaces</strong></p>
+<p>In one terminal, start the first AP:</p>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#bf616a;">hostapd -t -i</span><span> wlan1 hostapd_5GHz-wpa2-11r-ap1.conf
+</span></code></pre>
+<p>Then in another terminal, start the second AP:</p>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#bf616a;">hostapd -t -i</span><span> wlan2 hostapd_5GHz-wpa2-11r-ap2.conf
+</span></code></pre>
+<p>Assuming no errors, you can verify operation with the <code>iw wlan1 info</code> command, substituting for the desired
+interface name.</p>
+<p>This dual-AP configuration supports 802.11r. However, we'll switch between a client that <em>does support</em> and one that
+<em>doesn't support</em> 802.11r to illustrate the difference.</p>
+</li>
+<li>
+<p><strong>Run Wireshark using the <code>mac80211_hwsim</code> packet capture interface</strong></p>
+<p>Packet capture requires root permissions. See the Wireshark documentation <a href="https://wiki.wireshark.org/capturesetup/captureprivileges#gnulinux-distributions-wireshark-is-installed-using-a-package-manager">here</a>
+for more information.</p>
+</li>
+<li>
+<p><strong>Start the client interface</strong></p>
+<p>In a third terminal, run the following command. Initially, we'll test a client that <em>doesn't support</em> 802.11r configuration.
+Then, later we'll switch to using a client that <em>does support</em> 802.11r configuration.</p>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#65737e;"># Use non-FT client config to start
+</span><span style="color:#bf616a;">wpa_supplicant -t -i</span><span> wlan0</span><span style="color:#bf616a;"> -c</span><span> supplicant_wpa2.conf
+</span></code></pre>
+</li>
+<li>
+<p><strong>Wait for client to connect</strong></p>
+<p>Once the client connects, you should also see the message <code>CTRL-EVENT-CONNECTED</code> in the client logs and <code>AP-STA-CONNECTED</code> in
+one of the AP's <code>hostapd</code> logs.</p>
+<p>Take note of the AP BSSID that the client connected to. You can run the <code>iw wlan2 link</code> command to verify connection, channel,
+SSID, BSSID, etc.</p>
+</li>
+<li>
+<p><strong>Connect to the <code>wpa_supplicant</code> CLI interface</strong></p>
+<p>In another terminal, run the following command. This should connect and show a <code>&gt;</code> prompt.</p>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#bf616a;">wpa_cli
+</span></code></pre>
+</li>
+</ol>
+<p>With the simulated client connected, Wireshark running, and the <code>wpa_supplicant</code> CLI up, it's time for some roaming!</p>
+<h2 id="simulated-non-fast-transition-client-roam">Simulated Non-Fast Transition Client Roam</h2>
+<h3 id="test-overview-and-goals">Test Overview and Goals</h3>
+<p>In this test, we'll simulate roaming with a client that doesn't support IEEE 802.11r BSS Fast Transition (FT).</p>
+<p>A successful test should result in the client disconnecting from the initial BSS and then reconnecting to the
+other, target BSS. In doing so, the client and target BSS will go through the full connection process.</p>
+<p>As we'll directly trigger the roam from the client side for both this and the next test, these are considered &quot;hard&quot; roam tests.
+In contrast, a &quot;soft&quot; roam test waits for the client to roam when it decides to. Each client implements its own, generally proprietary
+algorithm, which will trigger a roam as network conditions change (e.g. moving client away from one AP and closer to another).</p>
+<h3 id="test-instructions">Test Instructions</h3>
+<p>Using the <code>wpa_supplicant</code> CLI interface we configured earlier, we'll use the <code>scan</code> and <code>roam</code> commands to roam the simulated
+client using basic, full reconnection roaming.</p>
+<ol>
+<li>
+<p><strong>Trigger a scan in the <code>wpa_cli</code> terminal with the <code>scan</code> command</strong></p>
+<p>In order to roam the client successfully, it must have recently scanned the target AP BSS. The roam will
+fail if scan results are not recent. You can check this with the <code>scan_results</code> command.</p>
+<p>Real clients will run background scans, occuring based on internal logic and network conditions. The configurations
+used here do not run background scans. However, you can configure enable them with the <code>bgscan</code> option in the station
+config file.</p>
+<p>After triggering the client scan, you should see something like the following. The scan is complete when
+the <code>CTRL-EVENT-SCAN-RESULTS</code> is shown. As <code>mac80211_hwsim</code> radios support all bands, scanning may take awhile.</p>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span>&gt; scan
+</span><span style="color:#bf616a;">OK
+</span><span>&lt;</span><span style="color:#d08770;">3</span><span>&gt;CTRL-EVENT-SCAN-STARTED
+</span><span>&lt;</span><span style="color:#d08770;">3</span><span>&gt;CTRL-EVENT-SCAN-RESULTS
+</span></code></pre>
+</li>
+<li>
+<p><strong>Trigger the basic client roam with the <code>roam</code> command</strong></p>
+<p>The format of the roam command is <code>roam &lt;addr&gt;</code>, where <code>&lt;addr&gt;</code> is the BSSID of the target AP BSS to roam to.</p>
+<p>After triggering the client roam, you should see something like the following. If the client has not
+recently scanned the target AP BSS, the roam will fail.</p>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span>&gt; roam </span><span style="color:#bf616a;">02:00:00:00:02:00
+</span><span style="color:#bf616a;">OK
+</span><span>&lt;</span><span style="color:#d08770;">3</span><span>&gt;SME: </span><span style="color:#bf616a;">Trying</span><span> to authenticate with 02:00:00:00:02:00 (SSID=&#39;</span><span style="color:#a3be8c;">testssid</span><span>&#39; freq=5200 MHz)
+</span><span>&lt;</span><span style="color:#d08770;">3</span><span>&gt;Trying </span><span style="color:#bf616a;">to</span><span> associate with 02:00:00:00:02:00 (SSID=&#39;</span><span style="color:#a3be8c;">testssid</span><span>&#39; freq=5200 MHz)
+</span><span>&lt;</span><span style="color:#d08770;">3</span><span>&gt;Associated </span><span style="color:#bf616a;">with</span><span> 02:00:00:00:02:00
+</span><span>&lt;</span><span style="color:#d08770;">3</span><span>&gt;CTRL-EVENT-SUBNET-STATUS-UPDATE </span><span style="color:#bf616a;">status</span><span>=</span><span style="color:#a3be8c;">0
+</span><span>&lt;</span><span style="color:#d08770;">3</span><span>&gt;WPA: </span><span style="color:#bf616a;">Key</span><span> negotiation completed with 02:00:00:00:02:00 </span><span style="color:#b48ead;">[</span><span>PTK=CCMP GTK=CCMP</span><span style="color:#b48ead;">]
+</span><span>&lt;</span><span style="color:#d08770;">3</span><span>&gt;CTRL-EVENT-CONNECTED </span><span style="color:#bf616a;">-</span><span> Connection to 02:00:00:00:02:00 completed </span><span style="color:#b48ead;">[</span><span>id=0 id_str=</span><span style="color:#b48ead;">]
+</span></code></pre>
+<p>You can verify the roam with the <code>status</code> command in <code>wpa_cli</code> or with the <code>iw wlan0 link</code> command.
+I find the <code>iw</code> command slightly easier to read.</p>
+<p>Here's what a successful roam should look like in Wireshark using the <code>mac80211_hwsim</code> packet capture interface.</p>
+
+
+<div align="center">
+  <a href="https:&#x2F;&#x2F;a-gavin.github.io&#x2F;processed_images&#x2F;non-ft_roam.b30b495f76cbb88e.png">
+    <img src="https:&#x2F;&#x2F;a-gavin.github.io&#x2F;processed_images&#x2F;non-ft_roam.dc0ed77d302b6de0.png" alt="Simulated non-802.11r client scan and roam. Contents of the Reassociation Request frame shown."  />
+  </a>
+  <figcaption>Simulated non-802.11r client scan and roam. Reassociation Request frame shown.</figcaption>
+</div>
+<p>Digging into this, the client first scans using Probe Request frames, triggered by our scan from <code>wpa_cli</code>. Then, after
+the scan completes, we initiate the roam to the target AP BSS. The client selects the target BSS from its cached scan
+results and initiates the connection.</p>
+<p>Since the target AP BSS is part of the same extended service set (ESS), the client and AP use Reassociation Request and
+Reassociation Response frames during the connection process. After the association completes, the 4-way handshake occurs
+again, just as it did during initial association. In the screenshot, the Reassociation Request frame contents are shown
+at the bottom of the window. Note the information elements (IEs) included.</p>
+<p>In this scenario, while the client roams within the same ESS, there is no coordination between the two APs. They exist
+independent of each other and do not coordinate, even though they share the same SSID and security configuration.
+Even if the client wanted to, there's no way for the initial AP to notify the target AP of the client's existence
+before it roams. This is not the case with 802.11r.</p>
+</li>
+</ol>
+<h2 id="simulated-fast-transition-client-roam">Simulated Fast Transition Client Roam</h2>
+<h3 id="test-overview-and-goals-1">Test Overview and Goals</h3>
+<p>In the previous test, we demonstrated roaming a client that <em>doesn't</em> support IEEE 802.11r BSS Fast Transition (FT). In this test,
+we'll trigger a roam with a client that <em>does</em> support 802.11r, specifically an FT over the distribution system (FT-DS) roam.</p>
+<p>As before, a successful test should result in the client disconnecting from the initial AP BSS and then reconnecting to the target AP BSS.
+Unlike the previous non-802.11r client test, though, the connection process here will look a bit different.</p>
+<p>In 802.11r roaming, specifically FT-DS, an additional frame exchange should occur between the client and initial AP BSS before the client
+roams to the target AP BSS (FT-OTA works a bit differently). In addition, the frames transmitted to the target AP during the connection
+process will contain additional information that was not present in the non-802.11r roam test (true for both FT-DS and FT-OTA).</p>
+<h3 id="test-instructions-1">Test Instructions</h3>
+<p>After connecting the client using the 802.11r-capable <code>wpa_supplicant</code> configuration, we'll use the <code>wpa_supplicant</code> CLI interface
+<code>scan</code> and <code>ft_ds</code> commands to roam the simulated client using 802.11r FT-DS roaming.</p>
+<ol>
+<li>
+<p><strong>Reconnect the client with 802.11r-capable configuration</strong></p>
+<p>Stop the running <code>wpa_supplicant</code> command and disconnect the client with <code>CTRL+C</code>. Then, reconnect with the following command.</p>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#bf616a;">wpa_supplicant -t -i</span><span> wlan0</span><span style="color:#bf616a;"> -c</span><span> supplicant_wpa2-11r.conf
+</span></code></pre>
+</li>
+<li>
+<p><strong>Trigger a scan in the <code>wpa_cli</code> terminal with the <code>scan</code> command</strong></p>
+<p>As in the previous test, look for the <code>CTRL-EVENT-SCAN-RESULTS</code> to indicate scan completion.</p>
+</li>
+<li>
+<p><strong>Trigger the FT-DS client roam with the <code>ft_ds</code> command</strong></p>
+<p>The format of the roam command is <code>ft_ds &lt;addr&gt;</code>, where <code>&lt;addr&gt;</code> is the BSSID of the target AP to roam to.
+Both the client and target AP must support 802.11r for this to succeed. The client must have recently
+scanned the target AP as well.</p>
+<p>After triggering the client roam, you should see something like the following. If the client has not
+recently scanned the target AP or if either the client or APs don't support 802.11r, the roam will fail.</p>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span>&gt; ft_ds </span><span style="color:#bf616a;">02:00:00:00:02:00
+</span><span style="color:#bf616a;">OK
+</span><span>&lt;</span><span style="color:#d08770;">3</span><span>&gt;Trying </span><span style="color:#bf616a;">to</span><span> associate with 02:00:00:00:02:00 (SSID=&#39;</span><span style="color:#a3be8c;">testssid</span><span>&#39; freq=5200 MHz)
+</span><span>&lt;</span><span style="color:#d08770;">3</span><span>&gt;Associated </span><span style="color:#bf616a;">with</span><span> 02:00:00:00:02:00
+</span><span>&lt;</span><span style="color:#d08770;">3</span><span>&gt;WPA: </span><span style="color:#bf616a;">Key</span><span> negotiation completed with 02:00:00:00:02:00 </span><span style="color:#b48ead;">[</span><span>PTK=CCMP GTK=CCMP</span><span style="color:#b48ead;">]
+</span><span>&lt;</span><span style="color:#d08770;">3</span><span>&gt;CTRL-EVENT-CONNECTED </span><span style="color:#bf616a;">-</span><span> Connection to 02:00:00:00:02:00 completed </span><span style="color:#b48ead;">[</span><span>id=0 id_str=</span><span style="color:#b48ead;">]
+</span><span>&lt;</span><span style="color:#d08770;">3</span><span>&gt;CTRL-EVENT-SUBNET-STATUS-UPDATE </span><span style="color:#bf616a;">status</span><span>=</span><span style="color:#a3be8c;">0
+</span></code></pre>
+<p>Here's what a successful FT-DS roam should look like in Wireshark using the <code>mac80211_hwsim</code> packet capture interface.</p>
+
+
+<div align="center">
+  <a href="https:&#x2F;&#x2F;a-gavin.github.io&#x2F;processed_images&#x2F;ft_roam.669e0907c391d390.png">
+    <img src="https:&#x2F;&#x2F;a-gavin.github.io&#x2F;processed_images&#x2F;ft_roam.9205004b4dd5db83.png" alt="Simulated 802.11r client scan and roam. Contents of the 802.11r BSS Fast Transition Action frame shown."  />
+  </a>
+  <figcaption>Simulated 802.11r client scan and roam. FT Action frame shown.</figcaption>
+</div>
+<p>As before, the client scans and roams based on cached scan results. However, unlike before, the Authentication frames
+and 4-way handshake are missing. There are also two new Action frames present before the Reassociation Request
+and Reassociation Response. This is expected!</p>
+<p>As the network has already authorized the client on initial connection, 802.11r can leverage this assumption to its
+advantage. Using the Action frames just before the reassociation, the client notifies the initial AP of its intent
+to roam to another AP BSS within the same ESS (more specifically the same Mobility Domain). Assuming the initial
+AP responds successfully, the client can then send connect to the target AP BSS without the Authentication frame
+exchange or the 4-way handshake.</p>
+<p>TODO
+On the backend (i.e. on the AP side), the AP/</p>
+<p>Overall, in this 802.11r FT-DS test scenario with personal security configuration, the change to 802.11r eliminated
+six frames while introducing two. To be more specific, the Authentication and 4-way handshake frames are eliminated
+and FT Action frames are introduced (in FT-OTA, there are not FT-Action frames and Authentication frames are still
+present). When using an enterprise security configuration (802.1X), the EAP handshake is also eliminated, reducing
+the number of frames even further. In either scenario, 802.11r reduces roam latency, ensuring good user experience.</p>
+</li>
+</ol>
+<h2 id="closing-thoughts">Closing Thoughts</h2>
+<p>In this post, we detailed how to run a simple client roam test as well as a 802.11r BSS Fast Transition (FT) roam test (FT-DS here)
+using the Linux <code>mac80211_hwsim</code> WiFi simulation driver and standard WiFi tooling. These tests showcased the differences between
+each test and highlighted how 802.11r client roams can sharply reduce roam time and improve end user experience.</p>
+<p>I hope this shed some light on some of the intricacies involved in this testing. There's much much more to cover than the simple
+setup I showed here, but that's what makes real world testing all the more interesting!</p>
+</section>
+
+
+    </main>
+
+    <footer class="w-full pt-6">
+  <div class="bottom-4 mx-auto max-w-3xl p-4">
+    <ul class="flex items-center justify-center text-lg">
+      <li>
+        <a class="primary-link block px-3 py-0 text-center" href="./index.html">Email</a>
+      </li>
+      <li>
+        <a class="primary-link l block px-3 py-0 text-center" href="https://codeberg.org/a-gavin"
+          >Git</a
+        >
+      </li>
+      <li>
+        <a
+          class="primary-link block px-3 py-0 text-center"
+          href="https://www.linkedin.com/in/alex-gavin/"
+          >LinkedIn</a
+        >
+      </li>
+    </ul>
+  </div>
+</footer>
+
+  </body>
+</html>

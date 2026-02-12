@@ -1,0 +1,301 @@
+<!doctype html>
+<html class="not-ready lg:text-base" lang="en">
+  <head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <!-- 'shrint-to-fit=no' is a post-Safari 9.0 workaround
+        https://stackoverflow.com/questions/33767533/what-does-the-shrink-to-fit-viewport-meta-attribute-do
+    -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
+
+  <title>Alex Gavin</title>
+  <link rel="icon" type="image/x-icon" href="https://a-gavin.github.io/favicon.ico" />
+
+  <!-- Author/description -->
+  <meta name="author" content="Alex Gavin" />
+  <meta name="description" content="Portfolio website" />
+
+  <!-- CSS & JS -->
+  <link rel="preload stylesheet" href="https://a-gavin.github.io/main.css" />
+  <link
+    href="https://pvinis.github.io/iosevka-webfont/3.4.1/iosevka.css"
+    rel="stylesheet preload"
+    as="font"
+  />
+</head>
+
+
+  <body>
+    <!-- Header -->
+<header class="sticky top-0 z-40 min-h-[3.5rem] w-full">
+  <div class="top-4 mx-auto flex w-full max-w-4xl justify-between bg-white p-4">
+    <!-- Left top menu -->
+    <div class="flex justify-between">
+      <a class="text-xl" href="https:&#x2F;&#x2F;a-gavin.github.io">Alex Gavin</a>
+    </div>
+
+    <!-- Right desktop menu -->
+    <div class="hidden w-auto items-center sm:flex">
+      <div class="flex space-x-6">
+        <a
+          class="primary-link block text-center text-xl"
+          href="https:&#x2F;&#x2F;a-gavin.github.io"
+          aria-current="page"
+          >About</a
+        >
+        <a
+          class="primary-link block text-center text-xl"
+          href="https://alw32c9tw.s3.us-west-2.amazonaws.com/AlexGavinResume.pdf"
+          >CV</a
+        >
+        <a class="primary-link block text-center text-xl" href="https:&#x2F;&#x2F;a-gavin.github.io/blog">Blog</a>
+      </div>
+    </div>
+    <!-- Right mobile menu button -->
+    <div class="fixed right-0 top-0 flex items-center p-5 sm:hidden">
+      <button
+        type="button"
+        class="group peer relative z-10 inline-flex items-center justify-center rounded-md text-gray-600 active:text-gray-300 peer-focus:block"
+      >
+        <!-- Icon when menu is closed.
+             Menu open: "hidden", Menu closed: "block" -->
+        <svg
+          class="block size-6 group-focus:hidden"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          aria-hidden="true"
+          data-slot="icon"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+          />
+        </svg>
+        <!-- Icon when menu is open.
+             Menu open: "block", Menu closed: "hidden" -->
+        <svg
+          class="hidden size-6 group-focus:block"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          aria-hidden="true"
+          data-slot="icon"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+        </svg>
+      </button>
+
+      <!-- Right mobile menu -->
+      <div
+        class="active-within:block peer hidden focus-within:block focus:block active:block peer-focus:block"
+      >
+        <div
+          class="fixed right-0 top-0 flex flex-row space-x-4 bg-white p-4 text-left ring-1 ring-gray-500"
+        >
+          <div class="menu flex flex-col space-y-1">
+            <ul>
+              <li>
+                <a class="primary-link inline-flex text-xl" href="https:&#x2F;&#x2F;a-gavin.github.io">About</a>
+              </li>
+              <li>
+                <a
+                  class="primary-link inline-flex text-xl"
+                  href="https://alw32c9tw.s3.us-west-2.amazonaws.com/AlexGavinResume.pdf"
+                  >CV</a
+                >
+              </li>
+              <li>
+                <a class="primary-link inline-flex text-xl" href="https:&#x2F;&#x2F;a-gavin.github.io/blog"
+                  >Blog</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div class="width-6 block p-4"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+
+    <!-- Maximum width and padding should match that in header -->
+    <main class="prose prose-neutral relative mx-auto max-w-3xl p-4">
+      <!---->
+
+<div class="mb-8">
+  <div class="flex items-center justify-center text-2xl">
+    <p class="text-center">Configuring Linux Serial Access</p>
+  </div>
+  <time class="my-0 flex items-center justify-center opacity-80"
+    >08-26-24</time
+  >
+</div>
+
+<section class="opacity-90"><h2 id="overview">Overview</h2>
+<p>For systems with no graphics support, serial access is a requirement. Useful for systems that support graphics too, serial access provides a robust method of administering a system in times of trouble.</p>
+<p>At its simplest, serial access provides a simple login shell for Linux systems. It's a bit crude generally and can be a bit frustrating to use at times. However, when a system begins to misbehave, the right serial configuration can make things much easier.</p>
+<p>This guide demonstrates how to configure serial for a Linux system, including dumping kernel logs (<code>dmesg</code>) to serial. This guide also aims to enable simultaneous terminal access through both serial and display, should the target system support both.</p>
+<h2 id="instructions">Instructions</h2>
+<p><strong>NOTE:</strong> This guide assumes assumes you have root access to the system and that the target system is x86-64 based (ARM systems boot differently).</p>
+<h3 id="1-identify-serial-port">1. Identify Serial Port</h3>
+<p>To configure serial, you must first ensure your system supports it.</p>
+<p>If not immediately visible, first reference the system or motherboard datasheet. On systems more purposed for so-called 'edge' or firewall use, you will often find a built-in serial port alongside other IO ports. It is usually labeled 'Console' or 'COM'. These systems largely lack graphics support, so serial access is essential.</p>
+<p>Alternatively, consumer and server motherboards may also provide a serial port, but this is not guaranteed. Serial may be either built-in alongside other IO ports (unlikely for consumer motherboards) or exposed pins on the motherboard. Labels are similar to firewall-type systems, but you may also see the label 'UART'.</p>
+<p>If the system exposes multiple serial ports, pick one and keep track of it. We'll need this information later.</p>
+<h3 id="2-ensure-serial-port-is-enabled">2. Ensure Serial Port is Enabled</h3>
+<p>Boot your system into its BIOS or access its IPMI management console and ensure the serial port is enabled and configured to a reasonable baud rate (115200 is standard). This step varies significantly system to system. <strong>When in doubt, leave other settings at default.</strong></p>
+<p>On systems with an AMI BIOS, you'll often find this option under the 'Advanced' tab in 'Serial Port Console Redirection'.</p>
+<h3 id="3-identify-serial-port-connector-type-procure-cable">3. Identify Serial Port Connector Type, Procure Cable</h3>
+<p>Once you've verified the system provides a serial port and it is configured in the BIOS/IPMI interface, next identify <em>what type</em> it is.</p>
+<p>There are several different serial port types, but you will most often find one of the following. This list is not meant to be exhaustive:</p>
+<ul>
+<li>
+<p><strong>RJ45:</strong></p>
+<ul>
+<li>Easy to confuse for an Ethernet port, this type uses the same RJ45 connector as most Ethernet cables/NICs</li>
+<li>Often found on more firewall-type systems</li>
+<li>Requires cable with converter (e.g. RJ45 to USB)</li>
+<li><strong>Connecting an Ethernet cable between systems will not work</strong></li>
+</ul>
+</li>
+<li>
+<p><strong>RS232:</strong></p>
+<ul>
+<li>Looks like VGA but with two rows of pins instead of three</li>
+<li>Most often found in server motherboards or industrial-grade systems</li>
+<li>Requires cable with converter (e.g. RS232 to USB)</li>
+<li>Ensure cable is right gender (i.e. pinned for pinhole port)</li>
+</ul>
+</li>
+<li>
+<p><strong>UART Pins:</strong></p>
+<ul>
+<li>Uses pins or pinholes and requires jumper wires</li>
+<li>Pins/pinholes most often found directly on the Motherboard or system PCB</li>
+<li>May have to solder on pins or even determine which pins are which. <a href="https://www.youtube.com/watch?v=ZmZuKA-Rst0">This video</a> can help with identification</li>
+<li>Requires USB to serial converter and jumper wires, which often come separate</li>
+<li>Ensure jumper wires are right gender on both ends</li>
+</ul>
+</li>
+<li>
+<p><strong>USB:</strong></p>
+<ul>
+<li>Plain old USB</li>
+<li>Not as frequent as other types, this type is often found in some commercial APs and more frequently in development boards (e.g. Arduino boards)</li>
+<li>Unlike other types, this type will sit in front of a chip on the PCB that converts from serial to USB. No special cable required</li>
+<li><strong>Make sure your cable has data wires and not just power.</strong> Not all USB cables are built the same</li>
+</ul>
+</li>
+</ul>
+<h3 id="4-configure-linux-grub-serial-settings">4. Configure Linux/GRUB Serial Settings</h3>
+<p>This step configures both Linux and GRUB to use serial output in addition to the system console. For context, GRUB is a bootloader used to select boot configurations including Linux. Documentation for these options is available <a href="https://www.gnu.org/software/grub/manual/grub/html_node/Simple-configuration.html">here</a>.</p>
+<p><strong>These instructions assume you are using GRUB2</strong>, which is basically every major Linux distribution at this point (including Ubuntu, Fedora, ArchLinux).</p>
+<ol>
+<li>
+<p><strong>Boot the system to the desired operating system</strong></p>
+</li>
+<li>
+<p><strong>Back up the <code>/etc/default/grub</code> file in a safe place</strong></p>
+</li>
+<li>
+<p><strong>As root, open the <code>/etc/default/grub</code> file in your desired text editor</strong></p>
+<p>This file contains configuration to boot the current operating system you're using, but other GRUB entries may be present in the final GRUB configuration file.</p>
+</li>
+<li>
+<p><strong>Add or adjust the file to match the following in the configuration file</strong></p>
+<p><em>Leave other configuration untouched unless you know what you're doing.</em></p>
+<pre style="background-color:#2b303b;color:#c0c5ce;"><code><span>GRUB_TERMINAL=&quot;serial console&quot;
+</span><span>GRUB_SERIAL_COMMAND=&quot;serial --unit=0 --speed=115200 --word-8 --parity=no --stop=1&quot;
+</span></code></pre>
+</li>
+<li>
+<p><strong>Carefully add the following to the <code>GRUB_CMDLINE_LINUX</code> option</strong></p>
+<p><strong>Be extra cautious to only <em>add</em></strong> to the <code>GRUB_CMDLINE_LINUX</code> option, as these are options passed directly to the kernel. Deleting the wrong thing could cause your system to not boot (e.g. if you remove a <code>resume=...</code> option). See <a href="https://www.kernel.org/doc/html/latest/admin-guide/kernel-parameters.html">here</a> for parameter documentation.</p>
+<p>Add exactly the following, separating from the previous option by a space character. Adjusting the baud and target serial device based on your system hardware:</p>
+<pre style="background-color:#2b303b;color:#c0c5ce;"><code><span>console=tty0 console=ttyS0,115200n8
+</span></code></pre>
+<p>For example, the following is from a system I've configured (<strong>do not copy verbatim, you will almost certainly misconfigure your system</strong>):</p>
+<pre style="background-color:#2b303b;color:#c0c5ce;"><code><span>GRUB_CMDLINE_LINUX=&quot;resume=UUID=... rhgb console=tty0 console=ttyS0,115200n8&quot;
+</span></code></pre>
+</li>
+<li>
+<p><strong>Update the GRUB configuration</strong></p>
+<p>Basically every distribution will use the <code>grub2-mkconfig</code> tool to generate a boot file, with specific invocation depending on the system.</p>
+<ul>
+<li>
+<p>Ubuntu:</p>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#65737e;"># Can also do this by using the &#39;update-grub&#39; and &#39;update-grub2&#39; utilities
+</span><span style="color:#bf616a;">grub2-mkconfig -o</span><span> /boot/grub/grub.cfg
+</span></code></pre>
+</li>
+<li>
+<p>Fedora:</p>
+<pre data-lang="Bash" style="background-color:#2b303b;color:#c0c5ce;" class="language-Bash "><code class="language-Bash" data-lang="Bash"><span style="color:#bf616a;">grub2-mkconfig -o</span><span> /boot/grub2/grub.cfg
+</span></code></pre>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Power off the system</strong></p>
+</li>
+</ol>
+<h3 id="5-install-desired-serial-access-program">5. Install Desired Serial Access Program</h3>
+<p>To access serial on a target system, you'll need to install a serial access program on the device you'll connect the <em>other end</em> of the serial cable to. I'll refer to this as the <em>host system</em>.</p>
+<p>Which program you choose depends on personal preference. I use <code>minicom</code> most often, but PuTTy and <code>screen</code> are other well-utilized options. For newer users, I recommend PuTTy.</p>
+<h3 id="6-connect-to-serial-port">6. Connect to Serial Port</h3>
+<ol>
+<li>
+<p><strong>Connect serial cable</strong></p>
+<p>With your serial cable, attach the USB end of the cable to the <em>host system</em> then attach the other end to the desired serial port on the <em>target system</em>.</p>
+</li>
+<li>
+<p><strong>Verify that the <em>host system</em> detects the serial cable</strong></p>
+<p>How you do this will depend on the operating system.</p>
+<p>On Linux, check the output of <code>sudo dmesg | grep tty</code>. Save the TTY name for later (e.g. <code>ttyUSB0</code> or <code>ttyACM0</code>). Windows will show the device as a COM port in the 'Device Manager' GUI.</p>
+</li>
+<li>
+<p><strong>Open your installed serial access program</strong></p>
+<p><strong>NOTE:</strong> You will need to adjust the baud rate and hardware flow control here. <code>minicom</code> does this in a sub-menu that you can open using the 'CTRL-A' keystroke.</p>
+<p>The specifics here will depend on the program you've chosen. If you're using <code>minicom</code> or <code>screen</code>, you must specify the TTY as an argument. For example, <code>minicom -D /dev/ttyUSB0</code>.</p>
+<p>Most Linux systems will only permit access to USB serial devices by default with root permissions. It is possible to permit this as non-root user configuring udev rules or adding the user to a specific group, but this depends on the distribution. See <a href="https://a-gavin.github.io/blog/linux-usb-serial/">this post</a> I wrote to configure this using udev rules.</p>
+</li>
+<li>
+<p><strong>Boot target system</strong></p>
+<p>Assuming everything is correct, you should have serial access to your system after this point!</p>
+<p>If you see garbled or no output, you may need to adjust the baud rate or disable flow control.</p>
+</li>
+</ol>
+</section>
+
+
+    </main>
+
+    <footer class="w-full pt-6">
+  <div class="bottom-4 mx-auto max-w-3xl p-4">
+    <ul class="flex items-center justify-center text-lg">
+      <li>
+        <a class="primary-link block px-3 py-0 text-center" href="./index.html">Email</a>
+      </li>
+      <li>
+        <a class="primary-link l block px-3 py-0 text-center" href="https://codeberg.org/a-gavin"
+          >Git</a
+        >
+      </li>
+      <li>
+        <a
+          class="primary-link block px-3 py-0 text-center"
+          href="https://www.linkedin.com/in/alex-gavin/"
+          >LinkedIn</a
+        >
+      </li>
+    </ul>
+  </div>
+</footer>
+
+  </body>
+</html>
